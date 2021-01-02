@@ -1,0 +1,1384 @@
+{
+    "search-results": {
+      "opensearch:totalResults": "32",
+      "opensearch:startIndex": "0",
+      "opensearch:itemsPerPage": "25",
+      "opensearch:Query": {
+        "@role": "request",
+        "@searchTerms": "all(\"digital innovation process\")",
+        "@startPage": "0"
+      },
+      "link": [
+        {
+          "@_fa": "true",
+          "@ref": "self",
+          "@href": "https://api.elsevier.com/content/search/scopus?start=0&count=25&query=all%28%22digital+innovation+process%22%29&apiKey=0b9d0f79e12ed3536ed782c77168881e",
+          "@type": "application/json"
+        },
+        {
+          "@_fa": "true",
+          "@ref": "first",
+          "@href": "https://api.elsevier.com/content/search/scopus?start=0&count=25&query=all%28%22digital+innovation+process%22%29&apiKey=0b9d0f79e12ed3536ed782c77168881e",
+          "@type": "application/json"
+        },
+        {
+          "@_fa": "true",
+          "@ref": "next",
+          "@href": "https://api.elsevier.com/content/search/scopus?start=25&count=25&query=all%28%22digital+innovation+process%22%29&apiKey=0b9d0f79e12ed3536ed782c77168881e",
+          "@type": "application/json"
+        },
+        {
+          "@_fa": "true",
+          "@ref": "last",
+          "@href": "https://api.elsevier.com/content/search/scopus?start=7&count=25&query=all%28%22digital+innovation+process%22%29&apiKey=0b9d0f79e12ed3536ed782c77168881e",
+          "@type": "application/json"
+        }
+      ],
+      "entry": [
+        {
+          "@_fa": "true",
+          "link": [
+            {
+              "@_fa": "true",
+              "@ref": "self",
+              "@href": "https://api.elsevier.com/content/abstract/scopus_id/85092236660"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "author-affiliation",
+              "@href": "https://api.elsevier.com/content/abstract/scopus_id/85092236660?field=author,affiliation"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "scopus",
+              "@href": "https://www.scopus.com/inward/record.uri?partnerID=HzOxMe3b&scp=85092236660&origin=inward"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "scopus-citedby",
+              "@href": "https://www.scopus.com/inward/citedby.uri?partnerID=HzOxMe3b&scp=85092236660&origin=inward"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "full-text",
+              "@href": "https://api.elsevier.com/content/article/eid/1-s2.0-S0148296320306238"
+            }
+          ],
+          "prism:url": "https://api.elsevier.com/content/abstract/scopus_id/85092236660",
+          "dc:identifier": "SCOPUS_ID:85092236660",
+          "eid": "2-s2.0-85092236660",
+          "dc:title": "The role of digital innovation in knowledge management systems: A systematic literature review",
+          "dc:creator": "Di Vaio A.",
+          "prism:publicationName": "Journal of Business Research",
+          "prism:issn": "01482963",
+          "prism:volume": "123",
+          "prism:pageRange": "220-231",
+          "prism:coverDate": "2021-02-01",
+          "prism:coverDisplayDate": "February 2021",
+          "prism:doi": "10.1016/j.jbusres.2020.09.042",
+          "pii": "S0148296320306238",
+          "citedby-count": "1",
+          "affiliation": [
+            {
+              "@_fa": "true",
+              "affilname": "Parthenope University of Naples",
+              "affiliation-city": "Naples",
+              "affiliation-country": "Italy"
+            }
+          ],
+          "prism:aggregationType": "Journal",
+          "subtype": "ar",
+          "subtypeDescription": "Article",
+          "source-id": "20550",
+          "openaccess": "0",
+          "openaccessFlag": false
+        },
+        {
+          "@_fa": "true",
+          "link": [
+            {
+              "@_fa": "true",
+              "@ref": "self",
+              "@href": "https://api.elsevier.com/content/abstract/scopus_id/85091100462"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "author-affiliation",
+              "@href": "https://api.elsevier.com/content/abstract/scopus_id/85091100462?field=author,affiliation"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "scopus",
+              "@href": "https://www.scopus.com/inward/record.uri?partnerID=HzOxMe3b&scp=85091100462&origin=inward"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "scopus-citedby",
+              "@href": "https://www.scopus.com/inward/citedby.uri?partnerID=HzOxMe3b&scp=85091100462&origin=inward"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "full-text",
+              "@href": "https://api.elsevier.com/content/article/eid/1-s2.0-S0148296320305610"
+            }
+          ],
+          "prism:url": "https://api.elsevier.com/content/abstract/scopus_id/85091100462",
+          "dc:identifier": "SCOPUS_ID:85091100462",
+          "eid": "2-s2.0-85091100462",
+          "dc:title": "How do digital innovation teams function? Understanding the team cognition-process nexus within the context of digital transformation",
+          "dc:creator": "Hadjielias E.",
+          "prism:publicationName": "Journal of Business Research",
+          "prism:issn": "01482963",
+          "prism:volume": "122",
+          "prism:pageRange": "373-386",
+          "prism:coverDate": "2021-01-01",
+          "prism:coverDisplayDate": "January 2021",
+          "prism:doi": "10.1016/j.jbusres.2020.08.045",
+          "pii": "S0148296320305610",
+          "citedby-count": "1",
+          "affiliation": [
+            {
+              "@_fa": "true",
+              "affilname": "Cyprus University of Technology",
+              "affiliation-city": "Limassol",
+              "affiliation-country": "Cyprus"
+            }
+          ],
+          "prism:aggregationType": "Journal",
+          "subtype": "ar",
+          "subtypeDescription": "Article",
+          "source-id": "20550",
+          "openaccess": "0",
+          "openaccessFlag": false
+        },
+        {
+          "@_fa": "true",
+          "link": [
+            {
+              "@_fa": "true",
+              "@ref": "self",
+              "@href": "https://api.elsevier.com/content/abstract/scopus_id/85092255441"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "author-affiliation",
+              "@href": "https://api.elsevier.com/content/abstract/scopus_id/85092255441?field=author,affiliation"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "scopus",
+              "@href": "https://www.scopus.com/inward/record.uri?partnerID=HzOxMe3b&scp=85092255441&origin=inward"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "scopus-citedby",
+              "@href": "https://www.scopus.com/inward/citedby.uri?partnerID=HzOxMe3b&scp=85092255441&origin=inward"
+            }
+          ],
+          "prism:url": "https://api.elsevier.com/content/abstract/scopus_id/85092255441",
+          "dc:identifier": "SCOPUS_ID:85092255441",
+          "eid": "2-s2.0-85092255441",
+          "dc:title": "Sources of Cryptocurrency Value Systems: The Case of Bitcoin",
+          "dc:creator": "Wingreen S.C.",
+          "prism:publicationName": "International Journal of Electronic Commerce",
+          "prism:issn": "10864415",
+          "prism:eIssn": "15579301",
+          "prism:volume": "24",
+          "prism:issueIdentifier": "4",
+          "prism:pageRange": "474-496",
+          "prism:coverDate": "2020-10-01",
+          "prism:coverDisplayDate": "1 October 2020",
+          "prism:doi": "10.1080/10864415.2020.1806469",
+          "citedby-count": "0",
+          "affiliation": [
+            {
+              "@_fa": "true",
+              "affilname": "University of Canterbury",
+              "affiliation-city": "Christchurch",
+              "affiliation-country": "New Zealand"
+            }
+          ],
+          "prism:aggregationType": "Journal",
+          "subtype": "ar",
+          "subtypeDescription": "Article",
+          "source-id": "19691",
+          "openaccess": "0",
+          "openaccessFlag": false
+        },
+        {
+          "@_fa": "true",
+          "link": [
+            {
+              "@_fa": "true",
+              "@ref": "self",
+              "@href": "https://api.elsevier.com/content/abstract/scopus_id/85092219170"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "author-affiliation",
+              "@href": "https://api.elsevier.com/content/abstract/scopus_id/85092219170?field=author,affiliation"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "scopus",
+              "@href": "https://www.scopus.com/inward/record.uri?partnerID=HzOxMe3b&scp=85092219170&origin=inward"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "scopus-citedby",
+              "@href": "https://www.scopus.com/inward/citedby.uri?partnerID=HzOxMe3b&scp=85092219170&origin=inward"
+            }
+          ],
+          "prism:url": "https://api.elsevier.com/content/abstract/scopus_id/85092219170",
+          "dc:identifier": "SCOPUS_ID:85092219170",
+          "eid": "2-s2.0-85092219170",
+          "dc:title": "Did transformational, transactional leadership style and organizational learning influence innovation capabilities of school teachers during covid-19 pandemic?",
+          "dc:creator": "Supriadi O.",
+          "prism:publicationName": "Systematic Reviews in Pharmacy",
+          "prism:issn": "09758453",
+          "prism:eIssn": "09762779",
+          "prism:volume": "11",
+          "prism:issueIdentifier": "9",
+          "prism:pageRange": "299-311",
+          "prism:coverDate": "2020-10-01",
+          "prism:coverDisplayDate": "October 2020",
+          "prism:doi": "10.31838/srp.2020.9.47",
+          "citedby-count": "7",
+          "affiliation": [
+            {
+              "@_fa": "true",
+              "affilname": "Universitas Singaperbangsa Karawang",
+              "affiliation-city": "Karawang",
+              "affiliation-country": "Indonesia"
+            }
+          ],
+          "prism:aggregationType": "Journal",
+          "subtype": "ar",
+          "subtypeDescription": "Article",
+          "source-id": "19700201140",
+          "openaccess": "0",
+          "openaccessFlag": false
+        },
+        {
+          "@_fa": "true",
+          "link": [
+            {
+              "@_fa": "true",
+              "@ref": "self",
+              "@href": "https://api.elsevier.com/content/abstract/scopus_id/85095738927"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "author-affiliation",
+              "@href": "https://api.elsevier.com/content/abstract/scopus_id/85095738927?field=author,affiliation"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "scopus",
+              "@href": "https://www.scopus.com/inward/record.uri?partnerID=HzOxMe3b&scp=85095738927&origin=inward"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "scopus-citedby",
+              "@href": "https://www.scopus.com/inward/citedby.uri?partnerID=HzOxMe3b&scp=85095738927&origin=inward"
+            }
+          ],
+          "prism:url": "https://api.elsevier.com/content/abstract/scopus_id/85095738927",
+          "dc:identifier": "SCOPUS_ID:85095738927",
+          "eid": "2-s2.0-85095738927",
+          "dc:title": "Effect of transformational and transactional leadership toward iso 22000:2018 Food safety certified company performance",
+          "dc:creator": "Abidin Z.",
+          "prism:publicationName": "Systematic Reviews in Pharmacy",
+          "prism:issn": "09758453",
+          "prism:eIssn": "09762779",
+          "prism:volume": "11",
+          "prism:issueIdentifier": "7",
+          "prism:pageRange": "529-538",
+          "prism:coverDate": "2020-07-01",
+          "prism:coverDisplayDate": "July 2020",
+          "prism:doi": "10.31838/srp.2020.7.77",
+          "citedby-count": "6",
+          "affiliation": [
+            {
+              "@_fa": "true",
+              "affilname": "Sekolah Tinggi Ilmu Administrasi",
+              "affiliation-city": "Bandung",
+              "affiliation-country": "Indonesia"
+            }
+          ],
+          "prism:aggregationType": "Journal",
+          "subtype": "ar",
+          "subtypeDescription": "Article",
+          "source-id": "19700201140",
+          "openaccess": "0",
+          "openaccessFlag": false
+        },
+        {
+          "@_fa": "true",
+          "link": [
+            {
+              "@_fa": "true",
+              "@ref": "self",
+              "@href": "https://api.elsevier.com/content/abstract/scopus_id/85092767866"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "author-affiliation",
+              "@href": "https://api.elsevier.com/content/abstract/scopus_id/85092767866?field=author,affiliation"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "scopus",
+              "@href": "https://www.scopus.com/inward/record.uri?partnerID=HzOxMe3b&scp=85092767866&origin=inward"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "scopus-citedby",
+              "@href": "https://www.scopus.com/inward/citedby.uri?partnerID=HzOxMe3b&scp=85092767866&origin=inward"
+            }
+          ],
+          "prism:url": "https://api.elsevier.com/content/abstract/scopus_id/85092767866",
+          "dc:identifier": "SCOPUS_ID:85092767866",
+          "eid": "2-s2.0-85092767866",
+          "dc:title": "Transformational or transactional leadership style: Which affects work satisfaction and performance of islamic university lecturers during COVID-19 pandemic?",
+          "dc:creator": "Azizah Y.N.",
+          "prism:publicationName": "Systematic Reviews in Pharmacy",
+          "prism:issn": "09758453",
+          "prism:eIssn": "09762779",
+          "prism:volume": "11",
+          "prism:issueIdentifier": "7",
+          "prism:pageRange": "577-588",
+          "prism:coverDate": "2020-07-01",
+          "prism:coverDisplayDate": "July 2020",
+          "prism:doi": "10.31838/srp.2020.7.82",
+          "citedby-count": "9",
+          "affiliation": [
+            {
+              "@_fa": "true",
+              "affilname": "Institut Agama Islam Negeri Samarinda",
+              "affiliation-city": "Samarinda",
+              "affiliation-country": "Indonesia"
+            }
+          ],
+          "prism:aggregationType": "Journal",
+          "subtype": "ar",
+          "subtypeDescription": "Article",
+          "source-id": "19700201140",
+          "openaccess": "0",
+          "openaccessFlag": false
+        },
+        {
+          "@_fa": "true",
+          "link": [
+            {
+              "@_fa": "true",
+              "@ref": "self",
+              "@href": "https://api.elsevier.com/content/abstract/scopus_id/85078170675"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "author-affiliation",
+              "@href": "https://api.elsevier.com/content/abstract/scopus_id/85078170675?field=author,affiliation"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "scopus",
+              "@href": "https://www.scopus.com/inward/record.uri?partnerID=HzOxMe3b&scp=85078170675&origin=inward"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "scopus-citedby",
+              "@href": "https://www.scopus.com/inward/citedby.uri?partnerID=HzOxMe3b&scp=85078170675&origin=inward"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "full-text",
+              "@href": "https://api.elsevier.com/content/article/eid/1-s2.0-S1462901119310482"
+            }
+          ],
+          "prism:url": "https://api.elsevier.com/content/abstract/scopus_id/85078170675",
+          "dc:identifier": "SCOPUS_ID:85078170675",
+          "eid": "2-s2.0-85078170675",
+          "dc:title": "Kolochilikélan: A digital opportunity for Malian emptying operators to boost their business",
+          "dc:creator": "de Georgio Ferrari Trecate F.",
+          "prism:publicationName": "Environmental Science and Policy",
+          "prism:issn": "14629011",
+          "prism:eIssn": "18736416",
+          "prism:volume": "106",
+          "prism:pageRange": "29-35",
+          "prism:coverDate": "2020-04-01",
+          "prism:coverDisplayDate": "April 2020",
+          "prism:doi": "10.1016/j.envsci.2020.01.012",
+          "pii": "S1462901119310482",
+          "citedby-count": "1",
+          "affiliation": [
+            {
+              "@_fa": "true",
+              "affilname": "Join For Water",
+              "affiliation-city": "Bamako",
+              "affiliation-country": "Mali"
+            }
+          ],
+          "prism:aggregationType": "Journal",
+          "subtype": "ar",
+          "subtypeDescription": "Article",
+          "source-id": "21536",
+          "openaccess": "0",
+          "openaccessFlag": false
+        },
+        {
+          "@_fa": "true",
+          "link": [
+            {
+              "@_fa": "true",
+              "@ref": "self",
+              "@href": "https://api.elsevier.com/content/abstract/scopus_id/85083105822"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "author-affiliation",
+              "@href": "https://api.elsevier.com/content/abstract/scopus_id/85083105822?field=author,affiliation"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "scopus",
+              "@href": "https://www.scopus.com/inward/record.uri?partnerID=HzOxMe3b&scp=85083105822&origin=inward"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "scopus-citedby",
+              "@href": "https://www.scopus.com/inward/citedby.uri?partnerID=HzOxMe3b&scp=85083105822&origin=inward"
+            }
+          ],
+          "prism:url": "https://api.elsevier.com/content/abstract/scopus_id/85083105822",
+          "dc:identifier": "SCOPUS_ID:85083105822",
+          "eid": "2-s2.0-85083105822",
+          "dc:title": "Hard skills versus soft skills: Which are more important for indonesian employees innovation capability",
+          "dc:creator": "Sopa A.",
+          "prism:publicationName": "International Journal of Advanced Science and Technology",
+          "prism:issn": "20054238",
+          "prism:eIssn": "22076360",
+          "prism:volume": "29",
+          "prism:issueIdentifier": "3",
+          "prism:pageRange": "6431-6453",
+          "prism:coverDate": "2020-03-18",
+          "prism:coverDisplayDate": "18 March 2020",
+          "citedby-count": "10",
+          "affiliation": [
+            {
+              "@_fa": "true",
+              "affilname": "Pelita Harapan University",
+              "affiliation-city": "Tangerang",
+              "affiliation-country": "Indonesia"
+            }
+          ],
+          "prism:aggregationType": "Journal",
+          "subtype": "ar",
+          "subtypeDescription": "Article",
+          "source-id": "21100829147",
+          "openaccess": "0",
+          "openaccessFlag": false
+        },
+        {
+          "@_fa": "true",
+          "link": [
+            {
+              "@_fa": "true",
+              "@ref": "self",
+              "@href": "https://api.elsevier.com/content/abstract/scopus_id/85081272003"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "author-affiliation",
+              "@href": "https://api.elsevier.com/content/abstract/scopus_id/85081272003?field=author,affiliation"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "scopus",
+              "@href": "https://www.scopus.com/inward/record.uri?partnerID=HzOxMe3b&scp=85081272003&origin=inward"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "scopus-citedby",
+              "@href": "https://www.scopus.com/inward/citedby.uri?partnerID=HzOxMe3b&scp=85081272003&origin=inward"
+            }
+          ],
+          "prism:url": "https://api.elsevier.com/content/abstract/scopus_id/85081272003",
+          "dc:identifier": "SCOPUS_ID:85081272003",
+          "eid": "2-s2.0-85081272003",
+          "dc:title": "Digitalization of agri-cooperatives in the smart agriculture context. Proposal of a digital diagnosis tool",
+          "dc:creator": "Ciruela-Lorenzo A.M.",
+          "prism:publicationName": "Sustainability (Switzerland)",
+          "prism:eIssn": "20711050",
+          "prism:volume": "12",
+          "prism:issueIdentifier": "4",
+          "prism:pageRange": null,
+          "prism:coverDate": "2020-02-01",
+          "prism:coverDisplayDate": "1 February 2020",
+          "prism:doi": "10.3390/su12041325",
+          "citedby-count": "6",
+          "affiliation": [
+            {
+              "@_fa": "true",
+              "affilname": "Universidad de Malaga",
+              "affiliation-city": "Malaga",
+              "affiliation-country": "Spain"
+            }
+          ],
+          "prism:aggregationType": "Journal",
+          "subtype": "ar",
+          "subtypeDescription": "Article",
+          "article-number": "1325",
+          "source-id": "21100240100",
+          "openaccess": "1",
+          "openaccessFlag": true
+        },
+        {
+          "@_fa": "true",
+          "link": [
+            {
+              "@_fa": "true",
+              "@ref": "self",
+              "@href": "https://api.elsevier.com/content/abstract/scopus_id/85089125477"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "author-affiliation",
+              "@href": "https://api.elsevier.com/content/abstract/scopus_id/85089125477?field=author,affiliation"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "scopus",
+              "@href": "https://www.scopus.com/inward/record.uri?partnerID=HzOxMe3b&scp=85089125477&origin=inward"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "scopus-citedby",
+              "@href": "https://www.scopus.com/inward/citedby.uri?partnerID=HzOxMe3b&scp=85089125477&origin=inward"
+            }
+          ],
+          "prism:url": "https://api.elsevier.com/content/abstract/scopus_id/85089125477",
+          "dc:identifier": "SCOPUS_ID:85089125477",
+          "eid": "2-s2.0-85089125477",
+          "dc:title": "Fifty shades of digital innovation: How firms innovate with digital technologies",
+          "dc:creator": "Lokuge S.",
+          "prism:publicationName": "Proceedings of the 24th Pacific Asia Conference on Information Systems: Information Systems (IS) for the Future, PACIS 2020",
+          "prism:pageRange": null,
+          "prism:coverDate": "2020-01-01",
+          "prism:coverDisplayDate": "2020",
+          "citedby-count": "0",
+          "affiliation": [
+            {
+              "@_fa": "true",
+              "affilname": "RMIT University",
+              "affiliation-city": "Melbourne",
+              "affiliation-country": "Australia"
+            }
+          ],
+          "prism:aggregationType": "Conference Proceeding",
+          "subtype": "cp",
+          "subtypeDescription": "Conference Paper",
+          "source-id": "21101019270",
+          "openaccess": "0",
+          "openaccessFlag": false
+        },
+        {
+          "@_fa": "true",
+          "link": [
+            {
+              "@_fa": "true",
+              "@ref": "self",
+              "@href": "https://api.elsevier.com/content/abstract/scopus_id/85094166831"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "author-affiliation",
+              "@href": "https://api.elsevier.com/content/abstract/scopus_id/85094166831?field=author,affiliation"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "scopus",
+              "@href": "https://www.scopus.com/inward/record.uri?partnerID=HzOxMe3b&scp=85094166831&origin=inward"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "scopus-citedby",
+              "@href": "https://www.scopus.com/inward/citedby.uri?partnerID=HzOxMe3b&scp=85094166831&origin=inward"
+            }
+          ],
+          "prism:url": "https://api.elsevier.com/content/abstract/scopus_id/85094166831",
+          "dc:identifier": "SCOPUS_ID:85094166831",
+          "eid": "2-s2.0-85094166831",
+          "dc:title": "Data-driven innovation processes within federated networks",
+          "dc:creator": "Rizk A.",
+          "prism:publicationName": "European Journal of Innovation Management",
+          "prism:issn": "14601060",
+          "prism:pageRange": null,
+          "prism:coverDate": "2020-01-01",
+          "prism:coverDisplayDate": "2020",
+          "prism:doi": "10.1108/EJIM-05-2020-0190",
+          "citedby-count": "0",
+          "affiliation": [
+            {
+              "@_fa": "true",
+              "affilname": "Luleå tekniska Universitet",
+              "affiliation-city": "Lulea",
+              "affiliation-country": "Sweden"
+            }
+          ],
+          "prism:aggregationType": "Journal",
+          "subtype": "ar",
+          "subtypeDescription": "Article",
+          "source-id": "144961",
+          "openaccess": "0",
+          "openaccessFlag": false
+        },
+        {
+          "@_fa": "true",
+          "link": [
+            {
+              "@_fa": "true",
+              "@ref": "self",
+              "@href": "https://api.elsevier.com/content/abstract/scopus_id/85097712349"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "author-affiliation",
+              "@href": "https://api.elsevier.com/content/abstract/scopus_id/85097712349?field=author,affiliation"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "scopus",
+              "@href": "https://www.scopus.com/inward/record.uri?partnerID=HzOxMe3b&scp=85097712349&origin=inward"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "scopus-citedby",
+              "@href": "https://www.scopus.com/inward/citedby.uri?partnerID=HzOxMe3b&scp=85097712349&origin=inward"
+            }
+          ],
+          "prism:url": "https://api.elsevier.com/content/abstract/scopus_id/85097712349",
+          "dc:identifier": "SCOPUS_ID:85097712349",
+          "eid": "2-s2.0-85097712349",
+          "dc:title": "IT governance and continuous digital innovation: Insights from a delphi study in the oil and gas industry",
+          "dc:creator": "Rincon A.R.",
+          "prism:publicationName": "26th Americas Conference on Information Systems, AMCIS 2020",
+          "prism:isbn": [
+            {
+              "@_fa": "true",
+              "$": "9781733632546"
+            }
+          ],
+          "prism:pageRange": null,
+          "prism:coverDate": "2020-01-01",
+          "prism:coverDisplayDate": "2020",
+          "citedby-count": "0",
+          "affiliation": [
+            {
+              "@_fa": "true",
+              "affilname": "Memorial University",
+              "affiliation-city": null,
+              "affiliation-country": null
+            }
+          ],
+          "prism:aggregationType": "Conference Proceeding",
+          "subtype": "cp",
+          "subtypeDescription": "Conference Paper",
+          "source-id": "21101030696",
+          "openaccess": "0",
+          "openaccessFlag": false
+        },
+        {
+          "@_fa": "true",
+          "link": [
+            {
+              "@_fa": "true",
+              "@ref": "self",
+              "@href": "https://api.elsevier.com/content/abstract/scopus_id/85082745352"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "author-affiliation",
+              "@href": "https://api.elsevier.com/content/abstract/scopus_id/85082745352?field=author,affiliation"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "scopus",
+              "@href": "https://www.scopus.com/inward/record.uri?partnerID=HzOxMe3b&scp=85082745352&origin=inward"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "scopus-citedby",
+              "@href": "https://www.scopus.com/inward/citedby.uri?partnerID=HzOxMe3b&scp=85082745352&origin=inward"
+            }
+          ],
+          "prism:url": "https://api.elsevier.com/content/abstract/scopus_id/85082745352",
+          "dc:identifier": "SCOPUS_ID:85082745352",
+          "eid": "2-s2.0-85082745352",
+          "dc:title": "Production environments of digital innovations: A scalar perspective on cultural legitimacy in Zambian coding networks",
+          "dc:creator": "Schmitt D.",
+          "prism:publicationName": "Perspectives on Global Development and Technology",
+          "prism:issn": "15691500",
+          "prism:eIssn": "15691497",
+          "prism:volume": "18",
+          "prism:issueIdentifier": "5-6",
+          "prism:pageRange": "527-552",
+          "prism:coverDate": "2020-01-01",
+          "prism:coverDisplayDate": "2020",
+          "prism:doi": "10.1163/15691497-12341531",
+          "citedby-count": "0",
+          "affiliation": [
+            {
+              "@_fa": "true",
+              "affilname": "Universität Bonn",
+              "affiliation-city": "Bonn",
+              "affiliation-country": "Germany"
+            }
+          ],
+          "prism:aggregationType": "Journal",
+          "subtype": "ar",
+          "subtypeDescription": "Article",
+          "source-id": "25234",
+          "openaccess": "0",
+          "openaccessFlag": false
+        },
+        {
+          "@_fa": "true",
+          "link": [
+            {
+              "@_fa": "true",
+              "@ref": "self",
+              "@href": "https://api.elsevier.com/content/abstract/scopus_id/85085323518"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "author-affiliation",
+              "@href": "https://api.elsevier.com/content/abstract/scopus_id/85085323518?field=author,affiliation"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "scopus",
+              "@href": "https://www.scopus.com/inward/record.uri?partnerID=HzOxMe3b&scp=85085323518&origin=inward"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "scopus-citedby",
+              "@href": "https://www.scopus.com/inward/citedby.uri?partnerID=HzOxMe3b&scp=85085323518&origin=inward"
+            }
+          ],
+          "prism:url": "https://api.elsevier.com/content/abstract/scopus_id/85085323518",
+          "dc:identifier": "SCOPUS_ID:85085323518",
+          "eid": "2-s2.0-85085323518",
+          "dc:title": "Digitalization of the education system: Formation of personality according to parameters",
+          "dc:creator": "Holovach N.V.",
+          "prism:publicationName": "Journal of Advanced Research in Dynamical and Control Systems",
+          "prism:eIssn": "1943023X",
+          "prism:volume": "12",
+          "prism:issueIdentifier": "4 Special Issue",
+          "prism:pageRange": "849-860",
+          "prism:coverDate": "2020-01-01",
+          "prism:coverDisplayDate": "2020",
+          "prism:doi": "10.5373/JARDCS/V12SP4/20201555",
+          "citedby-count": "0",
+          "affiliation": [
+            {
+              "@_fa": "true",
+              "affilname": "Interregional Academy of Personnel Management",
+              "affiliation-city": "Kiev",
+              "affiliation-country": "Ukraine"
+            }
+          ],
+          "prism:aggregationType": "Journal",
+          "subtype": "ar",
+          "subtypeDescription": "Article",
+          "source-id": "20500195215",
+          "openaccess": "0",
+          "openaccessFlag": false
+        },
+        {
+          "@_fa": "true",
+          "link": [
+            {
+              "@_fa": "true",
+              "@ref": "self",
+              "@href": "https://api.elsevier.com/content/abstract/scopus_id/85081540329"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "author-affiliation",
+              "@href": "https://api.elsevier.com/content/abstract/scopus_id/85081540329?field=author,affiliation"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "scopus",
+              "@href": "https://www.scopus.com/inward/record.uri?partnerID=HzOxMe3b&scp=85081540329&origin=inward"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "scopus-citedby",
+              "@href": "https://www.scopus.com/inward/citedby.uri?partnerID=HzOxMe3b&scp=85081540329&origin=inward"
+            }
+          ],
+          "prism:url": "https://api.elsevier.com/content/abstract/scopus_id/85081540329",
+          "dc:identifier": "SCOPUS_ID:85081540329",
+          "eid": "2-s2.0-85081540329",
+          "dc:title": "The role of knowledge transfer and organizational learning to build innovation capability: Evidence from Indonesian automotive industry",
+          "dc:creator": "Asbari M.",
+          "prism:publicationName": "International Journal of Control and Automation",
+          "prism:issn": "20054297",
+          "prism:eIssn": "22076387",
+          "prism:volume": "13",
+          "prism:issueIdentifier": "1",
+          "prism:pageRange": "319-333",
+          "prism:coverDate": "2020-01-01",
+          "prism:coverDisplayDate": "2020",
+          "citedby-count": "15",
+          "affiliation": [
+            {
+              "@_fa": "true",
+              "affilname": "Pelita Harapan University",
+              "affiliation-city": null,
+              "affiliation-country": "Indonesia"
+            }
+          ],
+          "prism:aggregationType": "Journal",
+          "subtype": "ar",
+          "subtypeDescription": "Article",
+          "source-id": "21100197912",
+          "openaccess": "0",
+          "openaccessFlag": false
+        },
+        {
+          "@_fa": "true",
+          "link": [
+            {
+              "@_fa": "true",
+              "@ref": "self",
+              "@href": "https://api.elsevier.com/content/abstract/scopus_id/85092797412"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "author-affiliation",
+              "@href": "https://api.elsevier.com/content/abstract/scopus_id/85092797412?field=author,affiliation"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "scopus",
+              "@href": "https://www.scopus.com/inward/record.uri?partnerID=HzOxMe3b&scp=85092797412&origin=inward"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "scopus-citedby",
+              "@href": "https://www.scopus.com/inward/citedby.uri?partnerID=HzOxMe3b&scp=85092797412&origin=inward"
+            }
+          ],
+          "prism:url": "https://api.elsevier.com/content/abstract/scopus_id/85092797412",
+          "dc:identifier": "SCOPUS_ID:85092797412",
+          "eid": "2-s2.0-85092797412",
+          "dc:title": "the influence of leadership style on innovation capabilities of islamic school teachers in organizational learning perspective during covid-19 pandemic",
+          "dc:creator": "Fadillah R.",
+          "prism:publicationName": "Systematic Reviews in Pharmacy",
+          "prism:issn": "09758453",
+          "prism:eIssn": "09762779",
+          "prism:volume": "11",
+          "prism:issueIdentifier": "7",
+          "prism:pageRange": "589-599",
+          "prism:coverDate": "2020-01-01",
+          "prism:coverDisplayDate": "2020",
+          "prism:doi": "10.31838/srp.2020.7.83",
+          "citedby-count": "3",
+          "affiliation": [
+            {
+              "@_fa": "true",
+              "affilname": "Universitas Muhammadiyah Yogyakarta",
+              "affiliation-city": "Yogyakarta",
+              "affiliation-country": "Indonesia"
+            }
+          ],
+          "prism:aggregationType": "Journal",
+          "subtype": "ar",
+          "subtypeDescription": "Article",
+          "source-id": "19700201140",
+          "openaccess": "0",
+          "openaccessFlag": false
+        },
+        {
+          "@_fa": "true",
+          "link": [
+            {
+              "@_fa": "true",
+              "@ref": "self",
+              "@href": "https://api.elsevier.com/content/abstract/scopus_id/85092791920"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "author-affiliation",
+              "@href": "https://api.elsevier.com/content/abstract/scopus_id/85092791920?field=author,affiliation"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "scopus",
+              "@href": "https://www.scopus.com/inward/record.uri?partnerID=HzOxMe3b&scp=85092791920&origin=inward"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "scopus-citedby",
+              "@href": "https://www.scopus.com/inward/citedby.uri?partnerID=HzOxMe3b&scp=85092791920&origin=inward"
+            }
+          ],
+          "prism:url": "https://api.elsevier.com/content/abstract/scopus_id/85092791920",
+          "dc:identifier": "SCOPUS_ID:85092791920",
+          "eid": "2-s2.0-85092791920",
+          "dc:title": "Effect of Hard Skills, Soft Skills, Organizational Learning and Innovation Capability on Islamic University Lecturers' Performance",
+          "dc:creator": "Wibowo T.S.",
+          "prism:publicationName": "Systematic Reviews in Pharmacy",
+          "prism:issn": "09758453",
+          "prism:eIssn": "09762779",
+          "prism:volume": "11",
+          "prism:issueIdentifier": "7",
+          "prism:pageRange": "556-569",
+          "prism:coverDate": "2020-01-01",
+          "prism:coverDisplayDate": "2020",
+          "prism:doi": "10.31838/srp.2020.7.80",
+          "citedby-count": "6",
+          "affiliation": [
+            {
+              "@_fa": "true",
+              "affilname": "STIE Mahardhika Surabaya",
+              "affiliation-city": "Surabaya",
+              "affiliation-country": "Indonesia"
+            }
+          ],
+          "prism:aggregationType": "Journal",
+          "subtype": "ar",
+          "subtypeDescription": "Article",
+          "source-id": "19700201140",
+          "openaccess": "0",
+          "openaccessFlag": false
+        },
+        {
+          "@_fa": "true",
+          "link": [
+            {
+              "@_fa": "true",
+              "@ref": "self",
+              "@href": "https://api.elsevier.com/content/abstract/scopus_id/85083435224"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "author-affiliation",
+              "@href": "https://api.elsevier.com/content/abstract/scopus_id/85083435224?field=author,affiliation"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "scopus",
+              "@href": "https://www.scopus.com/inward/record.uri?partnerID=HzOxMe3b&scp=85083435224&origin=inward"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "scopus-citedby",
+              "@href": "https://www.scopus.com/inward/citedby.uri?partnerID=HzOxMe3b&scp=85083435224&origin=inward"
+            }
+          ],
+          "prism:url": "https://api.elsevier.com/content/abstract/scopus_id/85083435224",
+          "dc:identifier": "SCOPUS_ID:85083435224",
+          "eid": "2-s2.0-85083435224",
+          "dc:title": "Hard skills versus soft skills: Which are more important for indonesian employees innovation capability",
+          "dc:creator": "Sopa A.",
+          "prism:publicationName": "International Journal of Control and Automation",
+          "prism:issn": "20054297",
+          "prism:eIssn": "22076387",
+          "prism:volume": "13",
+          "prism:issueIdentifier": "2",
+          "prism:pageRange": "156-175",
+          "prism:coverDate": "2020-01-01",
+          "prism:coverDisplayDate": "2020",
+          "citedby-count": "11",
+          "affiliation": [
+            {
+              "@_fa": "true",
+              "affilname": "Universitas Pelita Harapan",
+              "affiliation-city": "Tangerang",
+              "affiliation-country": "Indonesia"
+            }
+          ],
+          "prism:aggregationType": "Journal",
+          "subtype": "ar",
+          "subtypeDescription": "Article",
+          "source-id": "21100197912",
+          "openaccess": "0",
+          "openaccessFlag": false
+        },
+        {
+          "@_fa": "true",
+          "link": [
+            {
+              "@_fa": "true",
+              "@ref": "self",
+              "@href": "https://api.elsevier.com/content/abstract/scopus_id/85077523091"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "author-affiliation",
+              "@href": "https://api.elsevier.com/content/abstract/scopus_id/85077523091?field=author,affiliation"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "scopus",
+              "@href": "https://www.scopus.com/inward/record.uri?partnerID=HzOxMe3b&scp=85077523091&origin=inward"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "scopus-citedby",
+              "@href": "https://www.scopus.com/inward/citedby.uri?partnerID=HzOxMe3b&scp=85077523091&origin=inward"
+            }
+          ],
+          "prism:url": "https://api.elsevier.com/content/abstract/scopus_id/85077523091",
+          "dc:identifier": "SCOPUS_ID:85077523091",
+          "eid": "2-s2.0-85077523091",
+          "dc:title": "The digitalization of the innovation process: Challenges and opportunities from a management perspective",
+          "dc:creator": "Agostini L.",
+          "prism:publicationName": "European Journal of Innovation Management",
+          "prism:issn": "14601060",
+          "prism:volume": "23",
+          "prism:issueIdentifier": "1",
+          "prism:pageRange": "1-12",
+          "prism:coverDate": "2019-12-20",
+          "prism:coverDisplayDate": "20 December 2019",
+          "prism:doi": "10.1108/EJIM-11-2019-0330",
+          "citedby-count": "0",
+          "affiliation": [
+            {
+              "@_fa": "true",
+              "affilname": "Università degli Studi di Padova",
+              "affiliation-city": "Padua",
+              "affiliation-country": "Italy"
+            }
+          ],
+          "prism:aggregationType": "Journal",
+          "subtype": "ar",
+          "subtypeDescription": "Article",
+          "source-id": "144961",
+          "openaccess": "0",
+          "openaccessFlag": false
+        },
+        {
+          "@_fa": "true",
+          "link": [
+            {
+              "@_fa": "true",
+              "@ref": "self",
+              "@href": "https://api.elsevier.com/content/abstract/scopus_id/85077328743"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "author-affiliation",
+              "@href": "https://api.elsevier.com/content/abstract/scopus_id/85077328743?field=author,affiliation"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "scopus",
+              "@href": "https://www.scopus.com/inward/record.uri?partnerID=HzOxMe3b&scp=85077328743&origin=inward"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "scopus-citedby",
+              "@href": "https://www.scopus.com/inward/citedby.uri?partnerID=HzOxMe3b&scp=85077328743&origin=inward"
+            }
+          ],
+          "prism:url": "https://api.elsevier.com/content/abstract/scopus_id/85077328743",
+          "dc:identifier": "SCOPUS_ID:85077328743",
+          "eid": "2-s2.0-85077328743",
+          "dc:title": "Understanding the moderating role of generation on the factors affecting the adoption of m-shopping",
+          "dc:creator": "Tyagi S.",
+          "prism:publicationName": "International Journal of Scientific and Technology Research",
+          "prism:eIssn": "22778616",
+          "prism:volume": "8",
+          "prism:issueIdentifier": "12",
+          "prism:pageRange": "433-443",
+          "prism:coverDate": "2019-12-01",
+          "prism:coverDisplayDate": "December 2019",
+          "citedby-count": "0",
+          "affiliation": [
+            {
+              "@_fa": "true",
+              "affilname": "Amity University, Noida",
+              "affiliation-city": "Noida",
+              "affiliation-country": "India"
+            }
+          ],
+          "prism:aggregationType": "Journal",
+          "subtype": "ar",
+          "subtypeDescription": "Article",
+          "source-id": "21100894501",
+          "openaccess": "0",
+          "openaccessFlag": false
+        },
+        {
+          "@_fa": "true",
+          "link": [
+            {
+              "@_fa": "true",
+              "@ref": "self",
+              "@href": "https://api.elsevier.com/content/abstract/scopus_id/85055993810"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "author-affiliation",
+              "@href": "https://api.elsevier.com/content/abstract/scopus_id/85055993810?field=author,affiliation"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "scopus",
+              "@href": "https://www.scopus.com/inward/record.uri?partnerID=HzOxMe3b&scp=85055993810&origin=inward"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "scopus-citedby",
+              "@href": "https://www.scopus.com/inward/citedby.uri?partnerID=HzOxMe3b&scp=85055993810&origin=inward"
+            }
+          ],
+          "prism:url": "https://api.elsevier.com/content/abstract/scopus_id/85055993810",
+          "dc:identifier": "SCOPUS_ID:85055993810",
+          "eid": "2-s2.0-85055993810",
+          "dc:title": "Digital innovation in context: Exploring serendipitous and unbounded digital innovation at the church of Sweden",
+          "dc:creator": "Nylén D.",
+          "prism:publicationName": "Information Technology and People",
+          "prism:issn": "09593845",
+          "prism:volume": "32",
+          "prism:issueIdentifier": "3",
+          "prism:pageRange": "696-714",
+          "prism:coverDate": "2019-06-03",
+          "prism:coverDisplayDate": "3 June 2019",
+          "prism:doi": "10.1108/ITP-05-2017-0148",
+          "citedby-count": "1",
+          "affiliation": [
+            {
+              "@_fa": "true",
+              "affilname": "Umeå Universitet",
+              "affiliation-city": "Umea",
+              "affiliation-country": "Sweden"
+            }
+          ],
+          "prism:aggregationType": "Journal",
+          "subtype": "ar",
+          "subtypeDescription": "Article",
+          "source-id": "130132",
+          "openaccess": "0",
+          "openaccessFlag": false
+        },
+        {
+          "@_fa": "true",
+          "link": [
+            {
+              "@_fa": "true",
+              "@ref": "self",
+              "@href": "https://api.elsevier.com/content/abstract/scopus_id/85053443366"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "author-affiliation",
+              "@href": "https://api.elsevier.com/content/abstract/scopus_id/85053443366?field=author,affiliation"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "scopus",
+              "@href": "https://www.scopus.com/inward/record.uri?partnerID=HzOxMe3b&scp=85053443366&origin=inward"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "scopus-citedby",
+              "@href": "https://www.scopus.com/inward/citedby.uri?partnerID=HzOxMe3b&scp=85053443366&origin=inward"
+            }
+          ],
+          "prism:url": "https://api.elsevier.com/content/abstract/scopus_id/85053443366",
+          "dc:identifier": "SCOPUS_ID:85053443366",
+          "eid": "2-s2.0-85053443366",
+          "dc:title": "Exploring the digital innovation process: The role of functionality for the adoption of innovation management software by innovation managers",
+          "dc:creator": "Huesig S.",
+          "prism:publicationName": "European Journal of Innovation Management",
+          "prism:issn": "14601060",
+          "prism:volume": "22",
+          "prism:issueIdentifier": "2",
+          "prism:pageRange": "302-314",
+          "prism:coverDate": "2019-03-04",
+          "prism:coverDisplayDate": "4 March 2019",
+          "prism:doi": "10.1108/EJIM-02-2018-0051",
+          "citedby-count": "11",
+          "affiliation": [
+            {
+              "@_fa": "true",
+              "affilname": "Technische Universität Chemnitz",
+              "affiliation-city": "Chemnitz",
+              "affiliation-country": "Germany"
+            }
+          ],
+          "prism:aggregationType": "Journal",
+          "subtype": "ar",
+          "subtypeDescription": "Article",
+          "source-id": "144961",
+          "openaccess": "0",
+          "openaccessFlag": false
+        },
+        {
+          "@_fa": "true",
+          "link": [
+            {
+              "@_fa": "true",
+              "@ref": "self",
+              "@href": "https://api.elsevier.com/content/abstract/scopus_id/85053240825"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "author-affiliation",
+              "@href": "https://api.elsevier.com/content/abstract/scopus_id/85053240825?field=author,affiliation"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "scopus",
+              "@href": "https://www.scopus.com/inward/record.uri?partnerID=HzOxMe3b&scp=85053240825&origin=inward"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "scopus-citedby",
+              "@href": "https://www.scopus.com/inward/citedby.uri?partnerID=HzOxMe3b&scp=85053240825&origin=inward"
+            }
+          ],
+          "prism:url": "https://api.elsevier.com/content/abstract/scopus_id/85053240825",
+          "dc:identifier": "SCOPUS_ID:85053240825",
+          "eid": "2-s2.0-85053240825",
+          "dc:title": "Data-driven innovation: switching the perspective on Big Data",
+          "dc:creator": "Trabucchi D.",
+          "prism:publicationName": "European Journal of Innovation Management",
+          "prism:issn": "14601060",
+          "prism:volume": "22",
+          "prism:issueIdentifier": "1",
+          "prism:pageRange": "23-40",
+          "prism:coverDate": "2019-01-14",
+          "prism:coverDisplayDate": "14 January 2019",
+          "prism:doi": "10.1108/EJIM-01-2018-0017",
+          "citedby-count": "15",
+          "affiliation": [
+            {
+              "@_fa": "true",
+              "affilname": "Politecnico di Milano",
+              "affiliation-city": "Milan",
+              "affiliation-country": "Italy"
+            }
+          ],
+          "prism:aggregationType": "Journal",
+          "subtype": "ar",
+          "subtypeDescription": "Article",
+          "source-id": "144961",
+          "openaccess": "0",
+          "openaccessFlag": false
+        },
+        {
+          "@_fa": "true",
+          "link": [
+            {
+              "@_fa": "true",
+              "@ref": "self",
+              "@href": "https://api.elsevier.com/content/abstract/scopus_id/85075451166"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "author-affiliation",
+              "@href": "https://api.elsevier.com/content/abstract/scopus_id/85075451166?field=author,affiliation"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "scopus",
+              "@href": "https://www.scopus.com/inward/record.uri?partnerID=HzOxMe3b&scp=85075451166&origin=inward"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "scopus-citedby",
+              "@href": "https://www.scopus.com/inward/citedby.uri?partnerID=HzOxMe3b&scp=85075451166&origin=inward"
+            }
+          ],
+          "prism:url": "https://api.elsevier.com/content/abstract/scopus_id/85075451166",
+          "dc:identifier": "SCOPUS_ID:85075451166",
+          "eid": "2-s2.0-85075451166",
+          "dc:title": "Mapping a slum: Learning from participatory mapping and digital innovation in Cotonou (Benin) Questioning participatory approaches and the digital shift in southern cities",
+          "dc:creator": "Choplin A.",
+          "prism:publicationName": "CyberGeo",
+          "prism:eIssn": "12783366",
+          "prism:volume": "2019",
+          "prism:pageRange": null,
+          "prism:coverDate": "2019-01-01",
+          "prism:coverDisplayDate": "2019",
+          "prism:doi": "10.4000/cybergeo.32949",
+          "citedby-count": "1",
+          "affiliation": [
+            {
+              "@_fa": "true",
+              "affilname": "Université de Genève",
+              "affiliation-city": "Geneva",
+              "affiliation-country": "Switzerland"
+            }
+          ],
+          "prism:aggregationType": "Journal",
+          "subtype": "re",
+          "subtypeDescription": "Review",
+          "source-id": "4800156303",
+          "openaccess": "1",
+          "openaccessFlag": true
+        },
+        {
+          "@_fa": "true",
+          "link": [
+            {
+              "@_fa": "true",
+              "@ref": "self",
+              "@href": "https://api.elsevier.com/content/abstract/scopus_id/85078638061"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "author-affiliation",
+              "@href": "https://api.elsevier.com/content/abstract/scopus_id/85078638061?field=author,affiliation"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "scopus",
+              "@href": "https://www.scopus.com/inward/record.uri?partnerID=HzOxMe3b&scp=85078638061&origin=inward"
+            },
+            {
+              "@_fa": "true",
+              "@ref": "scopus-citedby",
+              "@href": "https://www.scopus.com/inward/citedby.uri?partnerID=HzOxMe3b&scp=85078638061&origin=inward"
+            }
+          ],
+          "prism:url": "https://api.elsevier.com/content/abstract/scopus_id/85078638061",
+          "dc:identifier": "SCOPUS_ID:85078638061",
+          "eid": "2-s2.0-85078638061",
+          "dc:title": "Digital innovation and organizational culture: The case of a danish media company",
+          "dc:creator": "Müller S.",
+          "prism:publicationName": "Scandinavian Journal of Information Systems",
+          "prism:issn": "09050167",
+          "prism:eIssn": "19010990",
+          "prism:volume": "31",
+          "prism:issueIdentifier": "2",
+          "prism:pageRange": "3-34",
+          "prism:coverDate": "2019-01-01",
+          "prism:coverDisplayDate": "2019",
+          "citedby-count": "0",
+          "affiliation": [
+            {
+              "@_fa": "true",
+              "affilname": "Aarhus Universitet",
+              "affiliation-city": "Aarhus",
+              "affiliation-country": "Denmark"
+            }
+          ],
+          "prism:aggregationType": "Journal",
+          "subtype": "ar",
+          "subtypeDescription": "Article",
+          "article-number": "1",
+          "source-id": "21100199731",
+          "openaccess": "0",
+          "openaccessFlag": false
+        }
+      ]
+    }
+  }

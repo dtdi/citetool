@@ -8,9 +8,12 @@ import {
   Fabric,
   Toggle,
   Announced,
+  CommandBar,
   TextField,
 } from "@fluentui/react";
 import React, { Component } from "react";
+
+import result from "../../data/results.json";
 
 const classNames = mergeStyleSets({
   wrapper: {},
@@ -62,34 +65,11 @@ export default class ResultList extends Component {
   constructor(props) {
     super(props);
 
-    this._allItems = _generateDocuments();
+    this._allItems = processSearchResults();
 
     const columns = [
       {
         key: "column1",
-        name: "File Type",
-        className: classNames.fileIconCell,
-        iconClassName: classNames.fileIconHeaderIcon,
-        ariaLabel:
-          "Column operations for File type, Press to sort on File type",
-        iconName: "Page",
-        isIconOnly: true,
-        fieldName: "name",
-        minWidth: 16,
-        maxWidth: 16,
-        onColumnClick: this._onColumnClick,
-        onRender: (item) => {
-          return (
-            <img
-              src={item.iconName}
-              className={classNames.fileIconImg}
-              alt={item.fileType + " file icon"}
-            />
-          );
-        },
-      },
-      {
-        key: "column2",
         name: "Name",
         fieldName: "name",
         minWidth: 210,
@@ -105,47 +85,28 @@ export default class ResultList extends Component {
         isPadded: true,
       },
       {
-        key: "column3",
-        name: "Date Modified",
-        fieldName: "dateModifiedValue",
+        key: "column2",
+        name: "Authors",
+        fieldName: "authors",
         minWidth: 70,
         maxWidth: 90,
         isResizable: true,
         onColumnClick: this._onColumnClick,
-        data: "number",
-        onRender: (item) => {
-          return <span>{item.dateModified}</span>;
-        },
-        isPadded: true,
-      },
-      {
-        key: "column4",
-        name: "Modified By",
-        fieldName: "modifiedBy",
-        minWidth: 70,
-        maxWidth: 90,
-        isResizable: true,
-        isCollapsible: true,
         data: "string",
-        onColumnClick: this._onColumnClick,
-        onRender: (item) => {
-          return <span>{item.modifiedBy}</span>;
-        },
+
         isPadded: true,
       },
       {
-        key: "column5",
-        name: "File Size",
-        fieldName: "fileSizeRaw",
+        key: "column3",
+        name: "Publication Name",
+        fieldName: "publicationName",
         minWidth: 70,
         maxWidth: 90,
         isResizable: true,
-        isCollapsible: true,
-        data: "number",
         onColumnClick: this._onColumnClick,
-        onRender: (item) => {
-          return <span>{item.fileSize}</span>;
-        },
+        data: "string",
+
+        isPadded: true,
       },
     ];
 
@@ -157,6 +118,90 @@ export default class ResultList extends Component {
       },
     });
 
+    const commandBarItems = [
+      {
+        key: "newItem",
+        text: "New",
+        cacheKey: "myCacheKey", // changing this key will invalidate this item's cache
+        iconProps: { iconName: "Add" },
+        subMenuProps: {
+          items: [
+            {
+              key: "emailMessage",
+              text: "Email message",
+              iconProps: { iconName: "Mail" },
+              ["data-automation-id"]: "newEmailButton", // optional
+            },
+            {
+              key: "calendarEvent",
+              text: "Calendar event",
+              iconProps: { iconName: "Calendar" },
+            },
+          ],
+        },
+      },
+      {
+        key: "upload",
+        text: "Upload",
+        iconProps: { iconName: "Upload" },
+        href: "https://developer.microsoft.com/en-us/fluentui",
+      },
+      {
+        key: "share",
+        text: "Share",
+        iconProps: { iconName: "Share" },
+        onClick: () => console.log("Share"),
+      },
+      {
+        key: "download",
+        text: "Download",
+        iconProps: { iconName: "Download" },
+        onClick: () => console.log("Download"),
+      },
+    ];
+
+    const commandBarOverflowItems = [
+      {
+        key: "move",
+        text: "Move to...",
+        onClick: () => console.log("Move to"),
+        iconProps: { iconName: "MoveToFolder" },
+      },
+      {
+        key: "copy",
+        text: "Copy to...",
+        onClick: () => console.log("Copy to"),
+        iconProps: { iconName: "Copy" },
+      },
+      {
+        key: "rename",
+        text: "Rename...",
+        onClick: () => console.log("Rename"),
+        iconProps: { iconName: "Edit" },
+      },
+    ];
+
+    const commandBarFarItems = [
+      {
+        key: "tile",
+        text: "Grid view",
+        // This needs an ariaLabel since it's icon-only
+        ariaLabel: "Grid view",
+        iconOnly: true,
+        iconProps: { iconName: "Tiles" },
+        onClick: () => console.log("Tiles"),
+      },
+      {
+        key: "info",
+        text: "Info",
+        // This needs an ariaLabel since it's icon-only
+        ariaLabel: "Info",
+        iconOnly: true,
+        iconProps: { iconName: "Info" },
+        onClick: () => console.log("Info"),
+      },
+    ];
+
     this.state = {
       items: this._allItems,
       columns: columns,
@@ -164,6 +209,9 @@ export default class ResultList extends Component {
       isModalSelection: false,
       isCompactMode: false,
       announcedMessage: undefined,
+      commandBarFarItems: commandBarFarItems,
+      commandBarItems: commandBarItems,
+      commandBarOverflowItems: commandBarOverflowItems,
     };
   }
 
@@ -175,11 +223,21 @@ export default class ResultList extends Component {
       selectionDetails,
       isModalSelection,
       announcedMessage,
+      commandBarFarItems,
+      commandBarOverflowItems,
+      commandBarItems,
     } = this.state;
 
     return (
       <Fabric>
         <div className={classNames.controlWrapper}>
+          <CommandBar
+            items={commandBarItems}
+            overflowItems={commandBarOverflowItems}
+            overflowButtonProps={{ ariaLabel: "More Commands" }}
+            farItems={commandBarFarItems}
+            ariaLabel="Use left and right arrow keys to navigate between commands"
+          />
           <Toggle
             label="Enable compact mode"
             checked={isCompactMode}
@@ -312,21 +370,20 @@ function _copyAndSort(items, columnKey, isSortedDescending) {
     );
 }
 
-function _generateDocuments() {
+function processSearchResults() {
   const items = [];
-  for (let i = 0; i < 500; i++) {
-    const randomDate = _randomDate(new Date(2012, 0, 1), new Date());
-    const randomFileSize = _randomFileSize();
-    const randomFileType = _randomFileIcon();
-    let fileName = _lorem(2);
-    fileName =
-      fileName.charAt(0).toUpperCase() +
-      fileName.slice(1).concat(`.${randomFileType.docType}`);
-    let userName = _lorem(2);
-    userName = userName
-      .split(" ")
-      .map((name) => name.charAt(0).toUpperCase() + name.slice(1))
-      .join(" ");
+  let entries = result["search-results"].entry;
+  entries.forEach((entry) => {
+    console.log(entry);
+    items.push({
+      key: entry["dc:identifier"],
+      name: entry["dc:title"],
+      authors: entry["dc:creator"],
+      publicationName: entry["prism:publicationName"],
+      value: entry,
+    });
+  });
+  /**
     items.push({
       key: i.toString(),
       name: fileName,
@@ -340,78 +397,6 @@ function _generateDocuments() {
       fileSizeRaw: randomFileSize.rawSize,
     });
   }
+  */
   return items;
-}
-
-function _randomDate(start, end) {
-  const date = new Date(
-    start.getTime() + Math.random() * (end.getTime() - start.getTime())
-  );
-  return {
-    value: date.valueOf(),
-    dateFormatted: date.toLocaleDateString(),
-  };
-}
-
-const FILE_ICONS = [
-  { name: "accdb" },
-  { name: "audio" },
-  { name: "code" },
-  { name: "csv" },
-  { name: "docx" },
-  { name: "dotx" },
-  { name: "mpp" },
-  { name: "mpt" },
-  { name: "model" },
-  { name: "one" },
-  { name: "onetoc" },
-  { name: "potx" },
-  { name: "ppsx" },
-  { name: "pdf" },
-  { name: "photo" },
-  { name: "pptx" },
-  { name: "presentation" },
-  { name: "potx" },
-  { name: "pub" },
-  { name: "rtf" },
-  { name: "spreadsheet" },
-  { name: "txt" },
-  { name: "vector" },
-  { name: "vsdx" },
-  { name: "vssx" },
-  { name: "vstx" },
-  { name: "xlsx" },
-  { name: "xltx" },
-  { name: "xsn" },
-];
-
-function _randomFileIcon() {
-  const docType =
-    FILE_ICONS[Math.floor(Math.random() * FILE_ICONS.length)].name;
-  return {
-    docType,
-    url: `https://static2.sharepointonline.com/files/fabric/assets/item-types/16/${docType}.svg`,
-  };
-}
-
-function _randomFileSize() {
-  const fileSize = Math.floor(Math.random() * 100) + 30;
-  return {
-    value: `${fileSize} KB`,
-    rawSize: fileSize,
-  };
-}
-
-const LOREM_IPSUM = (
-  "lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut " +
-  "labore et dolore magna aliqua ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut " +
-  "aliquip ex ea commodo consequat duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore " +
-  "eu fugiat nulla pariatur excepteur sint occaecat cupidatat non proident sunt in culpa qui officia deserunt "
-).split(" ");
-let loremIndex = 0;
-function _lorem(wordCount) {
-  const startIndex =
-    loremIndex + wordCount > LOREM_IPSUM.length ? 0 : loremIndex;
-  loremIndex = startIndex + wordCount;
-  return LOREM_IPSUM.slice(startIndex, loremIndex).join(" ");
 }
