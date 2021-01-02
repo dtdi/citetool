@@ -1,25 +1,29 @@
-import logo from './logo.svg';
-import './App.css';
+import logo from "./logo.svg";
 
-function App() {
+import React from "react";
+import {
+  Stack,
+  SearchBox,
+  Fabric,
+  FontWeights,
+  mergeStyleSets,
+  Toggle,
+  Announced,
+  TextField,
+} from "@fluentui/react";
+
+import ResultList from "./app/components/ResultList";
+
+export default function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Fabric>
+      <Stack>
+        <SearchBox
+          placeholder="Search"
+          onSearch={(newValue) => console.log("value is " + newValue)}
+        />
+        <ResultList />
+      </Stack>
+    </Fabric>
   );
 }
-
-export default App;
