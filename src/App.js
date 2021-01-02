@@ -41,7 +41,9 @@ export default class App extends Component {
     const { selected } = this.state;
     return (
       <Stack>
-        <Fabric className="TopBar"></Fabric>
+        <Fabric className="TopBar">
+          <h1>Header Element</h1>
+        </Fabric>
         <Stack className="Grid" tokens={{ padding: 10, childrenGap: 5 }}>
           <Stack
             horizontal

@@ -6,8 +6,8 @@ import {
   SelectionMode,
   DetailsListLayoutMode,
   Fabric,
-  Toggle,
   Announced,
+  Toggle,
   CommandBar,
   TextField,
 } from "@fluentui/react";
@@ -208,13 +208,16 @@ export default class ResultList extends Component {
     ];
 
     this.state = {
+      total: 100,
+      loading: false,
+      announcedMessage: null,
       items: this._allItems,
       columns: columns,
       selectionDetails: this._getSelectionDetails(),
       selectedItem: null,
       isModalSelection: false,
       isCompactMode: false,
-      announcedMessage: undefined,
+
       commandBarFarItems: commandBarFarItems,
       commandBarItems: commandBarItems,
       commandBarOverflowItems: commandBarOverflowItems,
@@ -222,6 +225,8 @@ export default class ResultList extends Component {
   }
 
   componentDidMount() {
+    const self = this;
+
     this._allItems = processSearchResults(result);
 
     this.setState({
@@ -264,9 +269,7 @@ export default class ResultList extends Component {
             onChange={this._onChangeText}
             styles={controlStyles}
           />
-          <Announced
-            message={`Number of items after filter applied: ${items.length}.`}
-          />
+          <Announced message={announcedMessage} />
         </div>
         <MarqueeSelection selection={this._selection}>
           <DetailsList
