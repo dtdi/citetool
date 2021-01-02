@@ -3,20 +3,15 @@ import {
   Stack,
   StackItem,
   SearchBox,
-  ISearchBoxStyles,
-  Fabric,
   Pivot,
   PivotItem,
   Label,
-  CommandBar,
-  FontWeights,
-  mergeStyleSets,
-  Toggle,
-  Announced,
-  TextField,
 } from "@fluentui/react";
 
 import ResultList from "./app/components/ResultList";
+import PaperFrame from "./app/components/PaperFrame";
+import SearchBar from "./app/components/SearchBar";
+
 
 const labelStyles = {
   root: { marginTop: 10 },
@@ -27,21 +22,21 @@ export default class App extends Component {
     super(props);
 
     this.state = {
-      selected: null,
+      selectedPaper: null,
     };
   }
 
   onSelectSingle = (elem) => {
     this.setState({
-      selected: elem,
+      selectedPaper: elem,
     });
   };
 
   render() {
-    const { selected } = this.state;
+    const { selectedPaper } = this.state;
     return (
       <Stack>
-        <Fabric className="TopBar"></Fabric>
+        <SearchBar />
         <Stack className="Grid" tokens={{ padding: 10, childrenGap: 5 }}>
           <Stack
             horizontal
@@ -56,23 +51,23 @@ export default class App extends Component {
 
               <Pivot>
                 <PivotItem
-                  headerText="Search List"
+                  headerText="Results"
                   itemCount={42}
-                  itemIcon="Emoji2"
+                  itemIcon="AllApps"
                 >
                   <Label styles={labelStyles}>Pivot #1</Label>
                 </PivotItem>
                 <PivotItem
                   itemCount={23}
-                  headerText="References"
-                  itemIcon="FavoriteList"
+                  headerText="Relevant Paper"
+                  itemIcon="Accept"
                 >
                   <Label styles={labelStyles}>Pivot #2</Label>
                 </PivotItem>
                 <PivotItem
                   itemCount={23}
-                  headerText="Favorites"
-                  itemIcon="FavoriteList"
+                  headerText="Not Relevant"
+                  itemIcon="StatusCircleErrorX"
                 >
                   <Label styles={labelStyles}>Pivot #2</Label>
                 </PivotItem>
@@ -81,19 +76,7 @@ export default class App extends Component {
               <ResultList onSelectSingle={this.onSelectSingle} />
             </StackItem>
             <StackItem grow={2}>
-              <Stack
-                className={"DetailsPane"}
-                tokens={{ padding: 10, childrenGap: 5 }}
-              >
-                <Fabric className={"Section"}>
-                  <h1>Paper infos</h1>
-                  {selected && selected.name}
-                  {selected && selected.authors}
-                </Fabric>
-                <Fabric className={"Section"}>
-                  <h1>Related Information</h1>
-                </Fabric>
-              </Stack>
+              <PaperFrame selectedPaper={selectedPaper} />
             </StackItem>
           </Stack>
         </Stack>
