@@ -10,7 +10,7 @@ import {
 } from "@fluentui/react";
 
 import ResultList from "./app/components/ResultList";
-import PaperFrame from "./app/components/PaperFrame";
+import DetailsFrame from "./app/components/DetailsFrame";
 import SearchBar from "./app/components/SearchBar";
 import header from "./img/header.jpg"
 import './style.css'
@@ -44,40 +44,40 @@ export default class App extends Component {
           <div class="searchbar">
             <SearchBar className="searchbar" />
           </div>
-            <Stack className="Grid paperarea" tokens={{ padding: 10, childrenGap: 5 }}>
-              <Stack
-                horizontal
-                horizontalAlign="space-evenly"
-                tokens={{ padding: 10, childrenGap: 5 }}
-              >
-                <StackItem grow={2} className={"Container"}>
-                  <Pivot className="pivotbutton">
-                    <PivotItem
-                      headerText="Results"
-                      itemCount={42}
-                      itemIcon="AllApps"
-                    >
-                    </PivotItem>
-                    <PivotItem
-                      itemCount={23}
-                      headerText="Relevant Paper"
-                      itemIcon="Accept"
-                    >
-                    </PivotItem>
-                    <PivotItem
-                      itemCount={23}
-                      headerText="Not Relevant"
-                      itemIcon="StatusCircleErrorX"
-                    >
-                    </PivotItem>
-                  </Pivot>
-                  <ResultList onSelectSingle={this.onSelectSingle} />
-                </StackItem>
-                <StackItem grow={2}>
-                  <PaperFrame selectedPaper={selectedPaper} />
-                </StackItem>
-              </Stack>
+          <Stack className="paperarea" tokens={{ padding: 10, childrenGap: 5 }}>
+            <Stack
+              horizontal
+              horizontalAlign="center"
+              tokens={{ padding: 10, childrenGap: 20 }}
+            >
+              <StackItem >
+                <DetailsFrame selectedPaper={selectedPaper}/>
+              </StackItem>
+              <StackItem className={"Container"}>
+                <Pivot className="pivotbutton">
+                  <PivotItem
+                    headerText="Results"
+                    itemCount={42}
+                    itemIcon="AllApps"
+                  >
+                  </PivotItem>
+                  <PivotItem
+                    itemCount={23}
+                    headerText="Relevant Paper"
+                    itemIcon="Accept"
+                  >
+                  </PivotItem>
+                  <PivotItem
+                    itemCount={23}
+                    headerText="Not Relevant"
+                    itemIcon="StatusCircleErrorX"
+                  >
+                  </PivotItem>
+                </Pivot>
+                <ResultList onSelectSingle={this.onSelectSingle} />
+              </StackItem>
             </Stack>
+          </Stack>
         </Stack>
       </Stack>
     );

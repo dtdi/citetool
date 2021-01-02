@@ -18,7 +18,6 @@
 
 .searchbarlabel{
     text-align:center;
-    font-size: 150%;
     color:white;
 }
 
@@ -31,6 +30,11 @@
     transform: translate(-50%, 0%);
 }
 
+.detailsframe{
+    background-color: white;
+}
+
 .pivotbutton{
     background-color: white;
 }
+

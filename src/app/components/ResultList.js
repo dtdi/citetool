@@ -70,42 +70,49 @@ export default class ResultList extends Component {
     const columns = [
       {
         key: "column1",
+        name: "Relevance",
+        fieldName: "relevance",
+        minWidth: 75,
+        maxWidth: 100,
+        isRowHeader: true,
+        isSorted: true,
+        isSortedDescending: true,
+        onColumnClick: this._onColumnClick,
+        data: "number",
+        isPadded: true,
+      },
+      {
+        key: "column2",
         name: "Name",
         fieldName: "name",
-        minWidth: 210,
-        maxWidth: 350,
-        isRowHeader: true,
-        isResizable: true,
-        isSorted: true,
-        isSortedDescending: false,
+        minWidth: 300,
+        maxWidth: 500,
         sortAscendingAriaLabel: "Sorted A to Z",
         sortDescendingAriaLabel: "Sorted Z to A",
         onColumnClick: this._onColumnClick,
         data: "string",
         isPadded: true,
-      },
-      {
-        key: "column2",
-        name: "Authors",
-        fieldName: "authors",
-        minWidth: 70,
-        maxWidth: 90,
-        isResizable: true,
-        onColumnClick: this._onColumnClick,
-        data: "string",
-
-        isPadded: true,
+        isMultiline: true,
       },
       {
         key: "column3",
-        name: "Publication Name",
-        fieldName: "publicationName",
-        minWidth: 70,
-        maxWidth: 90,
-        isResizable: true,
+        name: "Authors",
+        fieldName: "authors",
+        minWidth: 75,
+        maxWidth: 100,
         onColumnClick: this._onColumnClick,
         data: "string",
-
+        isPadded: true,
+        isMultiline: true,
+      },
+      {
+        key: "column4",
+        name: "Year",
+        fieldName: "year",
+        minWidth: 50,
+        maxWidth: 75,
+        onColumnClick: this._onColumnClick,
+        data: "string",
         isPadded: true,
       },
     ];
@@ -123,7 +130,7 @@ export default class ResultList extends Component {
       },
     });
 
-    const commandBarItems = [
+    /*const commandBarItems = [
       {
         key: "newItem",
         text: "New",
@@ -205,7 +212,7 @@ export default class ResultList extends Component {
         iconProps: { iconName: "Info" },
         onClick: () => console.log("Info"),
       },
-    ];
+    ];*/
 
     this.state = {
       items: this._allItems,
@@ -215,9 +222,9 @@ export default class ResultList extends Component {
       isModalSelection: false,
       isCompactMode: false,
       announcedMessage: undefined,
-      commandBarFarItems: commandBarFarItems,
-      commandBarItems: commandBarItems,
-      commandBarOverflowItems: commandBarOverflowItems,
+      //commandBarFarItems: commandBarFarItems,
+      //commandBarItems: commandBarItems,
+      //commandBarOverflowItems: commandBarOverflowItems,
     };
   }
 
@@ -269,23 +276,25 @@ export default class ResultList extends Component {
           />
         </div>*/}
         <MarqueeSelection selection={this._selection}>
-          <DetailsList
-            items={items}
-            compact={isCompactMode}
-            columns={columns}
-            selectionMode={SelectionMode.multiple}
-            getKey={this._getKey}
-            setKey="multiple"
-            layoutMode={DetailsListLayoutMode.justified}
-            isHeaderVisible={true}
-            selection={this._selection}
-            selectionPreservedOnEmptyClick={true}
-            onItemInvoked={this._onItemInvoked}
-            enterModalSelectionOnTouch={true}
-            ariaLabelForSelectionColumn="Toggle selection"
-            ariaLabelForSelectAllCheckbox="Toggle selection for all items"
-            checkButtonAriaLabel="Row checkbox"
-          />
+          <div overflow="scroll" data-is-scrollable="true">
+            <DetailsList
+              items={items}
+              compact={"true"}
+              columns={columns}
+              selectionMode={SelectionMode.multiple}
+              getKey={this._getKey}
+              setKey="multiple"
+              layoutMode={DetailsListLayoutMode.justified}
+              isHeaderVisible={true}
+              selection={this._selection}
+              selectionPreservedOnEmptyClick={true}
+              onItemInvoked={this._onItemInvoked}
+              enterModalSelectionOnTouch={true}
+              ariaLabelForSelectionColumn="Toggle selection"
+              ariaLabelForSelectAllCheckbox="Toggle selection for all items"
+              checkButtonAriaLabel="Row checkbox"
+            />
+          </div>
         </MarqueeSelection>
       </Fabric>
     );
@@ -348,8 +357,7 @@ export default class ResultList extends Component {
         currColumn.isSortedDescending = !currColumn.isSortedDescending;
         currColumn.isSorted = true;
         this.setState({
-          announcedMessage: `${currColumn.name} is sorted ${
-            currColumn.isSortedDescending ? "descending" : "ascending"
+          announcedMessage: `${currColumn.name} is sorted ${currColumn.isSortedDescending ? "descending" : "ascending"
             }`,
         });
       } else {
@@ -383,11 +391,27 @@ function processSearchResults(result) {
   let entries = result["search-results"].entry;
   console.log(entries);
   entries.forEach((entry) => {
+    
+    let abstractlink = "test";
+    let links = entry["link"];
+    links.forEach(((link) => {
+      let linktype = link['@ref'];
+      if(linktype === "scopus"){
+        abstractlink = link['@href'];
+      }
+    }));
+
     items.push({
       key: entry["dc:identifier"],
       name: entry["dc:title"],
+      abstract: "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.",
+      abstractlink: abstractlink,
       authors: entry["dc:creator"],
-      publicationName: entry["prism:publicationName"],
+      year: entry["prism:coverDate"].substr(0, 4),
+      relevance: (Math.random() * 100).toFixed(2),
+      doi: entry["prism:doi"],
+      type: entry["subtypeDescription"],
+      citedbycount: entry["citedby-count"],
       value: entry,
     });
   });
