@@ -1,5 +1,3 @@
-import logo from "./logo.svg";
-
 import React, { Component } from "react";
 import {
   Stack,
@@ -90,6 +88,7 @@ export default class App extends Component {
                 <Fabric className={"Section"}>
                   <h1>Paper infos</h1>
                   {selected && selected.name}
+                  {selected && selected.authors}
                 </Fabric>
                 <Fabric className={"Section"}>
                   <h1>Related Information</h1>

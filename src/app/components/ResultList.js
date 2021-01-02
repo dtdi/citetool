@@ -67,8 +67,6 @@ export default class ResultList extends Component {
 
     const { onSelectSingle } = this.props;
 
-    this._allItems = processSearchResults();
-
     const columns = [
       {
         key: "column1",
@@ -223,6 +221,14 @@ export default class ResultList extends Component {
     };
   }
 
+  componentDidMount() {
+    this._allItems = processSearchResults(result);
+
+    this.setState({
+      items: this._allItems,
+    });
+  }
+
   render() {
     const {
       columns,
@@ -372,11 +378,11 @@ function _copyAndSort(items, columnKey, isSortedDescending) {
     );
 }
 
-function processSearchResults() {
+function processSearchResults(result) {
   const items = [];
   let entries = result["search-results"].entry;
+  console.log(entries);
   entries.forEach((entry) => {
-    console.log(entry);
     items.push({
       key: entry["dc:identifier"],
       name: entry["dc:title"],
@@ -385,20 +391,6 @@ function processSearchResults() {
       value: entry,
     });
   });
-  /**
-    items.push({
-      key: i.toString(),
-      name: fileName,
-      value: fileName,
-      iconName: randomFileType.url,
-      fileType: randomFileType.docType,
-      modifiedBy: userName,
-      dateModified: randomDate.dateFormatted,
-      dateModifiedValue: randomDate.value,
-      fileSize: randomFileSize.value,
-      fileSizeRaw: randomFileSize.rawSize,
-    });
-  }
-  */
+
   return items;
 }
