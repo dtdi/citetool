@@ -65,6 +65,8 @@ export default class ResultList extends Component {
   constructor(props) {
     super(props);
 
+    const { onSelectSingle } = this.props;
+
     this._allItems = processSearchResults();
 
     const columns = [
@@ -112,6 +114,11 @@ export default class ResultList extends Component {
 
     this._selection = new Selection({
       onSelectionChanged: () => {
+        const selectionCount = this._selection.getSelectedCount();
+        if (selectionCount === 1) {
+          onSelectSingle(this._selection.getSelection()[0]);
+        }
+
         this.setState({
           selectionDetails: this._getSelectionDetails(),
         });
@@ -206,6 +213,7 @@ export default class ResultList extends Component {
       items: this._allItems,
       columns: columns,
       selectionDetails: this._getSelectionDetails(),
+      selectedItem: null,
       isModalSelection: false,
       isCompactMode: false,
       announcedMessage: undefined,
@@ -221,7 +229,6 @@ export default class ResultList extends Component {
       isCompactMode,
       items,
       selectionDetails,
-      isModalSelection,
       announcedMessage,
       commandBarFarItems,
       commandBarOverflowItems,
@@ -255,11 +262,6 @@ export default class ResultList extends Component {
             message={`Number of items after filter applied: ${items.length}.`}
           />
         </div>
-        <div className={classNames.selectionDetails}>{selectionDetails}</div>
-        <Announced message={selectionDetails} />
-        {announcedMessage ? (
-          <Announced message={announcedMessage} />
-        ) : undefined}
         <MarqueeSelection selection={this._selection}>
           <DetailsList
             items={items}
