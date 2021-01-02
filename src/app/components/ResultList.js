@@ -248,7 +248,7 @@ export default class ResultList extends Component {
 
     return (
       <Fabric>
-        <div className={classNames.controlWrapper}>
+        {/*<div className={classNames.controlWrapper}>
           <CommandBar
             items={commandBarItems}
             overflowItems={commandBarOverflowItems}
@@ -271,6 +271,10 @@ export default class ResultList extends Component {
           />
           <Announced message={announcedMessage} />
         </div>
+          <Announced
+            message={`Number of items after filter applied: ${items.length}.`}
+          />
+        </div>*/}
         <MarqueeSelection selection={this._selection}>
           <DetailsList
             items={items}
