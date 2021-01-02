@@ -2,62 +2,13 @@ import {
   DetailsList,
   MarqueeSelection,
   Selection,
-  mergeStyleSets,
   SelectionMode,
   DetailsListLayoutMode,
   Fabric,
-  Toggle,
-  Announced,
-  CommandBar,
-  TextField,
 } from "@fluentui/react";
 import React, { Component } from "react";
 
 import result from "../../data/results.json";
-
-const classNames = mergeStyleSets({
-  wrapper: {},
-  fileIconHeaderIcon: {
-    padding: 0,
-    fontSize: "16px",
-  },
-  fileIconCell: {
-    textAlign: "center",
-    selectors: {
-      "&:before": {
-        content: ".",
-        display: "inline-block",
-        verticalAlign: "middle",
-        height: "100%",
-        width: "0px",
-        visibility: "hidden",
-      },
-    },
-  },
-  fileIconImg: {
-    verticalAlign: "middle",
-    maxHeight: "16px",
-    maxWidth: "16px",
-  },
-  controlWrapper: {
-    display: "flex",
-    flexWrap: "wrap",
-  },
-  exampleToggle: {
-    display: "inline-block",
-    marginBottom: "10px",
-    marginRight: "30px",
-  },
-  selectionDetails: {
-    marginBottom: "20px",
-  },
-});
-const controlStyles = {
-  root: {
-    margin: "0 30px 20px 0",
-    maxWidth: "300px",
-  },
-};
 
 export default class ResultList extends Component {
   _selection;
@@ -130,90 +81,6 @@ export default class ResultList extends Component {
       },
     });
 
-    /*const commandBarItems = [
-      {
-        key: "newItem",
-        text: "New",
-        cacheKey: "myCacheKey", // changing this key will invalidate this item's cache
-        iconProps: { iconName: "Add" },
-        subMenuProps: {
-          items: [
-            {
-              key: "emailMessage",
-              text: "Email message",
-              iconProps: { iconName: "Mail" },
-              ["data-automation-id"]: "newEmailButton", // optional
-            },
-            {
-              key: "calendarEvent",
-              text: "Calendar event",
-              iconProps: { iconName: "Calendar" },
-            },
-          ],
-        },
-      },
-      {
-        key: "upload",
-        text: "Upload",
-        iconProps: { iconName: "Upload" },
-        href: "https://developer.microsoft.com/en-us/fluentui",
-      },
-      {
-        key: "share",
-        text: "Share",
-        iconProps: { iconName: "Share" },
-        onClick: () => console.log("Share"),
-      },
-      {
-        key: "download",
-        text: "Download",
-        iconProps: { iconName: "Download" },
-        onClick: () => console.log("Download"),
-      },
-    ];
-
-    const commandBarOverflowItems = [
-      {
-        key: "move",
-        text: "Move to...",
-        onClick: () => console.log("Move to"),
-        iconProps: { iconName: "MoveToFolder" },
-      },
-      {
-        key: "copy",
-        text: "Copy to...",
-        onClick: () => console.log("Copy to"),
-        iconProps: { iconName: "Copy" },
-      },
-      {
-        key: "rename",
-        text: "Rename...",
-        onClick: () => console.log("Rename"),
-        iconProps: { iconName: "Edit" },
-      },
-    ];
-
-    const commandBarFarItems = [
-      {
-        key: "tile",
-        text: "Grid view",
-        // This needs an ariaLabel since it's icon-only
-        ariaLabel: "Grid view",
-        iconOnly: true,
-        iconProps: { iconName: "Tiles" },
-        onClick: () => console.log("Tiles"),
-      },
-      {
-        key: "info",
-        text: "Info",
-        // This needs an ariaLabel since it's icon-only
-        ariaLabel: "Info",
-        iconOnly: true,
-        iconProps: { iconName: "Info" },
-        onClick: () => console.log("Info"),
-      },
-    ];*/
-
     this.state = {
       items: this._allItems,
       columns: columns,
@@ -222,59 +89,29 @@ export default class ResultList extends Component {
       isModalSelection: false,
       isCompactMode: false,
       announcedMessage: undefined,
-      //commandBarFarItems: commandBarFarItems,
-      //commandBarItems: commandBarItems,
-      //commandBarOverflowItems: commandBarOverflowItems,
     };
   }
 
   componentDidMount() {
-    this._allItems = processSearchResults(result);
+    this._allItems = processSearchResults(result).slice(0)
+    .sort((a, b) =>
+      (Number(a["relevance"]) < Number(b["relevance"])) ? 1 : -1
+    );;
 
     this.setState({
       items: this._allItems,
     });
+
   }
 
   render() {
     const {
       columns,
-      isCompactMode,
       items,
-      selectionDetails,
-      announcedMessage,
-      commandBarFarItems,
-      commandBarOverflowItems,
-      commandBarItems,
     } = this.state;
 
     return (
       <Fabric>
-        {/*<div className={classNames.controlWrapper}>
-          <CommandBar
-            items={commandBarItems}
-            overflowItems={commandBarOverflowItems}
-            overflowButtonProps={{ ariaLabel: "More Commands" }}
-            farItems={commandBarFarItems}
-            ariaLabel="Use left and right arrow keys to navigate between commands"
-          />
-          <Toggle
-            label="Enable compact mode"
-            checked={isCompactMode}
-            onChange={this._onChangeCompactMode}
-            onText="Compact"
-            offText="Normal"
-            styles={controlStyles}
-          />
-          <TextField
-            label="Filter by name:"
-            onChange={this._onChangeText}
-            styles={controlStyles}
-          />
-          <Announced
-            message={`Number of items after filter applied: ${items.length}.`}
-          />
-        </div>*/}
         <MarqueeSelection selection={this._selection}>
           <div overflow="scroll" data-is-scrollable="true">
             <DetailsList
@@ -288,7 +125,6 @@ export default class ResultList extends Component {
               isHeaderVisible={true}
               selection={this._selection}
               selectionPreservedOnEmptyClick={true}
-              onItemInvoked={this._onItemInvoked}
               enterModalSelectionOnTouch={true}
               ariaLabelForSelectionColumn="Toggle selection"
               ariaLabelForSelectAllCheckbox="Toggle selection for all items"
@@ -300,7 +136,7 @@ export default class ResultList extends Component {
     );
   }
 
-  componentDidUpdate(previousProps, previousState) {
+  _componentDidUpdate(previousProps, previousState) {
     if (
       previousState.isModalSelection !== this.state.isModalSelection &&
       !this.state.isModalSelection
@@ -313,14 +149,6 @@ export default class ResultList extends Component {
     return item.key;
   }
 
-  _onChangeCompactMode = (ev, checked) => {
-    this.setState({ isCompactMode: checked });
-  };
-
-  _onChangeModalSelection = (ev, checked) => {
-    this.setState({ isModalSelection: checked });
-  };
-
   _onChangeText = (ev, text) => {
     this.setState({
       items: text
@@ -328,10 +156,6 @@ export default class ResultList extends Component {
         : this._allItems,
     });
   };
-
-  _onItemInvoked(item) {
-    alert(`Item invoked: ${item.name}`);
-  }
 
   _getSelectionDetails() {
     const selectionCount = this._selection.getSelectedCount();

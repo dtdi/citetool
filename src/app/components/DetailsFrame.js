@@ -1,6 +1,7 @@
 import {
     Stack,
-    Fabric
+    Fabric,
+    DefaultButton,
 } from "@fluentui/react";
 import React, { Component } from "react";
 
@@ -11,7 +12,7 @@ export default class DetailsFrame extends Component {
 
     render() {
         const { selectedPaper } = this.props;
-        if(!selectedPaper){
+        if (!selectedPaper) {
             return null;
         }
         return (
@@ -19,6 +20,29 @@ export default class DetailsFrame extends Component {
                 <Stack
                     tokens={{ padding: 20, childrenGap: 5 }}
                 >
+                    <Fabric>
+                        <DefaultButton
+                            text="To Result List"
+                            iconProps={{ iconName: 'AllApps' }}
+                            allowDisabledFocus
+                            disabled={false}
+                            onClick={this._movePaperToResultList}
+                        />
+                        <DefaultButton
+                            text="To Relevant List"
+                            iconProps={{ iconName: 'Accept' }}
+                            allowDisabledFocus
+                            disabled={false}
+                            onClick={this._movePaperToRelevantList}
+                        />
+                        <DefaultButton
+                            text="To Not Relevant List"
+                            iconProps={{ iconName: 'StatusCircleErrorX' }}
+                            allowDisabledFocus
+                            disabled={false}
+                            onClick={this._movePaperToNotRelevantList}
+                        />
+                    </Fabric>
                     <Fabric>
                         <h2>Your selected paper</h2>
                         <p><b>Title:</b> {selectedPaper.name}</p>
@@ -39,5 +63,17 @@ export default class DetailsFrame extends Component {
                 </Stack>
             </div>
         );
+    }
+
+    _movePaperToResultList() {
+        console.log("_movePaperToResultList");
+    }
+
+    _movePaperToRelevantList() {
+        console.log("_movePaperToRelevantList");
+    }
+
+    _movePaperToNotRelevantList() {
+        console.log("_movePaperToNotRelevantList");
     }
 }
