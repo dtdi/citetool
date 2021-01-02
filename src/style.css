@@ -1,0 +1,36 @@
+.header {
+    position: fixed;
+    z-index: 0;
+    top: 0;
+    left: 0;
+    -webkit-mask-image: -webkit-gradient(linear, left top, left bottom, from(rgba(0, 0, 0, 1)), to(rgba(0, 0, 0, 0)));
+    mask-image: linear-gradient(rgba(0, 0, 0, 1.0), transparent);
+}
+
+.searchbar {
+    position: absolute;
+    left: 50%;
+    top: 10%;
+    width: 750px;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+
+.searchbarlabel{
+    text-align:center;
+    font-size: 150%;
+    color:white;
+}
+
+.paperarea {
+    position:absolute;
+    width: 1500px;
+    left: 50%;
+    top: 20%;
+    -webkit-transform: translate(-50%, 0%);
+    transform: translate(-50%, 0%);
+}
+
+.pivotbutton{
+    background-color: white;
+}
