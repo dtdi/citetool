@@ -70,33 +70,66 @@ export default class App extends Component {
     }
   }
 
-  onSelectSingle = (elem) => {
+  onSelectSingle = async (elem) => {
     this.setState({
       selectedPaper: elem,
     });
+    console.log("onSelectSingle", elem);
+
+    const semanticScholarPaper = await this.onLoadSemanticScholar(elem.doi);
+    elem.semanticScholarEntry = semanticScholarPaper;
+    this.onPaperAction(elem, "update-paper");
   };
 
   onSearch = (newValue) => {
     this.processSearchResults(result);
   };
 
-  onLoadSemanticScholar = (doi) => {
-    fetch(
-      `https://api.semanticscholar.org/v1/paper/${doi}}?include_unknown_references=true`
-    )
-      .then((res) => res.json())
-      .then(
-        (result) => {
-          console.log(result);
-          localStorage.setItem(doi, result);
-        },
-        (error) => {
-          this.setState({
-            isLoaded: true,
-            error,
-          });
-        }
-      );
+  onLoadSemanticScholar = async (doi) => {
+    class PaperCache {
+      prefix = "paper_";
+
+      _getKey(doi) {
+        return this.prefix + encodeURIComponent(doi);
+      }
+
+      async getOrLoad(doi) {
+        const key = this._getKey(doi);
+        const item = localStorage.getItem(key);
+        if (!item) {
+          const response = await fetch(
+            `https://api.semanticscholar.org/v1/paper/${doi}?include_unknown_references=true`
+          );
+
+          if (!response.ok) {
+            if (response.status == "404") {
+              const body = await response.json();
+              localStorage.setItem(key, JSON.stringify(body));
+              return body;
+            } else {
+              const message = `An error has occured: ${response.status}`;
+              throw new Error(message);
+            }
+          }
+
+          const body = await response.json();
+          localStorage.setItem(key, JSON.stringify(body));
+          return body;
+        } else return JSON.parse(item);
+      }
+
+      remove(doi) {
+        localStorage.removeItem(this._getKey(doi));
+      }
+    }
+    this.setState({ isLoaded: false });
+
+    let cache = new PaperCache();
+    const item = await cache.getOrLoad(doi);
+
+    this.setState({ isLoaded: true });
+
+    return item;
   };
 
   onLoadData = (searchString) => {
@@ -137,38 +170,24 @@ export default class App extends Component {
         key: entry["dc:identifier"],
         name: entry["dc:title"],
         abstractlink: abstractlink,
-        authors: entry["dc:creator"],
-        publication: `${entry["prism:publicationName"]}`,
+        authors: entry["dc:creator"], // @todo: replace with full list of authors.
+        publication: `${entry["prism:publicationName"]} ${entry["prism:volume"]}`,
         year: entry["prism:coverDate"].substr(0, 4),
         relevance: (Math.random() * 100).toFixed(2),
         doi: entry["prism:doi"],
         type: entry["subtypeDescription"],
         citedbycount: entry["citedby-count"],
-        value: entry,
+        scopusEntry: entry,
+        semanticScholarEntry: null,
         inList: LIST_RESULT,
       });
     });
 
-    items[0].abstract = semanticscholarresult1["abstract"];
-    items[1].abstract = semanticscholarresult2["abstract"];
-    items[2].abstract = semanticscholarresult3["abstract"];
-    items[3].abstract = semanticscholarresult4["abstract"];
-    items[4].abstract = semanticscholarresult5["abstract"];
-    items[5].abstract = semanticscholarresult6["abstract"];
-    items[6].abstract = semanticscholarresult7["abstract"];
-    items[0].references = semanticscholarresult1["references"];
-    items[1].references = semanticscholarresult2["references"];
-    items[2].references = semanticscholarresult3["references"];
-    items[3].references = semanticscholarresult4["references"];
-    items[4].references = semanticscholarresult5["references"];
-    items[5].references = semanticscholarresult6["references"];
-    items[6].references = semanticscholarresult7["references"];
-
     items = items.sort((a, b) => Number(b.relevance) - Number(a.relevance));
     this.setState({
       paperList: items,
-      selectedPaper: items[0],
     });
+    this.onSelectSingle(items[0]);
   }
 
   handleTabLinkClick = (item) => {
@@ -192,6 +211,7 @@ export default class App extends Component {
             newPaper.inList = LIST_RELEVANT;
           } else if (action === "move-to-not-relevant") {
             newPaper.inList = LIST_NOT_RELEVANT;
+          } else if (action === "update-paper") {
           }
 
           const updatedPaper = {
@@ -233,16 +253,11 @@ export default class App extends Component {
         break;
     }
 
-    console.log(listItems);
-
     return (
       <Stack>
         <img class="header" src={header} alt="Header" />
-        <div className="searchbar" >
+        <div className="searchbar">
           <Stack>
-            <Fabric>
-              <h1 className="searchbarlabel">Potatosearch</h1>
-            </Fabric>
             <SearchBox placeholder="Search" onSearch={this.onSearch} />
           </Stack>
         </div>
@@ -260,7 +275,6 @@ export default class App extends Component {
                     onPaperAction={this.onPaperAction}
                   />
                 </div>
-
               </StackItem>
               <StackItem grow={2}>
                 <Pivot
