@@ -16,13 +16,13 @@
     transform: translate(-50%, -50%);
 }
 
-.searchbarlabel{
-    text-align:center;
-    color:white;
+.searchbarlabel {
+    text-align: center;
+    color: white;
 }
 
 .paperarea {
-    position:absolute;
+    position: absolute;
     width: 1500px;
     left: 50%;
     top: 20%;
@@ -30,11 +30,10 @@
     transform: translate(-50%, 0%);
 }
 
-.detailsframe{
+.detailsframe {
     background-color: white;
 }
 
-.resultlist{
+.resultlist {
     height: 850px;
 }
-

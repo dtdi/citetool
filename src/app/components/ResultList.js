@@ -260,9 +260,8 @@ export default class ResultList extends Component {
         currColumn.isSortedDescending = !currColumn.isSortedDescending;
         currColumn.isSorted = true;
         this.setState({
-          announcedMessage: `${currColumn.name} is sorted ${
-            currColumn.isSortedDescending ? "descending" : "ascending"
-          }`,
+          announcedMessage: `${currColumn.name} is sorted ${currColumn.isSortedDescending ? "descending" : "ascending"
+            }`,
         });
       } else {
         newCol.isSorted = false;

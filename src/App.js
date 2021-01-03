@@ -6,6 +6,8 @@ import {
   PivotItem,
   mergeStyleSets,
   SearchBox,
+  Fabric,
+  PivotLinkFormat,
 } from "@fluentui/react";
 
 import result from "./data/scopusresult.json";
@@ -13,7 +15,7 @@ import result from "./data/scopusresult.json";
 import ResultList from "./app/components/ResultList";
 import DetailsFrame from "./app/components/DetailsFrame";
 import header from "./img/header.jpg";
-// import "./style.css";
+import "./style.css";
 
 import semanticscholarresult1 from "./data/semanticscholarresult1.json";
 import semanticscholarresult2 from "./data/semanticscholarresult2.json";
@@ -22,10 +24,6 @@ import semanticscholarresult4 from "./data/semanticscholarresult4.json";
 import semanticscholarresult5 from "./data/semanticscholarresult5.json";
 import semanticscholarresult6 from "./data/semanticscholarresult6.json";
 import semanticscholarresult7 from "./data/semanticscholarresult7.json";
-
-const labelStyles = {
-  root: { marginTop: 10 },
-};
 
 const classNames = mergeStyleSets({
   paperFrame: {
@@ -230,56 +228,72 @@ export default class App extends Component {
       case "notRelevantList":
         listItems = notRelevantList;
         break;
+      default:
+        listItems = searchResultsList;
+        break;
     }
 
     console.log(listItems);
 
     return (
-      <Stack style={{ zIndex: 1 }} tokens={{ padding: 10, childrenGap: 5 }}>
-        <SearchBox placeholder="Search" onSearch={this.onSearch} />
+      <Stack>
+        <img class="header" src={header} alt="Header" />
+        <div className="searchbar" >
+          <Stack>
+            <Fabric>
+              <h1 className="searchbarlabel">Potatosearch</h1>
+            </Fabric>
+            <SearchBox placeholder="Search" onSearch={this.onSearch} />
+          </Stack>
+        </div>
+        <Stack style={{ zIndex: 1 }} tokens={{ padding: 10, childrenGap: 5 }}>
+          <Stack className="paperarea" tokens={{ padding: 10, childrenGap: 5 }}>
+            <Stack
+              horizontal
+              horizontalAlign="space-evenly"
+              tokens={{ padding: 10, childrenGap: 10 }}
+            >
+              <StackItem disableShrink className={classNames.paperFrame}>
+                <div className="detailsframe">
+                  <DetailsFrame
+                    selectedPaper={selectedPaper}
+                    onPaperAction={this.onPaperAction}
+                  />
+                </div>
 
-        <Stack className="paperarea" tokens={{ padding: 10, childrenGap: 5 }}>
-          <Stack
-            horizontal
-            horizontalAlign="space-evenly"
-            tokens={{ padding: 10, childrenGap: 10 }}
-          >
-            <StackItem disableShrink className={classNames.paperFrame}>
-              <DetailsFrame
-                selectedPaper={selectedPaper}
-                onPaperAction={this.onPaperAction}
-              />
-            </StackItem>
-            <StackItem grow={2}>
-              <Pivot
-                selectedKey={selectedTabId}
-                onLinkClick={this.handleTabLinkClick}
-                headersOnly={true}
-              >
-                <PivotItem
-                  headerText="Results"
-                  itemKey={"searchResultsList"}
-                  itemCount={searchResultsList.length}
-                  itemIcon="AllApps"
-                ></PivotItem>
-                <PivotItem
-                  itemCount={relevantList.length}
-                  itemKey={"relevantList"}
-                  headerText="Relevant Paper"
-                  itemIcon="Accept"
-                ></PivotItem>
-                <PivotItem
-                  itemCount={notRelevantList.length}
-                  itemKey={"notRelevantList"}
-                  headerText="Not Relevant"
-                  itemIcon="StatusCircleErrorX"
-                ></PivotItem>
-              </Pivot>
-              <ResultList
-                items={listItems}
-                onSelectSingle={this.onSelectSingle}
-              />
-            </StackItem>
+              </StackItem>
+              <StackItem grow={2}>
+                <Pivot
+                  selectedKey={selectedTabId}
+                  onLinkClick={this.handleTabLinkClick}
+                  headersOnly={true}
+                  linkFormat={PivotLinkFormat.tabs}
+                >
+                  <PivotItem
+                    itemKey={"searchResultsList"}
+                    itemIcon="AllApps"
+                    headerText="Results"
+                    itemCount={searchResultsList.length}
+                  ></PivotItem>
+                  <PivotItem
+                    itemKey={"relevantList"}
+                    itemIcon="Accept"
+                    headerText="Relevant Paper"
+                    itemCount={relevantList.length}
+                  ></PivotItem>
+                  <PivotItem
+                    itemKey={"notRelevantList"}
+                    itemIcon="StatusCircleErrorX"
+                    headerText="Not Relevant"
+                    itemCount={notRelevantList.length}
+                  ></PivotItem>
+                </Pivot>
+                <ResultList
+                  items={listItems}
+                  onSelectSingle={this.onSelectSingle}
+                />
+              </StackItem>
+            </Stack>
           </Stack>
         </Stack>
       </Stack>
