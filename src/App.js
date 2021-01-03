@@ -123,7 +123,7 @@ export default class App extends Component {
   };
 
   processSearchResults(result) {
-    const items = [];
+    let items = [];
     const entries = result["search-results"].entry;
     entries.forEach((entry) => {
       let abstractlink = "test";
@@ -166,10 +166,10 @@ export default class App extends Component {
     items[5].references = semanticscholarresult6["references"];
     items[6].references = semanticscholarresult7["references"];
 
+    items = items.sort((a, b) => Number(b.relevance) - Number(a.relevance));
     this.setState({
-      paperList: items.sort(
-        (a, b) => Number(b.relevance) - Number(a.relevance)
-      ),
+      paperList: items,
+      selectedPaper: items[0],
     });
   }
 
