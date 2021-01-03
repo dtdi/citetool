@@ -1,0 +1,110 @@
+{
+    "abstract":"Abstract This article investigates the literary corpus on digital innovation in knowledge management systems (KMS) to understand its role in business governance. The study introduces a broad survey of the scientific literature on this topic to understand how digital innovation promotes new business models through the optimization of new knowledge. We carried out a bibliometric analysis on a database, including 46 articles published in the last three decades (1990\u20132020). All the articles were written in English. The results show that research published on the topic reveals interesting implications for business models and business performance. These findings especially highlight the links between innovation and sustainability, revealing that digital transformation tools contribute over the long-term to the value creation process. This research contributes to the existing literature analyzing the KMS topic by considering it from the digital innovation processes perspective, pointing out the need to implement new knowledge creation and to share measures which support global and inclusive growth.",
+    "arxivId":null,
+    "authors":[
+       {
+          "authorId":"98184530",
+          "name":"A. D. Vaio",
+          "url":"https://www.semanticscholar.org/author/98184530"
+       },
+       {
+          "authorId":"1517937886",
+          "name":"Rosa Palladino",
+          "url":"https://www.semanticscholar.org/author/1517937886"
+       },
+       {
+          "authorId":"70129591",
+          "name":"A. Pezzi",
+          "url":"https://www.semanticscholar.org/author/70129591"
+       },
+       {
+          "authorId":"72747533",
+          "name":"D. Kalisz",
+          "url":"https://www.semanticscholar.org/author/72747533"
+       }
+    ],
+    "citationVelocity":0,
+    "citations":[
+       
+    ],
+    "corpusId":225116381,
+    "doi":"10.31838/srp.2020.7.77",
+    "fieldsOfStudy":[
+       "Business"
+    ],
+    "influentialCitationCount":0,
+    "is_open_access":false,
+    "is_publisher_licensed":false,
+    "paperId":"4b594a26db2d6e61a035038929d926541f1c5fdd",
+    "references":[
+       {
+          "arxivId":null,
+          "authors":[
+             {
+                "authorId":"2969603",
+                "name":"L. Uden"
+             },
+             {
+                "authorId":"1690783",
+                "name":"Wu He"
+             }
+          ],
+          "doi":"10.31838/srp.2020.7.82",
+          "intent":[
+             
+          ],
+          "isInfluential":false,
+          "paperId":"54c4bb8f6201216f300bfdab0ffdaefa72a5d875",
+          "title":"How the Internet of Things can help knowledge management: a case study from the automotive domain",
+          "url":"https://www.semanticscholar.org/paper/54c4bb8f6201216f300bfdab0ffdaefa72a5d875",
+          "venue":"J. Knowl. Manag.",
+          "year":2017
+       },
+       {
+          "arxivId":null,
+          "authors":[
+             {
+                "authorId":"97494986",
+                "name":"Veronica Scuotto"
+             },
+             {
+                "authorId":"122015440",
+                "name":"Orlando Beatrice"
+             },
+             {
+                "authorId":"151357903",
+                "name":"Cillo Valentina"
+             },
+             {
+                "authorId":"40450963",
+                "name":"M. Nicotra"
+             },
+             {
+                "authorId":"120516567",
+                "name":"L. D. Gioia"
+             },
+             {
+                "authorId":"121461501",
+                "name":"Massimiliano Farina Briamonte"
+             }
+          ],
+          "doi":"10.1016/j.envsci.2020.01.012",
+          "intent":[
+             
+          ],
+          "isInfluential":false,
+          "paperId":"2889469cc997c3d6f857c9f9ded68f3fdc413422",
+          "title":"Uncovering the micro-foundations of knowledge sharing in open innovation partnerships: An intention-based perspective of technology transfer",
+          "url":"https://www.semanticscholar.org/paper/2889469cc997c3d6f857c9f9ded68f3fdc413422",
+          "venue":"",
+          "year":2020
+       }
+    ],
+    "title":"The role of digital innovation in knowledge management systems: A systematic literature review",
+    "topics":[
+       
+    ],
+    "url":"https://www.semanticscholar.org/paper/4b594a26db2d6e61a035038929d926541f1c5fdd",
+    "venue":"",
+    "year":2021
+ }

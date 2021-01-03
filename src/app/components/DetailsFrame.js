@@ -8,6 +8,8 @@ import {
   ScrollablePane,
   ScrollbarVisibility,
   mergeStyleSets,
+  Icon,
+  Link,
   Text,
 } from "@fluentui/react";
 import React, { Component } from "react";
@@ -18,7 +20,7 @@ const classNames = mergeStyleSets({
   },
   scrollWrapper: {
     position: "relative",
-    height: "25vh",
+    height: "35vh",
   },
 });
 export default class DetailsFrame extends Component {
@@ -31,14 +33,12 @@ export default class DetailsFrame extends Component {
     if (!selectedPaper) {
       return null;
     }
+
     return (
-      <Stack
-        className={classNames.detailsStack}
-        tokens={{ padding: 20, childrenGap: 5 }}
-      >
+      <Stack tokens={{ padding: 20, childrenGap: 5 }}>
         <Stack horizontal tokens={{ childrenGap: 5 }}>
           <ActionButton
-            text="To Result List"
+            text="To Paper Pool"
             iconProps={{ iconName: "AllApps" }}
             allowDisabledFocus
             disabled={false}
@@ -65,55 +65,52 @@ export default class DetailsFrame extends Component {
             }}
           />
         </Stack>
-        <StackItem grow>
-          <Text>{selectedPaper.name}</Text>
-          <p>
-            <b>Authors:</b> <i>{selectedPaper.authors}</i>
-          </p>
 
-          <ScrollablePane
-            className={classNames.scrollWrapper}
-            scrollbarVisibility={ScrollbarVisibility.auto}
-          >
-            <p>
-              <b>Abstract:</b> {selectedPaper.abstract}
-            </p>
-          </ScrollablePane>
-          <p>
-            <b>Year:</b> {selectedPaper.year}{" "}
-          </p>
-          <p>
+        <Text variant={"mediumPlus"}>{selectedPaper.name}</Text>
+        <Text>
+          <b>Authors:</b> <i>{selectedPaper.authors}</i>
+        </Text>
+        <Text>
+          <b>In:</b> <i>{selectedPaper.publication}</i>
+        </Text>
+        <ScrollablePane
+          className={classNames.scrollWrapper}
+          scrollbarVisibility={ScrollbarVisibility.auto}
+        >
+          <Text>
+            <b>Abstract:</b> {selectedPaper.abstract}
+          </Text>
+        </ScrollablePane>
+
+        <Stack
+          horizontal
+          horizontalAlign="space-between"
+          tokens={{ childrenGap: 5 }}
+        >
+          <Text>
+            <b>Year:</b> {selectedPaper.year}
+          </Text>
+          <Text>
+            <b>Type:</b> {selectedPaper.type}
+          </Text>
+          <Text>
             <b>DOI:</b>{" "}
-            <a href={selectedPaper.abstractlink}>{selectedPaper.doi}</a>{" "}
-          </p>
-          <p>
-            <b>Type:</b> {selectedPaper.type}{" "}
-          </p>
-        </StackItem>
-        <StackItem grow>
-          <Fabric>
-            <h3>Bibliometrics</h3>
-            <p>
-              <b>Relevance Score:</b> {selectedPaper.relevance}
-            </p>
-            <p>
-              <b>#Cited-by:</b> {selectedPaper.citedbycount}
-            </p>
-          </Fabric>
-        </StackItem>
+            <Link href={selectedPaper.abstractlink}>{selectedPaper.doi}</Link>
+          </Text>
+        </Stack>
+        <Stack
+          horizontal
+          horizontalAlign="space-between"
+          tokens={{ childrenGap: 10 }}
+        >
+          <Text>
+            <b>Relevance Score:</b> {selectedPaper.relevance}
+          </Text>
+          <Text>
+            <b>#Cited-by:</b> {selectedPaper.citedbycount}
+          </Text>
+        </Stack>
       </Stack>
     );
-  }
-
-  _movePaperToResultList() {
-    console.log("_movePaperToResultList");
-  }
-
-  _movePaperToRelevantList() {
-    console.log("_movePaperToRelevantList");
-  }
-
-  _movePaperToNotRelevantList() {
-    console.log("_movePaperToNotRelevantList");
   }
 }

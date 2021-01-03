@@ -2,19 +2,26 @@ import React, { Component } from "react";
 import {
   Stack,
   StackItem,
-  SearchBox,
   Pivot,
   PivotItem,
   mergeStyleSets,
+  SearchBox,
 } from "@fluentui/react";
 
-import result from "./data/results.json";
+import result from "./data/scopusresult.json";
 
 import ResultList from "./app/components/ResultList";
 import DetailsFrame from "./app/components/DetailsFrame";
-
 import header from "./img/header.jpg";
 // import "./style.css";
+
+import semanticscholarresult1 from "./data/semanticscholarresult1.json";
+import semanticscholarresult2 from "./data/semanticscholarresult2.json";
+import semanticscholarresult3 from "./data/semanticscholarresult3.json";
+import semanticscholarresult4 from "./data/semanticscholarresult4.json";
+import semanticscholarresult5 from "./data/semanticscholarresult5.json";
+import semanticscholarresult6 from "./data/semanticscholarresult6.json";
+import semanticscholarresult7 from "./data/semanticscholarresult7.json";
 
 const labelStyles = {
   root: { marginTop: 10 },
@@ -29,6 +36,7 @@ const classNames = mergeStyleSets({
 const LIST_RESULT = "result";
 const LIST_RELEVANT = "relevant";
 const LIST_NOT_RELEVANT = "not-relevant";
+
 export default class App extends Component {
   constructor(props) {
     super(props);
@@ -116,8 +124,7 @@ export default class App extends Component {
 
   processSearchResults(result) {
     const items = [];
-    let entries = result["search-results"].entry;
-    console.log(entries);
+    const entries = result["search-results"].entry;
     entries.forEach((entry) => {
       let abstractlink = "test";
       let links = entry["link"];
@@ -131,23 +138,37 @@ export default class App extends Component {
       items.push({
         key: entry["dc:identifier"],
         name: entry["dc:title"],
-        abstract:
-          "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.",
         abstractlink: abstractlink,
         authors: entry["dc:creator"],
+        publication: `${entry["prism:publicationName"]}`,
         year: entry["prism:coverDate"].substr(0, 4),
         relevance: (Math.random() * 100).toFixed(2),
         doi: entry["prism:doi"],
         type: entry["subtypeDescription"],
         citedbycount: entry["citedby-count"],
-        inList: LIST_RESULT,
         value: entry,
+        inList: LIST_RESULT,
       });
     });
 
+    items[0].abstract = semanticscholarresult1["abstract"];
+    items[1].abstract = semanticscholarresult2["abstract"];
+    items[2].abstract = semanticscholarresult3["abstract"];
+    items[3].abstract = semanticscholarresult4["abstract"];
+    items[4].abstract = semanticscholarresult5["abstract"];
+    items[5].abstract = semanticscholarresult6["abstract"];
+    items[6].abstract = semanticscholarresult7["abstract"];
+    items[0].references = semanticscholarresult1["references"];
+    items[1].references = semanticscholarresult2["references"];
+    items[2].references = semanticscholarresult3["references"];
+    items[3].references = semanticscholarresult4["references"];
+    items[4].references = semanticscholarresult5["references"];
+    items[5].references = semanticscholarresult6["references"];
+    items[6].references = semanticscholarresult7["references"];
+
     this.setState({
       paperList: items.sort(
-        (a, b) => Number(a.relevance) - Number(b.relevance)
+        (a, b) => Number(b.relevance) - Number(a.relevance)
       ),
     });
   }
@@ -211,6 +232,8 @@ export default class App extends Component {
         break;
     }
 
+    console.log(listItems);
+
     return (
       <Stack style={{ zIndex: 1 }} tokens={{ padding: 10, childrenGap: 5 }}>
         <SearchBox placeholder="Search" onSearch={this.onSearch} />
@@ -221,10 +244,15 @@ export default class App extends Component {
             horizontalAlign="space-evenly"
             tokens={{ padding: 10, childrenGap: 10 }}
           >
+            <StackItem disableShrink className={classNames.paperFrame}>
+              <DetailsFrame
+                selectedPaper={selectedPaper}
+                onPaperAction={this.onPaperAction}
+              />
+            </StackItem>
             <StackItem grow={2}>
               <Pivot
                 selectedKey={selectedTabId}
-                // eslint-disable-next-line react/jsx-no-bind
                 onLinkClick={this.handleTabLinkClick}
                 headersOnly={true}
               >
@@ -250,12 +278,6 @@ export default class App extends Component {
               <ResultList
                 items={listItems}
                 onSelectSingle={this.onSelectSingle}
-              />
-            </StackItem>
-            <StackItem disableShrink className={classNames.paperFrame}>
-              <DetailsFrame
-                selectedPaper={selectedPaper}
-                onPaperAction={this.onPaperAction}
               />
             </StackItem>
           </Stack>

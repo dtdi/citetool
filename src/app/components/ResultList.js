@@ -9,6 +9,7 @@ import {
   ScrollbarVisibility,
   mergeStyleSets,
 } from "@fluentui/react";
+
 import React, { Component } from "react";
 
 const classNames = mergeStyleSets({
@@ -237,7 +238,6 @@ export default class ResultList extends Component {
 
   _getSelectionDetails() {
     const selectionCount = this._selection.getSelectedCount();
-
     switch (selectionCount) {
       case 0:
         return "No items selected";
