@@ -267,8 +267,240 @@ function processSearchResults(scopusresult) {
   items[6].references = semanticscholarresult7["references"];
 
 
-  //Hier kann Oli arbeiten
-  items[0].olislieblingskpi = "5";
+  //Extract DOIs into array from references
+  items.forEach((item) => {
+    if (item["references"] == undefined) {
+      item.referencingdois = [];
+    } else {
+      let referencearray = [];
+      item.references.forEach((reference, i) => {
+        referencearray[i] = reference.doi;
+      });
+      item.referencingdois = referencearray;
+    }
+  });
+
+  //Hard coded list separation
+  const relevantItems = [items[0], items[2], items[3], items[5]];
+  const paperPool = [items[1], items[4], items[6]];
+
+  //Join Lists
+  relevantItems.forEach(function (item) {
+    item.relevant = true;
+  });
+  paperPool.forEach(function (item) {
+    item.relevant = false;
+  });
+  //hard coded list aggregation
+  //const allPapers = [relevantItems[0], paperPool[0], relevantItems[1], relevantItems[2], paperPool[1], relevantItems[3], paperPool[2]];
+  const allPapers = relevantItems.concat(paperPool);
+  console.log(allPapers);
+
+  //ATTENTION - INCONSISTENCIES BETWEEN allPapers AND items --> Join later on uses index, might have to use doi
+
+  //Build matrix (Step1)
+  let paperCount = allPapers.length;
+  const matrix = new Array(paperCount);
+  allPapers.forEach((paper, i) => {
+    let matrixline = new Array(paperCount).fill(0);
+    paper.referencingdois.forEach((doi) => {
+      let paperindex = allPapers.map(paper => paper.doi).indexOf(doi);
+      matrixline[paperindex] = 1;      
+    });
+    matrix[i] = matrixline;
+  });
+
+  console.log(matrix);
+
+  //////Prepare Calculation of Indicators
+  let relevantArray = allPapers.map(paper => paper.relevant);
+  
+  //calculate row sums
+  let rowsums = new Array(paperCount);
+  matrix.forEach((matrixline, i) => {
+    let matrixlineRelevant = matrixline.filter((line, i) => relevantArray[i]);
+    let referencingRelevant = matrixlineRelevant.reduce((a, b) => {
+      return a+b;
+    }, 0);
+    let matrixlinePool = matrixline.filter((line, i) => !relevantArray[i]);
+    let referencingPool = matrixlinePool.reduce((a, b) => {
+      return a+b;
+    }, 0);
+    rowsums[i] = [referencingPool, referencingRelevant];
+  });  
+  
+  //calculate Column Sums
+  let columnsumsRelevant = new Array(paperCount).fill(0);
+  let columnsumsPool = new Array(paperCount).fill(0);
+  let columnsums = new Array(paperCount).fill([]);
+
+  matrix.forEach((matrixline, i) => {
+    let relevantLine = relevantArray[i];
+    matrixline.forEach((value, index) => {
+      if (relevantLine) {
+        columnsumsRelevant[index] = columnsumsRelevant[index] + value 
+      } else {
+        columnsumsPool[index] = columnsumsPool[index] + value 
+      }
+    });
+  });
+  columnsumsRelevant.forEach((column, index) => {
+    columnsums[index] = [columnsumsPool[index], columnsumsRelevant[index]];
+  });
+
+  //Calculate Indicators (Step2)
+  
+  //Referencing Count - a)
+  let referencingPool = new Array(paperCount).fill(0);
+  let referencingRelevant = new Array(paperCount).fill(0);
+  matrix.forEach((line, i) => {
+    referencingPool[i] = rowsums[i][0];
+    referencingRelevant[i] = rowsums[i][1];
+  });
+
+  //Referenced Count - b)
+  let referencedPool = new Array(paperCount).fill(0);
+  let referencedRelevant = new Array(paperCount).fill(0);
+  matrix.forEach((line, i) => {
+    referencedPool[i] = columnsums[i][0];
+    referencedRelevant[i] = columnsums[i][1];
+  });
+
+  //Cocitation Count - c)
+  let cocitationPool = new Array(paperCount).fill(0);
+  let cocitationRelevant = new Array(paperCount).fill(0);
+  matrix.forEach((column, columnindex) => {
+    matrix.forEach((line, lineindex) => {
+      //calculate Cocitation Pool
+      cocitationPool[columnindex] =
+        cocitationPool[columnindex] +
+        ((line[columnindex]===1) &&
+        (rowsums[lineindex][0] - (!relevantArray[columnindex] && 1)));
+      //Calculate Cocitation Relevant
+      cocitationRelevant[columnindex] =
+      cocitationRelevant[columnindex] +
+        ((line[columnindex]===1) &&
+        (rowsums[lineindex][1] - (relevantArray[columnindex] && 1))); 
+    });
+  });
+
+  //Bibliographic Count - d)
+  let bibliographicPool = new Array(paperCount).fill(0);
+  let bibliographicRelevant = new Array(paperCount).fill(0);
+  matrix.forEach((line, lineindex) => {
+    matrix.forEach((c, columnindex) => {
+      //calculate Bibliographic Pool
+      bibliographicPool[lineindex] =
+      bibliographicPool[lineindex] +
+        ((line[columnindex]===1) &&
+        (columnsums[columnindex][0] - (!relevantArray[lineindex] && 1)));
+      //Calculate Bibliographic Relevant
+      bibliographicRelevant[lineindex] =
+      bibliographicRelevant[lineindex] +
+        ((line[columnindex]===1) &&
+        (columnsums[columnindex][1] - (relevantArray[lineindex] && 1)));
+    });
+  });
+
+  //Initialize Indicator Property - 8 indicators
+  items.forEach((item, index) => {
+    item.indicators = new Array(8).fill(0)
+  })
+
+  //indicators compared to Pool
+  let referencingPoolMaxPool = Math.max(...referencingPool.filter((line, i) => !relevantArray[i]));
+  let referencingPoolMaxRelevant = Math.max(...referencingPool.filter((line, i) => relevantArray[i]));
+  referencingPool.forEach((line, index) => {
+    if (relevantArray[index]) {
+      items[index].indicators[0] = 0.01 * Math.round(10000 * (referencingPool[index]/Math.max(1, referencingPoolMaxRelevant)));
+    } else {
+      items[index].indicators[0] = 0.01 * Math.round(10000 * (referencingPool[index]/Math.max(1, referencingPoolMaxPool))); 
+    };
+  });
+  
+  let referencedPoolMaxPool = Math.max(...referencedPool.filter((line, i) => !relevantArray[i]));
+  let referencedPoolMaxRelevant = Math.max(...referencedPool.filter((line, i) => relevantArray[i]));
+  referencedPool.forEach((line, index) => {
+    if (relevantArray[index]) {
+      items[index].indicators[1] = 0.01 * Math.round(10000 * (referencedPool[index]/Math.max(1, referencedPoolMaxRelevant)));
+    } else {
+      items[index].indicators[1] = 0.01 * Math.round(10000 * (referencedPool[index]/Math.max(1, referencedPoolMaxPool))); 
+    };
+  });
+    
+  let cocitationPoolMaxPool = Math.max(...cocitationPool.filter((line, i) => !relevantArray[i]));  
+  let cocitationPoolMaxRelevant = Math.max(...cocitationPool.filter((line, i) => relevantArray[i]));
+  cocitationPool.forEach((line, index) => {
+    if (relevantArray[index]) {
+      items[index].indicators[2] = 0.01 * Math.round(10000 * (cocitationPool[index]/Math.max(1, cocitationPoolMaxRelevant)));
+    } else {
+      items[index].indicators[2] = 0.01 * Math.round(10000 * (cocitationPool[index]/Math.max(1, cocitationPoolMaxPool))); 
+    };
+  });
+  
+  let bibliographicPoolMaxPool = Math.max(...bibliographicPool.filter((line, i) => !relevantArray[i]));
+  let bibliographicPoolMaxRelevant = Math.max(...bibliographicPool.filter((line, i) => relevantArray[i]));
+  bibliographicPool.forEach((line, index) => {
+    if (relevantArray[index]) {
+      items[index].indicators[3] = 0.01 * Math.round(10000 * (bibliographicPool[index]/Math.max(1, bibliographicPoolMaxRelevant)));
+    } else {
+      items[index].indicators[3] = 0.01 * Math.round(10000 * (bibliographicPool[index]/Math.max(1, bibliographicPoolMaxPool))); 
+    };
+  });
+
+
+  //indicators compared to Relevant Papers
+  let referencingRelevantMaxPool = Math.max(...referencingRelevant.filter((line, i) => !relevantArray[i]));
+  let referencingRelevantMaxRelevant = Math.max(...referencingRelevant.filter((line, i) => relevantArray[i]));
+  referencingRelevant.forEach((line, index) => {
+    if (relevantArray[index]) {
+      items[index].indicators[4] = 0.01 * Math.round(10000 * (referencingRelevant[index]/Math.max(1, referencingRelevantMaxRelevant)));
+    } else {
+      items[index].indicators[4] = 0.01 * Math.round(10000 * (referencingRelevant[index]/Math.max(1, referencingRelevantMaxPool))); 
+    };
+  });
+  
+  let referencedRelevantMaxPool = Math.max(...referencedRelevant.filter((line, i) => !relevantArray[i]));
+  let referencedRelevantMaxRelevant = Math.max(...referencedRelevant.filter((line, i) => relevantArray[i]));
+  referencedRelevant.forEach((line, index) => {
+    if (relevantArray[index]) {
+      items[index].indicators[5] = 0.01 * Math.round(10000 * (referencedRelevant[index]/Math.max(1, referencedRelevantMaxRelevant)));
+    } else {
+      items[index].indicators[5] = 0.01 * Math.round(10000 * (referencedRelevant[index]/Math.max(1, referencedRelevantMaxPool))); 
+    };
+  });
+    
+  let cocitationRelevantMaxPool = Math.max(...cocitationRelevant.filter((line, i) => !relevantArray[i]));  
+  let cocitationRelevantMaxRelevant = Math.max(...cocitationRelevant.filter((line, i) => relevantArray[i]));
+  cocitationRelevant.forEach((line, index) => {
+    if (relevantArray[index]) {
+      items[index].indicators[6] = 0.01 * Math.round(10000 * (cocitationRelevant[index]/Math.max(1, cocitationRelevantMaxRelevant)));
+    } else {
+      items[index].indicators[6] = 0.01 * Math.round(10000 * (cocitationRelevant[index]/Math.max(1, cocitationRelevantMaxPool))); 
+    };
+  });
+  
+  let bibliographicRelevantMaxPool = Math.max(...bibliographicRelevant.filter((line, i) => !relevantArray[i]));
+  let bibliographicRelevantMaxRelevant = Math.max(...bibliographicRelevant.filter((line, i) => relevantArray[i]));
+  bibliographicRelevant.forEach((line, index) => {
+    if (relevantArray[index]) {
+      items[index].indicators[7] = 0.01 * Math.round(10000 * (bibliographicRelevant[index]/Math.max(1, bibliographicRelevantMaxRelevant)));
+    } else {
+      items[index].indicators[7] = 0.01 * Math.round(10000 * (bibliographicRelevant[index]/Math.max(1, bibliographicRelevantMaxPool))); 
+    };
+  });
+
+  items.forEach((item, index) => {
+    let indicatorsforscore = relevantArray[index] ? item.indicators.slice(4,8) : item.indicators;
+    console.log(indicatorsforscore);
+    let score = 0;
+    let size = indicatorsforscore.length;
+    indicatorsforscore.forEach((indicator) => {
+      score = score + (1/size) * indicator;
+    });
+    item.relevance = (0.01 * Math.round(score*100));
+  });
+
   console.log(items);
 
   return items;
