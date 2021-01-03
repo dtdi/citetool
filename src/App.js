@@ -8,12 +8,14 @@ import {
   SearchBox,
   Fabric,
   PivotLinkFormat,
-  IconButton,
+  ActionButton,
   Modal,
   getTheme,
   FontWeights,
   TextField,
   PrimaryButton,
+  Text,
+  IconButton,
 } from "@fluentui/react";
 
 import result from "./data/scopusresult.json";
@@ -43,6 +45,8 @@ const contentStyles = mergeStyleSets({
     display: 'flex',
     flexFlow: 'column nowrap',
     alignItems: 'stretch',
+    width: '1000px',
+    maxWidth: '100%',
   },
   header: [
     theme.fonts.xLargePlus,
@@ -95,7 +99,8 @@ export default class App extends Component {
       relevantList: [],
       notRelevantList: [],
       selectedTabId: "searchResultsList",
-      APIKey: "1f1787f55e2084eca33a02829ff7fe6c"
+      APIKey: "1f1787f55e2084eca33a02829ff7fe6c",
+      modalOpen: true,
     };
   }
 
@@ -269,9 +274,9 @@ export default class App extends Component {
   }
 
   //@TODO: local storage einbauen
-  handleAPIKeyChange =(e)=> {
-    this.setState({APIKey: e.target.value});
- }
+  handleAPIKeyChange = (e) => {
+    this.setState({ APIKey: e.target.value });
+  }
 
   render() {
     const {
@@ -305,27 +310,46 @@ export default class App extends Component {
     return (
       <Stack>
         <img class="header" src={header} alt="Header" />
-        <IconButton iconProps={{ iconName: 'Settings' }} title="settings" ariaLabel="Settings" disabled={false} onClick={this.onSettingsOpenClose} className="settingsbutton" />
+        <ActionButton text="Help & Settings" iconProps={{ iconName: 'Settings' }} title="settings" ariaLabel="Settings" disabled={false} onClick={this.onSettingsOpenClose} className="settingsbutton" />
         <Modal
           isOpen={modalOpen}
           isBlocking={false}
           containerClassName={contentStyles.container}
         >
-          <div className={contentStyles.header}>
-          <span>Change your Scopus API-Key here: </span>
-          <IconButton
-            styles={iconButtonStyles}
-            iconProps={{ iconName: 'Cancel' }}
-            ariaLabel="Close popup modal"
-            onClick={this.onSettingsOpenClose}
-          />
-        </div>
-        <div className={contentStyles.body}>
-          <Stack>
-            <TextField placeholder="Type in your API Code" id="apiKeyTextField" value={this.state.APIKey} onChange={this.handleAPIKeyChange}/>
-            <PrimaryButton>Save</PrimaryButton>
-          </Stack>
-        </div>
+          <div className="settings">
+            <div className={contentStyles.header}>
+              <span>Welcome to Potatosearch</span>
+              <IconButton
+                styles={iconButtonStyles}
+                iconProps={{ iconName: 'Cancel' }}
+                ariaLabel="Close popup modal"
+                onClick={this.onSettingsOpenClose}
+              />
+            </div>
+            <div className={contentStyles.body}>
+              <Stack>
+                <Text variant="mediumPlus">
+                  <b>This website helps to discover exciting new papers in three easy steps:</b>
+                </Text>
+                <br />
+                <Text>
+                  <p><b>I) </b>To get started, use the search box above to start a search query on Scopus. </p></Text>
+                <Text>
+                  <b>II) </b>Based on the results, we suggest relevant papers on the left, which you can mark as relevant or irrelevant using the buttons at the top. Your vote will automatically move the paper to the lists on the right side of the page. Based on the papers you rated as relevant, we will suggest new papers to rate. For this purpose, we use bibliometric data (i.e., co-citation & bibliometric coupling) to find papers that have a particularly high overlap with your selection.
+              </Text>
+                <Text>
+                  <b>III) </b>If you have identified enough papers or if our suggestions do not contain any more relevant papers, use the download function in the header to export your results as a list.
+              </Text>
+                <br />
+                <Text variant="mediumPlus"><b>Before you start: Please change your Scopus API-Key:</b></Text>
+                <br />
+                <Stack horizontal>
+                  <TextField placeholder="Type in your API Code" id="apiKeyTextField" value={this.state.APIKey} onChange={this.handleAPIKeyChange} className="apikeytextfield" />
+                  <PrimaryButton>Save</PrimaryButton>
+                </Stack>
+              </Stack>
+            </div>
+          </div>
         </Modal>
         <div className="searchbar" >
           <Stack>
@@ -361,7 +385,7 @@ export default class App extends Component {
                   <PivotItem
                     itemKey={"searchResultsList"}
                     itemIcon="AllApps"
-                    headerText="Results"
+                    headerText="Paper Pool"
                     itemCount={searchResultsList.length}
                   ></PivotItem>
                   <PivotItem
