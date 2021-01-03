@@ -7,6 +7,8 @@ import {
   PivotItem,
   Label,
   Fabric,
+  PivotLinkFormat,
+  IPivotItemProps,
 } from "@fluentui/react";
 
 import ResultList from "./app/components/ResultList";
@@ -29,11 +31,17 @@ export default class App extends Component {
     };
   }
 
-  onSelectSingle = (elem) => {
+  
+
+  _onSelectSingle = (elem) => {
     this.setState({
       selectedPaper: elem,
     });
   };
+
+  _changeListView(){
+    console.log("Click")
+  }
 
   render() {
     const { selectedPaper } = this.state;
@@ -51,30 +59,38 @@ export default class App extends Component {
               tokens={{ padding: 10, childrenGap: 20 }}
             >
               <StackItem >
-                <DetailsFrame selectedPaper={selectedPaper}/>
+                <DetailsFrame selectedPaper={selectedPaper} />
               </StackItem>
               <StackItem className={"Container"}>
-                <Pivot className="pivotbutton">
+                <Pivot
+                  //aria-labelledby={getTabId(selectedKey)}
+                  linkFormat={PivotLinkFormat.tabs}
+                  onLinkClick={this._changeListView}
+                  //getTabId={getTabId}
+                >
                   <PivotItem
                     headerText="Results"
-                    itemCount={42}
+                    //itemCount={42}
                     itemIcon="AllApps"
+                    itemKey="results"
                   >
                   </PivotItem>
                   <PivotItem
-                    itemCount={23}
+                    //itemCount={23}
                     headerText="Relevant Paper"
                     itemIcon="Accept"
+                    itemkey="relevant"
                   >
                   </PivotItem>
                   <PivotItem
-                    itemCount={23}
+                    //itemCount={23}
                     headerText="Not Relevant"
                     itemIcon="StatusCircleErrorX"
+                    itemkey="notrelevant"
                   >
                   </PivotItem>
                 </Pivot>
-                <ResultList onSelectSingle={this.onSelectSingle} />
+                <ResultList onSelectSingle={this._onSelectSingle} className="resultlist" />
               </StackItem>
             </Stack>
           </Stack>

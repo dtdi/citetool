@@ -5,10 +5,20 @@ import {
   SelectionMode,
   DetailsListLayoutMode,
   Fabric,
+  PeoplePickerItemBase,
 } from "@fluentui/react";
 import React, { Component } from "react";
 
-import result from "../../data/results.json";
+import scopusresult from "../../data/scopusresult.json";
+import crossrefresult1 from "../../data/crossrefresult1.json";
+import crossrefresult2 from "../../data/crossrefresult1.json";
+import semanticscholarresult1 from "../../data/semanticscholarresult1.json";
+import semanticscholarresult2 from "../../data/semanticscholarresult2.json";
+import semanticscholarresult3 from "../../data/semanticscholarresult3.json";
+import semanticscholarresult4 from "../../data/semanticscholarresult4.json";
+import semanticscholarresult5 from "../../data/semanticscholarresult5.json";
+import semanticscholarresult6 from "../../data/semanticscholarresult6.json";
+import semanticscholarresult7 from "../../data/semanticscholarresult7.json";
 
 export default class ResultList extends Component {
   _selection;
@@ -93,7 +103,7 @@ export default class ResultList extends Component {
   }
 
   componentDidMount() {
-    this._allItems = processSearchResults(result).slice(0)
+    this._allItems = processSearchResults(scopusresult).slice(0)
     .sort((a, b) =>
       (Number(a["relevance"]) < Number(b["relevance"])) ? 1 : -1
     );;
@@ -210,10 +220,10 @@ function _copyAndSort(items, columnKey, isSortedDescending) {
     );
 }
 
-function processSearchResults(result) {
+function processSearchResults(scopusresult) {
   const items = [];
-  let entries = result["search-results"].entry;
-  console.log(entries);
+  let entries = scopusresult["search-results"].entry;
+  //console.log(entries);
   entries.forEach((entry) => {
     
     let abstractlink = "test";
@@ -225,10 +235,11 @@ function processSearchResults(result) {
       }
     }));
 
+    //API Call for Crossrefresult and semanticscholarresult
+
     items.push({
       key: entry["dc:identifier"],
       name: entry["dc:title"],
-      abstract: "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.",
       abstractlink: abstractlink,
       authors: entry["dc:creator"],
       year: entry["prism:coverDate"].substr(0, 4),
@@ -239,6 +250,26 @@ function processSearchResults(result) {
       value: entry,
     });
   });
+
+  items[0].abstract = semanticscholarresult1["abstract"];
+  items[1].abstract = semanticscholarresult2["abstract"];
+  items[2].abstract = semanticscholarresult3["abstract"];
+  items[3].abstract = semanticscholarresult4["abstract"];
+  items[4].abstract = semanticscholarresult5["abstract"];
+  items[5].abstract = semanticscholarresult6["abstract"];
+  items[6].abstract = semanticscholarresult7["abstract"];
+  items[0].references = semanticscholarresult1["references"];
+  items[1].references = semanticscholarresult2["references"];
+  items[2].references = semanticscholarresult3["references"];
+  items[3].references = semanticscholarresult4["references"];
+  items[4].references = semanticscholarresult5["references"];
+  items[5].references = semanticscholarresult6["references"];
+  items[6].references = semanticscholarresult7["references"];
+
+
+  //Hier kann Oli arbeiten
+  items[0].olislieblingskpi = "5";
+  console.log(items);
 
   return items;
 }
