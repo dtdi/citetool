@@ -7,6 +7,18 @@
     mask-image: linear-gradient(rgba(0, 0, 0, 1.0), transparent);
 }
 
+.settingsbutton {
+    position: absolute;
+    right: 5%;
+    top: 5%;
+    background-color: white;
+}
+
+.apikeytextfield {
+    width: 300px;
+    margin-right: 10px;
+}
+
 .searchbar {
     position: absolute;
     left: 50%;
