@@ -6,6 +6,8 @@ import {
   SelectionMode,
   DetailsListLayoutMode,
   Fabric,
+  ScrollablePane,
+  ScrollbarVisibility,
   Announced,
   Toggle,
   CommandBar,
@@ -13,10 +15,11 @@ import {
 } from "@fluentui/react";
 import React, { Component } from "react";
 
-import result from "../../data/results.json";
-
 const classNames = mergeStyleSets({
-  wrapper: {},
+  scrollWrapper: {
+    position: "relative",
+    height: "80vh",
+  },
   fileIconHeaderIcon: {
     padding: 0,
     fontSize: "16px",
@@ -61,7 +64,7 @@ const controlStyles = {
 
 export default class ResultList extends Component {
   _selection;
-  _allItems = [];
+
   constructor(props) {
     super(props);
 
@@ -88,6 +91,18 @@ export default class ResultList extends Component {
         key: "column2",
         name: "Authors",
         fieldName: "authors",
+        minWidth: 70,
+        maxWidth: 90,
+        isResizable: true,
+        onColumnClick: this._onColumnClick,
+        data: "string",
+
+        isPadded: true,
+      },
+      {
+        key: "column4",
+        name: "Year",
+        fieldName: "year",
         minWidth: 70,
         maxWidth: 90,
         isResizable: true,
@@ -208,10 +223,7 @@ export default class ResultList extends Component {
     ];
 
     this.state = {
-      total: 100,
-      loading: false,
       announcedMessage: null,
-      items: this._allItems,
       columns: columns,
       selectionDetails: this._getSelectionDetails(),
       selectedItem: null,
@@ -224,27 +236,18 @@ export default class ResultList extends Component {
     };
   }
 
-  componentDidMount() {
-    const self = this;
-
-    this._allItems = processSearchResults(result);
-
-    this.setState({
-      items: this._allItems,
-    });
-  }
-
   render() {
     const {
       columns,
       isCompactMode,
-      items,
       selectionDetails,
       announcedMessage,
       commandBarFarItems,
       commandBarOverflowItems,
       commandBarItems,
     } = this.state;
+
+    const { items } = this.props;
 
     return (
       <Fabric>
@@ -275,25 +278,30 @@ export default class ResultList extends Component {
             message={`Number of items after filter applied: ${items.length}.`}
           />
         </div>*/}
-        <MarqueeSelection selection={this._selection}>
-          <DetailsList
-            items={items}
-            compact={isCompactMode}
-            columns={columns}
-            selectionMode={SelectionMode.multiple}
-            getKey={this._getKey}
-            setKey="multiple"
-            layoutMode={DetailsListLayoutMode.justified}
-            isHeaderVisible={true}
-            selection={this._selection}
-            selectionPreservedOnEmptyClick={true}
-            onItemInvoked={this._onItemInvoked}
-            enterModalSelectionOnTouch={true}
-            ariaLabelForSelectionColumn="Toggle selection"
-            ariaLabelForSelectAllCheckbox="Toggle selection for all items"
-            checkButtonAriaLabel="Row checkbox"
-          />
-        </MarqueeSelection>
+        <ScrollablePane
+          className={classNames.scrollWrapper}
+          scrollbarVisibility={ScrollbarVisibility.auto}
+        >
+          <MarqueeSelection selection={this._selection}>
+            <DetailsList
+              items={items}
+              compact={isCompactMode}
+              columns={columns}
+              selectionMode={SelectionMode.multiple}
+              getKey={this._getKey}
+              setKey="multiple"
+              layoutMode={DetailsListLayoutMode.justified}
+              isHeaderVisible={true}
+              selection={this._selection}
+              selectionPreservedOnEmptyClick={true}
+              onItemInvoked={this._onItemInvoked}
+              enterModalSelectionOnTouch={true}
+              ariaLabelForSelectionColumn="Toggle selection"
+              ariaLabelForSelectAllCheckbox="Toggle selection for all items"
+              checkButtonAriaLabel="Row checkbox"
+            />
+          </MarqueeSelection>
+        </ScrollablePane>
       </Fabric>
     );
   }
@@ -345,7 +353,8 @@ export default class ResultList extends Component {
   }
 
   _onColumnClick = (ev, column) => {
-    const { columns, items } = this.state;
+    const { columns } = this.state;
+    const { items } = this.props;
     const newColumns = columns.slice();
     const currColumn = newColumns.filter(
       (currCol) => column.key === currCol.key
@@ -383,21 +392,4 @@ function _copyAndSort(items, columnKey, isSortedDescending) {
     .sort((a, b) =>
       (isSortedDescending ? a[key] < b[key] : a[key] > b[key]) ? 1 : -1
     );
-}
-
-function processSearchResults(result) {
-  const items = [];
-  let entries = result["search-results"].entry;
-  console.log(entries);
-  entries.forEach((entry) => {
-    items.push({
-      key: entry["dc:identifier"],
-      name: entry["dc:title"],
-      authors: entry["dc:creator"],
-      publicationName: entry["prism:publicationName"],
-      value: entry,
-    });
-  });
-
-  return items;
 }
