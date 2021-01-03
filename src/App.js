@@ -2,13 +2,9 @@ import React, { Component } from "react";
 import {
   Stack,
   StackItem,
-  SearchBox,
   Pivot,
   PivotItem,
-  Label,
-  Fabric,
   PivotLinkFormat,
-  IPivotItemProps,
 } from "@fluentui/react";
 
 import ResultList from "./app/components/ResultList";
@@ -17,21 +13,17 @@ import SearchBar from "./app/components/SearchBar";
 import header from "./img/header.jpg"
 import './style.css'
 
-
-const labelStyles = {
-  root: { marginTop: 10 },
-};
-
 export default class App extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
       selectedPaper: null,
+      paperPool: null,
+      relevantList: null,
+      irrelevantList: null,
     };
   }
-
-  
 
   _onSelectSingle = (elem) => {
     this.setState({
@@ -39,12 +31,13 @@ export default class App extends Component {
     });
   };
 
-  _changeListView(){
-    console.log("Click")
+  _changeListView = (item) => {
+    console.log(item.props.itemkey);
   }
 
   render() {
-    const { selectedPaper } = this.state;
+    const { selectedPaper} = this.state;
+
     return (
       <Stack>
         <img class="header" src={header} alt="Header" />
@@ -63,16 +56,14 @@ export default class App extends Component {
               </StackItem>
               <StackItem className={"Container"}>
                 <Pivot
-                  //aria-labelledby={getTabId(selectedKey)}
                   linkFormat={PivotLinkFormat.tabs}
                   onLinkClick={this._changeListView}
-                  //getTabId={getTabId}
                 >
                   <PivotItem
-                    headerText="Results"
+                    headerText="Paper Pool"
                     //itemCount={42}
                     itemIcon="AllApps"
-                    itemKey="results"
+                    itemkey="paperpool"
                   >
                   </PivotItem>
                   <PivotItem
@@ -84,9 +75,9 @@ export default class App extends Component {
                   </PivotItem>
                   <PivotItem
                     //itemCount={23}
-                    headerText="Not Relevant"
+                    headerText="Irrelevant Paper"
                     itemIcon="StatusCircleErrorX"
-                    itemkey="notrelevant"
+                    itemkey="irrrelevant"
                   >
                   </PivotItem>
                 </Pivot>

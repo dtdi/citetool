@@ -2,7 +2,6 @@ import {
     Fabric,
     SearchBox,
     Stack,
-    Label,
 } from "@fluentui/react";
 import React, { Component } from "react";
 

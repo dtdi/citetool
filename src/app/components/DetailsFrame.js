@@ -22,7 +22,7 @@ export default class DetailsFrame extends Component {
                 >
                     <Fabric>
                         <DefaultButton
-                            text="To Result List"
+                            text="To Paper Pool"
                             iconProps={{ iconName: 'AllApps' }}
                             allowDisabledFocus
                             disabled={false}
@@ -36,7 +36,7 @@ export default class DetailsFrame extends Component {
                             onClick={this._movePaperToRelevantList}
                         />
                         <DefaultButton
-                            text="To Not Relevant List"
+                            text="To Irrelevant List"
                             iconProps={{ iconName: 'StatusCircleErrorX' }}
                             allowDisabledFocus
                             disabled={false}
