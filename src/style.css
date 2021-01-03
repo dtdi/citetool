@@ -7,6 +7,13 @@
     mask-image: linear-gradient(rgba(0, 0, 0, 1.0), transparent);
 }
 
+.settingsbutton {
+    position: absolute;
+    right: 5%;
+    top: 5%;
+    background-color: white;
+}
+
 .searchbar {
     position: absolute;
     left: 50%;

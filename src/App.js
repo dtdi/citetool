@@ -8,6 +8,12 @@ import {
   SearchBox,
   Fabric,
   PivotLinkFormat,
+  IconButton,
+  Modal,
+  getTheme,
+  FontWeights,
+  TextField,
+  PrimaryButton,
 } from "@fluentui/react";
 
 import result from "./data/scopusresult.json";
@@ -31,6 +37,49 @@ const classNames = mergeStyleSets({
   },
 });
 
+const theme = getTheme();
+const contentStyles = mergeStyleSets({
+  container: {
+    display: 'flex',
+    flexFlow: 'column nowrap',
+    alignItems: 'stretch',
+  },
+  header: [
+    theme.fonts.xLargePlus,
+    {
+      flex: '1 1 auto',
+      borderTop: `4px solid ${theme.palette.themePrimary}`,
+      color: theme.palette.neutralPrimary,
+      display: 'flex',
+      alignItems: 'center',
+      fontWeight: FontWeights.semibold,
+      padding: '12px 12px 14px 24px',
+    },
+  ],
+  body: {
+    flex: '4 4 auto',
+    padding: '0 24px 24px 24px',
+    overflowY: 'hidden',
+    selectors: {
+      p: { margin: '14px 0' },
+      'p:first-child': { marginTop: 0 },
+      'p:last-child': { marginBottom: 0 },
+    },
+  },
+});
+
+const iconButtonStyles = {
+  root: {
+    color: theme.palette.neutralPrimary,
+    marginLeft: 'auto',
+    marginTop: '4px',
+    marginRight: '2px',
+  },
+  rootHovered: {
+    color: theme.palette.neutralDark,
+  },
+};
+
 const LIST_RESULT = "result";
 const LIST_RELEVANT = "relevant";
 const LIST_NOT_RELEVANT = "not-relevant";
@@ -46,6 +95,7 @@ export default class App extends Component {
       relevantList: [],
       notRelevantList: [],
       selectedTabId: "searchResultsList",
+      APIKey: "1f1787f55e2084eca33a02829ff7fe6c"
     };
   }
 
@@ -100,7 +150,8 @@ export default class App extends Component {
   };
 
   onLoadData = (searchString) => {
-    const apiKey = "1f1787f55e2084eca33a02829ff7fe6c";
+    const { APIKey } = this.state;
+    const apiKey = APIKey;
     const query = `all("${searchString}")`;
     fetch(
       `https://api.elsevier.com/content/search/scopus?apiKey=${apiKey}&query=${query}&count=25&start=0`
@@ -207,6 +258,21 @@ export default class App extends Component {
     });
   };
 
+  onSettingsOpenClose = () => {
+    const { modalOpen } = this.state;
+
+    const isModalOpen = modalOpen ? false : true;
+
+    this.setState({
+      modalOpen: isModalOpen,
+    });
+  }
+
+  //@TODO: local storage einbauen
+  handleAPIKeyChange =(e)=> {
+    this.setState({APIKey: e.target.value});
+ }
+
   render() {
     const {
       selectedPaper,
@@ -214,6 +280,7 @@ export default class App extends Component {
       relevantList,
       notRelevantList,
       selectedTabId,
+      modalOpen,
     } = this.state;
 
     let listItems;
@@ -238,6 +305,28 @@ export default class App extends Component {
     return (
       <Stack>
         <img class="header" src={header} alt="Header" />
+        <IconButton iconProps={{ iconName: 'Settings' }} title="settings" ariaLabel="Settings" disabled={false} onClick={this.onSettingsOpenClose} className="settingsbutton" />
+        <Modal
+          isOpen={modalOpen}
+          isBlocking={false}
+          containerClassName={contentStyles.container}
+        >
+          <div className={contentStyles.header}>
+          <span>Change your Scopus API-Key here: </span>
+          <IconButton
+            styles={iconButtonStyles}
+            iconProps={{ iconName: 'Cancel' }}
+            ariaLabel="Close popup modal"
+            onClick={this.onSettingsOpenClose}
+          />
+        </div>
+        <div className={contentStyles.body}>
+          <Stack>
+            <TextField placeholder="Type in your API Code" id="apiKeyTextField" value={this.state.APIKey} onChange={this.handleAPIKeyChange}/>
+            <PrimaryButton>Save</PrimaryButton>
+          </Stack>
+        </div>
+        </Modal>
         <div className="searchbar" >
           <Stack>
             <Fabric>
