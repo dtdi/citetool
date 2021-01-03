@@ -2,13 +2,13 @@ import {
   DetailsList,
   MarqueeSelection,
   Selection,
-  mergeStyleSets,
   SelectionMode,
   DetailsListLayoutMode,
   Fabric,
   ScrollablePane,
   ScrollbarVisibility,
   Announced,
+  mergeStyleSets,
   Toggle,
   CommandBar,
   TextField,
@@ -73,54 +73,49 @@ export default class ResultList extends Component {
     const columns = [
       {
         key: "column1",
+        name: "Relevance",
+        fieldName: "relevance",
+        minWidth: 75,
+        maxWidth: 100,
+        isRowHeader: true,
+        isSorted: true,
+        isSortedDescending: true,
+        onColumnClick: this._onColumnClick,
+        data: "number",
+        isPadded: true,
+      },
+      {
+        key: "column2",
         name: "Name",
         fieldName: "name",
-        minWidth: 210,
-        maxWidth: 350,
-        isRowHeader: true,
-        isResizable: true,
-        isSorted: true,
-        isSortedDescending: false,
+        minWidth: 300,
+        maxWidth: 500,
         sortAscendingAriaLabel: "Sorted A to Z",
         sortDescendingAriaLabel: "Sorted Z to A",
         onColumnClick: this._onColumnClick,
         data: "string",
         isPadded: true,
+        isMultiline: true,
       },
       {
-        key: "column2",
+        key: "column3",
         name: "Authors",
         fieldName: "authors",
-        minWidth: 70,
-        maxWidth: 90,
-        isResizable: true,
+        minWidth: 75,
+        maxWidth: 100,
         onColumnClick: this._onColumnClick,
         data: "string",
-
         isPadded: true,
+        isMultiline: true,
       },
       {
         key: "column4",
         name: "Year",
         fieldName: "year",
-        minWidth: 70,
-        maxWidth: 90,
-        isResizable: true,
+        minWidth: 50,
+        maxWidth: 75,
         onColumnClick: this._onColumnClick,
         data: "string",
-
-        isPadded: true,
-      },
-      {
-        key: "column3",
-        name: "Publication Name",
-        fieldName: "publicationName",
-        minWidth: 70,
-        maxWidth: 90,
-        isResizable: true,
-        onColumnClick: this._onColumnClick,
-        data: "string",
-
         isPadded: true,
       },
     ];
@@ -138,90 +133,6 @@ export default class ResultList extends Component {
       },
     });
 
-    const commandBarItems = [
-      {
-        key: "newItem",
-        text: "New",
-        cacheKey: "myCacheKey", // changing this key will invalidate this item's cache
-        iconProps: { iconName: "Add" },
-        subMenuProps: {
-          items: [
-            {
-              key: "emailMessage",
-              text: "Email message",
-              iconProps: { iconName: "Mail" },
-              ["data-automation-id"]: "newEmailButton", // optional
-            },
-            {
-              key: "calendarEvent",
-              text: "Calendar event",
-              iconProps: { iconName: "Calendar" },
-            },
-          ],
-        },
-      },
-      {
-        key: "upload",
-        text: "Upload",
-        iconProps: { iconName: "Upload" },
-        href: "https://developer.microsoft.com/en-us/fluentui",
-      },
-      {
-        key: "share",
-        text: "Share",
-        iconProps: { iconName: "Share" },
-        onClick: () => console.log("Share"),
-      },
-      {
-        key: "download",
-        text: "Download",
-        iconProps: { iconName: "Download" },
-        onClick: () => console.log("Download"),
-      },
-    ];
-
-    const commandBarOverflowItems = [
-      {
-        key: "move",
-        text: "Move to...",
-        onClick: () => console.log("Move to"),
-        iconProps: { iconName: "MoveToFolder" },
-      },
-      {
-        key: "copy",
-        text: "Copy to...",
-        onClick: () => console.log("Copy to"),
-        iconProps: { iconName: "Copy" },
-      },
-      {
-        key: "rename",
-        text: "Rename...",
-        onClick: () => console.log("Rename"),
-        iconProps: { iconName: "Edit" },
-      },
-    ];
-
-    const commandBarFarItems = [
-      {
-        key: "tile",
-        text: "Grid view",
-        // This needs an ariaLabel since it's icon-only
-        ariaLabel: "Grid view",
-        iconOnly: true,
-        iconProps: { iconName: "Tiles" },
-        onClick: () => console.log("Tiles"),
-      },
-      {
-        key: "info",
-        text: "Info",
-        // This needs an ariaLabel since it's icon-only
-        ariaLabel: "Info",
-        iconOnly: true,
-        iconProps: { iconName: "Info" },
-        onClick: () => console.log("Info"),
-      },
-    ];
-
     this.state = {
       announcedMessage: null,
       columns: columns,
@@ -230,9 +141,9 @@ export default class ResultList extends Component {
       isModalSelection: false,
       isCompactMode: false,
 
-      commandBarFarItems: commandBarFarItems,
-      commandBarItems: commandBarItems,
-      commandBarOverflowItems: commandBarOverflowItems,
+      //commandBarFarItems: commandBarFarItems,
+      //commandBarItems: commandBarItems,
+      //commandBarOverflowItems: commandBarOverflowItems,
     };
   }
 
@@ -285,7 +196,7 @@ export default class ResultList extends Component {
           <MarqueeSelection selection={this._selection}>
             <DetailsList
               items={items}
-              compact={isCompactMode}
+              compact={true}
               columns={columns}
               selectionMode={SelectionMode.multiple}
               getKey={this._getKey}
@@ -306,7 +217,7 @@ export default class ResultList extends Component {
     );
   }
 
-  componentDidUpdate(previousProps, previousState) {
+  _componentDidUpdate(previousProps, previousState) {
     if (
       previousState.isModalSelection !== this.state.isModalSelection &&
       !this.state.isModalSelection
@@ -319,14 +230,6 @@ export default class ResultList extends Component {
     return item.key;
   }
 
-  _onChangeCompactMode = (ev, checked) => {
-    this.setState({ isCompactMode: checked });
-  };
-
-  _onChangeModalSelection = (ev, checked) => {
-    this.setState({ isModalSelection: checked });
-  };
-
   _onChangeText = (ev, text) => {
     this.setState({
       items: text
@@ -334,10 +237,6 @@ export default class ResultList extends Component {
         : this._allItems,
     });
   };
-
-  _onItemInvoked(item) {
-    alert(`Item invoked: ${item.name}`);
-  }
 
   _getSelectionDetails() {
     const selectionCount = this._selection.getSelectedCount();

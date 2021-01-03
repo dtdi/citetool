@@ -5,6 +5,9 @@ export default class PaperFrame extends Component {
   render() {
     return (
       <Stack>
+        <Fabric>
+          <h1 className="searchbarlabel">Potatosearch</h1>
+        </Fabric>
         <SearchBox
           placeholder="Search"
           onSearch={(newValue) => console.log("value is " + newValue)}
