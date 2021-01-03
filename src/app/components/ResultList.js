@@ -7,11 +7,7 @@ import {
   Fabric,
   ScrollablePane,
   ScrollbarVisibility,
-  Announced,
   mergeStyleSets,
-  Toggle,
-  CommandBar,
-  TextField,
 } from "@fluentui/react";
 import React, { Component } from "react";
 
@@ -19,6 +15,7 @@ const classNames = mergeStyleSets({
   scrollWrapper: {
     position: "relative",
     height: "80vh",
+    width: "50vw",
   },
   fileIconHeaderIcon: {
     padding: 0,
@@ -75,8 +72,8 @@ export default class ResultList extends Component {
         key: "column1",
         name: "Relevance",
         fieldName: "relevance",
-        minWidth: 75,
-        maxWidth: 100,
+        minWidth: 30,
+        maxWidth: 60,
         isRowHeader: true,
         isSorted: true,
         isSortedDescending: true,

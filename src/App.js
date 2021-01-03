@@ -2,11 +2,9 @@ import React, { Component } from "react";
 import {
   Stack,
   StackItem,
-  Image,
+  SearchBox,
   Pivot,
   PivotItem,
-  Label,
-  Fabric,
   mergeStyleSets,
 } from "@fluentui/react";
 
@@ -14,7 +12,7 @@ import result from "./data/results.json";
 
 import ResultList from "./app/components/ResultList";
 import DetailsFrame from "./app/components/DetailsFrame";
-import SearchBar from "./app/components/SearchBar";
+
 import header from "./img/header.jpg";
 // import "./style.css";
 
@@ -24,40 +22,96 @@ const labelStyles = {
 
 const classNames = mergeStyleSets({
   paperFrame: {
-    width: 500,
+    width: "40vw",
   },
 });
 
+const LIST_RESULT = "result";
+const LIST_RELEVANT = "relevant";
+const LIST_NOT_RELEVANT = "not-relevant";
 export default class App extends Component {
-  _allItems = [];
-
   constructor(props) {
     super(props);
 
     this.state = {
+      paperList: [],
       selectedPaper: null,
-      items: [],
+      searchResultsList: [],
+      relevantList: [],
+      notRelevantList: [],
+      selectedTabId: "searchResultsList",
     };
   }
 
   componentDidMount() {
-    const self = this;
+    this.processSearchResults(result);
+  }
 
-    this._allItems = this.processSearchResults(result)
-      .slice(0)
-      .sort((a, b) =>
-        Number(a["relevance"]) < Number(b["relevance"]) ? 1 : -1
-      );
-
-    this.setState({
-      items: this._allItems,
+  _filterPapers(listType) {
+    const { paperList } = this.state;
+    return paperList.filter((paper) => {
+      return paper.inList == listType;
     });
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.paperList !== this.state.paperList) {
+      this.setState({
+        searchResultsList: this._filterPapers(LIST_RESULT),
+        relevantList: this._filterPapers(LIST_RELEVANT),
+        notRelevantList: this._filterPapers(LIST_NOT_RELEVANT),
+      });
+    }
   }
 
   onSelectSingle = (elem) => {
     this.setState({
       selectedPaper: elem,
     });
+  };
+
+  onSearch = (newValue) => {
+    this.processSearchResults(result);
+  };
+
+  onLoadSemanticScholar = (doi) => {
+    fetch(
+      `https://api.semanticscholar.org/v1/paper/${doi}}?include_unknown_references=true`
+    )
+      .then((res) => res.json())
+      .then(
+        (result) => {
+          console.log(result);
+          localStorage.setItem(doi, result);
+        },
+        (error) => {
+          this.setState({
+            isLoaded: true,
+            error,
+          });
+        }
+      );
+  };
+
+  onLoadData = (searchString) => {
+    const apiKey = "1f1787f55e2084eca33a02829ff7fe6c";
+    const query = `all("${searchString}")`;
+    fetch(
+      `https://api.elsevier.com/content/search/scopus?apiKey=${apiKey}&query=${query}&count=25&start=0`
+    )
+      .then((res) => res.json())
+      .then(
+        (result) => {
+          console.log(result);
+          this.processSearchResults(result);
+        },
+        (error) => {
+          this.setState({
+            isLoaded: true,
+            error,
+          });
+        }
+      );
   };
 
   processSearchResults(result) {
@@ -86,59 +140,109 @@ export default class App extends Component {
         doi: entry["prism:doi"],
         type: entry["subtypeDescription"],
         citedbycount: entry["citedby-count"],
+        inList: LIST_RESULT,
         value: entry,
       });
     });
 
-    return items;
+    this.setState({
+      paperList: items.sort(
+        (a, b) => Number(a.relevance) - Number(b.relevance)
+      ),
+    });
   }
 
-  render() {
-    const { selectedPaper, items } = this.state;
+  handleTabLinkClick = (item) => {
+    this.setState({
+      selectedTabId: item.props.itemKey,
+    });
+  };
 
-    const listItems = items;
+  onPaperAction = (newPaper, action) => {
+    const { paperList } = this.state;
+
+    const newList = paperList
+      .filter((paper) => {
+        return action !== "remove-paper" || newPaper.key !== paper.key;
+      })
+      .map((paper) => {
+        if (paper.key === newPaper.key) {
+          if (action === "move-to-result") {
+            newPaper.inList = LIST_RESULT;
+          } else if (action === "move-to-relevant") {
+            newPaper.inList = LIST_RELEVANT;
+          } else if (action === "move-to-not-relevant") {
+            newPaper.inList = LIST_NOT_RELEVANT;
+          }
+
+          const updatedPaper = {
+            ...paper,
+            ...newPaper,
+          };
+          return updatedPaper;
+        }
+        return paper;
+      });
+    this.setState({
+      paperList: newList,
+    });
+  };
+
+  render() {
+    const {
+      selectedPaper,
+      searchResultsList,
+      relevantList,
+      notRelevantList,
+      selectedTabId,
+    } = this.state;
+
+    let listItems;
+
+    switch (selectedTabId) {
+      case "searchResultsList":
+        listItems = searchResultsList;
+        break;
+      case "relevantList":
+        listItems = relevantList;
+        break;
+      case "notRelevantList":
+        listItems = notRelevantList;
+        break;
+    }
 
     return (
       <Stack style={{ zIndex: 1 }} tokens={{ padding: 10, childrenGap: 5 }}>
-        <SearchBar className="searchbar" />
-        {/**  
-        <Stack className="Grid paperarea" tokens={{ childrenGap: 5 }}>
-            <Stack
-              horizontal
-              horizontalAlign="space-evenly"
-              tokens={{ childrenGap: 5 }}
-            >
-              <StackItem grow={2} disableShrink>
-                <Pivot className="pivotbutton">
-                  <PivotItem
-                    headerText="Results"
-                    itemCount={items.length}
-                    itemIcon="AllApps"
-                  ></PivotItem>
-        */}
+        <SearchBox placeholder="Search" onSearch={this.onSearch} />
+
         <Stack className="paperarea" tokens={{ padding: 10, childrenGap: 5 }}>
           <Stack
             horizontal
-            horizontalAlign="center"
-            tokens={{ padding: 10, childrenGap: 20 }}
+            horizontalAlign="space-evenly"
+            tokens={{ padding: 10, childrenGap: 10 }}
           >
-            <StackItem className={classNames.paperFrame}>
-              <DetailsFrame selectedPaper={selectedPaper} />
-            </StackItem>
-            <StackItem className={"Container"}>
-              <Pivot className="pivotbutton">
+            <StackItem grow={2}>
+              <Pivot
+                selectedKey={selectedTabId}
+                // eslint-disable-next-line react/jsx-no-bind
+                onLinkClick={this.handleTabLinkClick}
+                headersOnly={true}
+              >
                 <PivotItem
                   headerText="Results"
-                  itemCount={items.length}
+                  itemKey={"searchResultsList"}
+                  itemCount={searchResultsList.length}
                   itemIcon="AllApps"
                 ></PivotItem>
                 <PivotItem
-                  itemCount={23}
+                  itemCount={relevantList.length}
+                  itemKey={"relevantList"}
                   headerText="Relevant Paper"
                   itemIcon="Accept"
                 ></PivotItem>
                 <PivotItem
-                  itemCount={23}
+                  itemCount={notRelevantList.length}
+                  itemKey={"notRelevantList"}
                   headerText="Not Relevant"
                   itemIcon="StatusCircleErrorX"
                 ></PivotItem>
@@ -146,6 +250,12 @@ export default class App extends Component {
               <ResultList
                 items={listItems}
                 onSelectSingle={this.onSelectSingle}
+              />
+            </StackItem>
+            <StackItem disableShrink className={classNames.paperFrame}>
+              <DetailsFrame
+                selectedPaper={selectedPaper}
+                onPaperAction={this.onPaperAction}
               />
             </StackItem>
           </Stack>
