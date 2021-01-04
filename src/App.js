@@ -7,13 +7,14 @@ import {
   PivotItem,
   Image,
   mergeStyleSets,
+  Text,
   SearchBox,
   PivotLinkFormat,
-  DefaultButton,
+  ProgressIndicator,
   getTheme,
 } from "@fluentui/react";
 
-import result from "./data/scopusresult.json";
+// import result from "./data/scopusresult.json";
 
 import ResultList from "./app/components/ResultList";
 import DetailsFrame from "./app/components/DetailsFrame";
@@ -34,9 +35,50 @@ const classNames = mergeStyleSets({
   },
 });
 
-const LIST_RESULT = "result";
-const LIST_RELEVANT = "relevant";
-const LIST_NOT_RELEVANT = "not-relevant";
+export const LIST_RESULT = "result";
+export const LIST_RELEVANT = "relevant";
+export const LIST_NOT_RELEVANT = "not-relevant";
+
+class PaperCache {
+  prefix = "paper_";
+
+  _getKey(doi) {
+    return this.prefix + encodeURIComponent(doi);
+  }
+
+  async getOrLoad(doi) {
+    const key = this._getKey(doi);
+    const item = localStorage.getItem(key);
+    if (!item) {
+      const response = await fetch(
+        `https://api.semanticscholar.org/v1/paper/${doi}?include_unknown_references=true`
+      );
+
+      if (!response.ok) {
+        if (response.status === 404) {
+          const body = await response.json();
+          localStorage.setItem(key, JSON.stringify(body));
+          return body;
+        } else {
+          const message = `An error has occured: ${response.status}`;
+          throw new Error(message);
+        }
+      }
+
+      const body = await response.json();
+      try {
+        localStorage.setItem(key, JSON.stringify(body));
+      } catch (e) {
+        console.log(e);
+      }
+      return body;
+    } else return JSON.parse(item);
+  }
+
+  remove(doi) {
+    localStorage.removeItem(this._getKey(doi));
+  }
+}
 
 export default class App extends Component {
   constructor(props) {
@@ -51,11 +93,18 @@ export default class App extends Component {
       selectedTabId: "searchResultsList",
       apiKey: "1f1787f55e2084eca33a02829ff7fe6c",
       modalOpen: false,
+      isLoading: false,
+      searchString: "",
     };
   }
 
-  componentDidMount() {
-    this.processSearchResults(result);
+  async componentDidMount() {
+    const lastSearch = JSON.parse(localStorage.getItem("lastSearch"));
+    if (lastSearch) {
+      this.setState({ isLoading: true, searchString: lastSearch.searchString });
+      await this.processSearchResults(lastSearch.result);
+      this.setState({ isLoading: false });
+    }
   }
 
   _filterPapers(listType) {
@@ -79,81 +128,46 @@ export default class App extends Component {
     this.setState({
       selectedPaper: elem,
     });
-    const semanticScholarPaper = await this.loadSemScholar(elem.doi);
-    this.onPaperAction(elem, "update-paper");
-  };
-
-  onSearch = (newValue) => {
-    this.processSearchResults(result);
   };
 
   loadSemScholar = async (doi) => {
-    class PaperCache {
-      prefix = "paper_";
-
-      _getKey(doi) {
-        return this.prefix + encodeURIComponent(doi);
-      }
-
-      async getOrLoad(doi) {
-        const key = this._getKey(doi);
-        const item = localStorage.getItem(key);
-        if (!item) {
-          const response = await fetch(
-            `https://api.semanticscholar.org/v1/paper/${doi}?include_unknown_references=true`
-          );
-
-          if (!response.ok) {
-            if (response.status === 404) {
-              const body = await response.json();
-              localStorage.setItem(key, JSON.stringify(body));
-              return body;
-            } else {
-              const message = `An error has occured: ${response.status}`;
-              throw new Error(message);
-            }
-          }
-
-          const body = await response.json();
-          localStorage.setItem(key, JSON.stringify(body));
-          return body;
-        } else return JSON.parse(item);
-      }
-
-      remove(doi) {
-        localStorage.removeItem(this._getKey(doi));
-      }
-    }
-    this.setState({ isLoaded: false });
-
     let cache = new PaperCache();
     const item = await cache.getOrLoad(doi);
-
-    this.setState({ isLoaded: true });
-
     return item;
   };
 
-  onLoadData = (searchString) => {
+  onLoadData = async (searchString) => {
+    this.setState({
+      isLoading: true,
+      selectedPaper: null,
+      searchString: searchString,
+    });
     const { apiKey: APIKey } = this.state;
     const apiKey = APIKey;
     const query = `all("${searchString}")`;
-    fetch(
+
+    const response = await fetch(
       `https://api.elsevier.com/content/search/scopus?apiKey=${apiKey}&query=${query}&count=25&start=0`
-    )
-      .then((res) => res.json())
-      .then(
-        (result) => {
-          console.log(result);
-          this.processSearchResults(result);
-        },
-        (error) => {
-          this.setState({
-            isLoaded: true,
-            error,
-          });
-        }
-      );
+    );
+
+    if (!response.ok) {
+      const error = `An error has occured: ${response.status}`;
+      this.setState({
+        isLoading: false,
+        error,
+      });
+    }
+    const body = await response.json();
+
+    localStorage.setItem(
+      "lastSearch",
+      JSON.stringify({ searchString: this.state.searchString, result: body })
+    );
+
+    await this.processSearchResults(body);
+    this.setState({
+      isLoading: false,
+    });
   };
 
   handleTabLinkClick = (item) => {
@@ -162,10 +176,12 @@ export default class App extends Component {
     });
   };
 
-  onPaperAction = (newPaper, action) => {
+  onPaperAction = async (newPaper, action) => {
     const { paperList } = this.state;
-
-    const newList = paperList
+    this.setState({
+      isLoading: true,
+    });
+    let newList = paperList
       .filter((paper) => {
         return action !== "remove-paper" || newPaper.key !== paper.key;
       })
@@ -188,8 +204,41 @@ export default class App extends Component {
         }
         return paper;
       });
+
+    if (action === "move-to-relevant") {
+      newPaper.refs.forEach((p) => {
+        const oldPaper = newList.find((oldPaper) => oldPaper.doi === p.doi);
+        if (oldPaper) {
+          oldPaper.inBatch.push(newPaper.doi);
+        } else {
+          newList.push({
+            key: p.doi || p.paperId,
+            name: p.title,
+            abstract: null,
+            refs: [],
+            cites: [],
+            raw: {},
+            ids: [],
+            authors: p.authors
+              ? p.authors.map((author) => author.name).join(", ")
+              : "",
+            publication: p.venue,
+            year: p.year,
+            doi: p.doi,
+            type: null,
+            citedByCount: null,
+            inBatch: [newPaper.doi],
+            inList: LIST_RESULT,
+          });
+        }
+      });
+      newList = await this.loadSemScholarForMany(newList);
+    }
+
+    newList = this.getPaperScores(newList);
     this.setState({
-      paperList: newList,
+      paperList: newList.sort((a, b) => b.relevance - a.relevance),
+      isLoading: false,
     });
   };
 
@@ -212,11 +261,13 @@ export default class App extends Component {
     const {
       selectedPaper,
       searchResultsList,
+      searchString,
       relevantList,
       notRelevantList,
       selectedTabId,
       modalOpen,
       apiKey,
+      isLoading,
     } = this.state;
 
     let listItems;
@@ -322,10 +373,12 @@ export default class App extends Component {
             tokens={{ childrenGap: 20 }}
             className={classNames.searchBar}
           >
+            <Text style={{ fontWeight: "bolder" }}>Potatosearch</Text>
             <SearchBox
               styles={{ root: { width: 400 } }}
               placeholder="Search"
-              onSearch={this.onSearch}
+              onSearch={this.onLoadData}
+              value={searchString}
             />
             <CommandBar
               items={_items}
@@ -343,6 +396,7 @@ export default class App extends Component {
             >
               <StackItem disableShrink className={classNames.paperFrame}>
                 <DetailsFrame
+                  isLoading={isLoading}
                   selectedPaper={selectedPaper}
                   onPaperAction={this.onPaperAction}
                 />
@@ -373,8 +427,15 @@ export default class App extends Component {
                     itemCount={notRelevantList.length}
                   ></PivotItem>
                 </Pivot>
+                {isLoading && (
+                  <ProgressIndicator
+                    label="We're Loading"
+                    description="Lots of data from semantic Scholar"
+                  />
+                )}
                 <ResultList
                   items={listItems}
+                  isLoading={isLoading}
                   onSelectSingle={this.onSelectSingle}
                 />
               </StackItem>
@@ -383,6 +444,37 @@ export default class App extends Component {
         </Stack>
       </>
     );
+  }
+
+  async loadSemScholarForMany(items) {
+    items = await Promise.all(
+      items.map(async (paper) => {
+        const semScholar = await this.loadSemScholar(paper.doi);
+
+        const newPaper = {
+          abstract: semScholar.abstract,
+          refs: semScholar.references || [],
+          cites: semScholar.citations || [],
+          authors: semScholar.authors
+            ? semScholar.authors.map((author) => author.name).join(", ")
+            : paper.authors,
+          ids: semScholar.references
+            ? semScholar.references.map((ref) => {
+                return ref.doi || ref.paperId;
+              })
+            : [],
+        };
+
+        const updatedPaper = {
+          ...paper,
+          ...newPaper,
+        };
+        updatedPaper.raw.semScholar = semScholar;
+
+        return updatedPaper;
+      })
+    );
+    return items;
   }
 
   async processSearchResults(result) {
@@ -400,503 +492,183 @@ export default class App extends Component {
       });
 
       items.push({
-        key: entry["dc:identifier"],
+        key: entry["prism:doi"] || entry["dc:identifier"],
         name: entry["dc:title"],
         abstractlink: abstractlink,
+        abstract: null,
+        refs: [],
+        cites: [],
+        ids: [],
         authors: entry["dc:creator"], // @todo: replace with full list of authors.
         publication: `${entry["prism:publicationName"]} ${entry["prism:volume"]}`,
         year: entry["prism:coverDate"].substr(0, 4),
         doi: entry["prism:doi"],
         type: entry["subtypeDescription"],
-        citedbycount: entry["citedby-count"],
+        citedByCount: entry["citedby-count"],
+        inBatch: [this.state.searchString],
         raw: {
           scopusEntry: entry,
           semScholar: null,
         },
         inList: LIST_RESULT,
-        refs: [],
       });
     });
 
-    items = await Promise.all(
-      items.map(async (paper) => {
-        const semScholar = await this.loadSemScholar(paper.doi);
+    items = await this.loadSemScholarForMany(items);
 
-        const newPaper = {
-          abstract: semScholar.abstract,
-          refs: semScholar.references || [],
-          cites: semScholar.citations || [],
-          ids: semScholar.references
-            ? semScholar.references.map((ref) => {
-                return ref.doi || ref.paperId;
-              })
-            : [],
-        };
+    items = this.getPaperScores(items);
+    items = items.sort((a, b) => b.relevance - a.relevance);
 
-        const updatedPaper = {
-          ...paper,
-          ...newPaper,
-        };
-        updatedPaper.raw.semScholar = semScholar;
+    this.setState({
+      paperList: items,
+      isLoading: false,
+    });
+    this.onSelectSingle(items[0]);
+  }
 
-        return updatedPaper;
-      })
-    );
-
-    console.log(items);
-
+  getPaperScores(papers) {
     //Build matrix (Step1) -> direct references.
-    const matrix = new Array(items.length);
-    const itemIDs = items.map((paper) => paper.doi);
-    console.log(itemIDs);
-    items.forEach((paper, i) => {
-      let row = new Array(items.length).fill(0);
+    /** @description matrix for direct references */
+    let matrix = new Array(papers.length);
+    const paperIds = papers.map((paper) => paper.doi);
+    papers.forEach((paper, i) => {
+      let row = new Array(papers.length).fill(0);
       paper.ids.forEach((id) => {
-        let idx = itemIDs.indexOf(id);
-        if (idx >= 0) row[idx] = 1;
+        let idx = paperIds.indexOf(id);
+        if (idx !== -1) row[idx] = 1;
       });
       matrix[i] = row;
     });
 
-    console.log(matrix);
+    /** @description Lookup-Array - determines whether a paper is in list relevant or not. */
+    let isRelevant = papers.map((paper) => paper.inList === LIST_RELEVANT);
 
-    //////Prepare Calculation of Indicators
-    const relevantItems = items.map((paper) => paper.inList === LIST_RELEVANT);
-    console.log(relevantItems);
-    //calculate row sums
-    let rowSums = new Array(items.length);
-    matrix.forEach((row, i) => {
-      let referencingRelevant = row
-        .filter((l, idx) => relevantItems[idx])
-        .reduce((a, b) => a + b, 0);
+    /**
+     * summarize all citations within the set of papers
+     */
 
-      let referencingPool = row
-        .filter((l, idx) => !relevantItems[idx])
-        .reduce((a, b) => a + b, 0);
-      rowSums[i] = [referencingPool, referencingRelevant];
+    papers = papers.map((p) => {
+      return {
+        ...p,
+        ...{
+          refs_relevant: 0,
+          refs_pool: 0,
+          cited_relevant: 0,
+          cited_pool: 0,
+          cocit_pool: 0,
+          cocit_relevant: 0,
+          bibcup_pool: 0,
+          bibcup_relevant: 0,
+        },
+      };
     });
 
-    //calculate Column Sums
-    let colSums_relevant = new Array(items.length).fill(0);
-    let colSums_pool = new Array(items.length).fill(0);
-    let colSums = new Array(items.length).fill([]);
+    const m = {};
 
-    matrix.forEach((row, row_idx) => {
-      row.forEach((value, col_idx) => {
-        if (relevantItems[row_idx]) {
-          colSums_relevant[col_idx] = colSums_relevant[col_idx] + value;
-        } else {
-          colSums_pool[col_idx] = colSums_pool[col_idx] + value;
+    // each paper
+    for (let i = 0; i < papers.length; i++) {
+      // each column
+      for (let j = 0; j < papers.length; j++) {
+        //Referencing Count - a)
+        if (matrix[i][j] === 1) {
+          if (isRelevant[j]) {
+            papers[i].refs_relevant++;
+          } else {
+            papers[i].refs_pool++;
+          }
         }
-      });
-    });
-    colSums_relevant.forEach((column, index) => {
-      colSums[index] = [colSums_pool[index], colSums_relevant[index]];
-    });
+        //Referenced Count - b)
+        if (matrix[j][i] === 1) {
+          if (isRelevant[j]) {
+            papers[i].cited_relevant++;
+          } else {
+            papers[i].cited_pool++;
+          }
+        }
+        // each row
+        for (let k = 0; k < papers.length; k++) {
+          // cocitation: how often has a paper been co-cited? - c)
+          if (matrix[j][i] === 1 && matrix[j][k] === 1 && i !== k) {
+            if (isRelevant[k]) {
+              papers[i].cocit_relevant++;
+            } else {
+              papers[i].cocit_pool++;
+            }
+          }
+          // bibcoupling: - d)
+          if (matrix[i][j] === 1 && matrix[k][j] === 1 && i !== k) {
+            if (isRelevant[k]) {
+              papers[i].bibcup_relevant++;
+            } else {
+              papers[i].bibcup_pool++;
+            }
+          }
+        }
+      }
+    }
 
-    //Calculate Indicators (Step2)
-    //Referencing Count - a)
-    let referencingPool = new Array(items.length).fill(0);
-    let referencingRelevant = new Array(items.length).fill(0);
-    matrix.forEach((line, i) => {
-      referencingPool[i] = rowSums[i][0];
-      referencingRelevant[i] = rowSums[i][1];
-    });
+    const relevantKpis = papers.filter((_, i) => isRelevant[i]);
+    const poolKpis = papers.filter((_, i) => !isRelevant[i]);
 
-    //Referenced Count - b)
-    let referencedPool = new Array(items.length).fill(0);
-    let referencedRelevant = new Array(items.length).fill(0);
-    matrix.forEach((line, i) => {
-      referencedPool[i] = colSums[i][0];
-      referencedRelevant[i] = colSums[i][1];
-    });
+    m.poolPoolRefs = Math.max(1, ...poolKpis.map((l) => l.refs_pool));
+    m.poolPoolCited = Math.max(1, ...poolKpis.map((l) => l.cited_pool));
+    m.poolPoolCocit = Math.max(1, ...poolKpis.map((l) => l.cocit_pool));
+    m.poolPoolBibcup = Math.max(1, ...poolKpis.map((l) => l.bibcup_pool));
 
-    //Cocitation Count - c)
-    let cocitationPool = new Array(items.length).fill(0);
-    let cocitationRelevant = new Array(items.length).fill(0);
-    matrix.forEach((column, col_idx) => {
-      matrix.forEach((line, lin_idx) => {
-        //calculate Cocitation Pool
-        cocitationPool[col_idx] =
-          cocitationPool[col_idx] +
-          (line[col_idx] === 1 &&
-            rowSums[lin_idx][0] - (!relevantItems[col_idx] && 1));
-        //Calculate Cocitation Relevant
-        cocitationRelevant[col_idx] =
-          cocitationRelevant[col_idx] +
-          (line[col_idx] === 1 &&
-            rowSums[lin_idx][1] - (relevantItems[col_idx] && 1));
-      });
-    });
+    m.relRelRefs = Math.max(1, ...relevantKpis.map((l) => l.refs_relevant));
+    m.relRelCited = Math.max(1, ...relevantKpis.map((l) => l.cited_relevant));
+    m.relRelCocit = Math.max(1, ...relevantKpis.map((l) => l.cocit_relevant));
+    m.relRelBibcup = Math.max(1, ...relevantKpis.map((l) => l.bibcup_relevant));
 
-    //Bibliographic Count - d)
-    let bibliographicPool = new Array(items.length).fill(0);
-    let bibliographicRelevant = new Array(items.length).fill(0);
-    matrix.forEach((line, lin_idx) => {
-      matrix.forEach((c, col_idx) => {
-        //calculate Bibliographic Pool
-        bibliographicPool[lin_idx] =
-          bibliographicPool[lin_idx] +
-          (line[col_idx] === 1 &&
-            colSums[col_idx][0] - (!relevantItems[lin_idx] && 1));
-        //Calculate Bibliographic Relevant
-        bibliographicRelevant[lin_idx] =
-          bibliographicRelevant[lin_idx] +
-          (line[col_idx] === 1 &&
-            colSums[col_idx][1] - (relevantItems[lin_idx] && 1));
-      });
-    });
+    m.poolRelRefs = Math.max(1, ...poolKpis.map((l) => l.refs_relevant));
+    m.poolRelCited = Math.max(1, ...poolKpis.map((l) => l.cited_relevant));
+    m.poolRelCocit = Math.max(1, ...poolKpis.map((l) => l.cocit_relevant));
+    m.poolRelBibcup = Math.max(1, ...poolKpis.map((l) => l.bibcup_relevant));
 
-    console.log(colSums);
+    papers.forEach((paper, i) => {
+      if (isRelevant[i]) {
+        paper.refs_relevant /= m.relRelRefs;
+        paper.cited_relevant /= m.relRelCited;
+        paper.cocit_relevant /= m.relRelCocit;
+        paper.bibcup_relevant /= m.relRelBibcup;
 
-    this.setState({
-      paperList: items,
-    });
-    this.onSelectSingle(items[0]);
-  }
-}
+        delete paper.refs_pool;
+        delete paper.cited_pool;
+        delete paper.cocit_pool;
+        delete paper.bibcup_pool;
 
-function processSearchResults(scopusresult) {
-  let items = [];
-  //Hard coded list separation
-  const relevantItems = [items[0], items[2], items[3], items[5]];
-  const paperPool = [items[1], items[4], items[6]];
-
-  //Join Lists
-  relevantItems.forEach(function (item) {
-    item.relevant = true;
-  });
-  paperPool.forEach(function (item) {
-    item.relevant = false;
-  });
-  //hard coded list aggregation
-  //const allPapers = [relevantItems[0], paperPool[0], relevantItems[1], relevantItems[2], paperPool[1], relevantItems[3], paperPool[2]];
-  const allPapers = relevantItems.concat(paperPool);
-  console.log(allPapers);
-
-  //ATTENTION - INCONSISTENCIES BETWEEN allPapers AND items --> Join later on uses index, might have to use doi
-
-  //Build matrix (Step1)
-  let paperCount = allPapers.length;
-  const matrix = new Array(paperCount);
-  allPapers.forEach((paper, i) => {
-    let matrixline = new Array(paperCount).fill(0);
-    paper.referencingdois.forEach((doi) => {
-      let paperindex = allPapers.map((paper) => paper.doi).indexOf(doi);
-      matrixline[paperindex] = 1;
-    });
-    matrix[i] = matrixline;
-  });
-
-  console.log(matrix);
-
-  //////Prepare Calculation of Indicators
-  let relevantArray = allPapers.map((paper) => paper.relevant);
-
-  //calculate row sums
-  let rowsums = new Array(paperCount);
-  matrix.forEach((matrixline, i) => {
-    let matrixlineRelevant = matrixline.filter((line, i) => relevantArray[i]);
-    let referencingRelevant = matrixlineRelevant.reduce((a, b) => {
-      return a + b;
-    }, 0);
-    let matrixlinePool = matrixline.filter((line, i) => !relevantArray[i]);
-    let referencingPool = matrixlinePool.reduce((a, b) => {
-      return a + b;
-    }, 0);
-    rowsums[i] = [referencingPool, referencingRelevant];
-  });
-
-  //calculate Column Sums
-  let columnsumsRelevant = new Array(paperCount).fill(0);
-  let columnsumsPool = new Array(paperCount).fill(0);
-  let columnsums = new Array(paperCount).fill([]);
-
-  matrix.forEach((matrixline, i) => {
-    let relevantLine = relevantArray[i];
-    matrixline.forEach((value, index) => {
-      if (relevantLine) {
-        columnsumsRelevant[index] = columnsumsRelevant[index] + value;
+        paper.relevance =
+          (paper.refs_relevant +
+            paper.cited_relevant +
+            paper.cocit_relevant +
+            paper.bibcup_relevant) /
+          4;
       } else {
-        columnsumsPool[index] = columnsumsPool[index] + value;
+        paper.refs_pool /= m.poolPoolRefs;
+        paper.cited_pool /= m.poolPoolCited;
+        paper.cocit_pool /= m.poolPoolCocit;
+        paper.bibcup_pool /= m.poolPoolBibcup;
+
+        paper.refs_relevant /= m.poolRelRefs;
+        paper.cited_relevant /= m.poolRelCited;
+        paper.cocit_relevant /= m.poolRelCocit;
+        paper.bibcup_relevant /= m.poolRelBibcup;
+
+        paper.relevance =
+          (paper.refs_relevant +
+            paper.cited_relevant +
+            paper.cocit_relevant +
+            paper.bibcup_relevant +
+            paper.refs_pool +
+            paper.cited_pool +
+            paper.cocit_pool +
+            paper.bibcup_pool) /
+          8;
       }
     });
-  });
-  columnsumsRelevant.forEach((column, index) => {
-    columnsums[index] = [columnsumsPool[index], columnsumsRelevant[index]];
-  });
 
-  //Calculate Indicators (Step2)
+    console.log("papers,", papers);
 
-  //Referencing Count - a)
-  let referencingPool = new Array(paperCount).fill(0);
-  let referencingRelevant = new Array(paperCount).fill(0);
-  matrix.forEach((line, i) => {
-    referencingPool[i] = rowsums[i][0];
-    referencingRelevant[i] = rowsums[i][1];
-  });
-
-  //Referenced Count - b)
-  let referencedPool = new Array(paperCount).fill(0);
-  let referencedRelevant = new Array(paperCount).fill(0);
-  matrix.forEach((line, i) => {
-    referencedPool[i] = columnsums[i][0];
-    referencedRelevant[i] = columnsums[i][1];
-  });
-
-  //Cocitation Count - c)
-  let cocitationPool = new Array(paperCount).fill(0);
-  let cocitationRelevant = new Array(paperCount).fill(0);
-  matrix.forEach((column, columnindex) => {
-    matrix.forEach((line, lineindex) => {
-      //calculate Cocitation Pool
-      cocitationPool[columnindex] =
-        cocitationPool[columnindex] +
-        (line[columnindex] === 1 &&
-          rowsums[lineindex][0] - (!relevantArray[columnindex] && 1));
-      //Calculate Cocitation Relevant
-      cocitationRelevant[columnindex] =
-        cocitationRelevant[columnindex] +
-        (line[columnindex] === 1 &&
-          rowsums[lineindex][1] - (relevantArray[columnindex] && 1));
-    });
-  });
-
-  //Bibliographic Count - d)
-  let bibliographicPool = new Array(paperCount).fill(0);
-  let bibliographicRelevant = new Array(paperCount).fill(0);
-  matrix.forEach((line, lineindex) => {
-    matrix.forEach((c, columnindex) => {
-      //calculate Bibliographic Pool
-      bibliographicPool[lineindex] =
-        bibliographicPool[lineindex] +
-        (line[columnindex] === 1 &&
-          columnsums[columnindex][0] - (!relevantArray[lineindex] && 1));
-      //Calculate Bibliographic Relevant
-      bibliographicRelevant[lineindex] =
-        bibliographicRelevant[lineindex] +
-        (line[columnindex] === 1 &&
-          columnsums[columnindex][1] - (relevantArray[lineindex] && 1));
-    });
-  });
-
-  //Initialize Indicator Property - 8 indicators
-  items.forEach((item, index) => {
-    item.indicators = new Array(8).fill(0);
-  });
-
-  //indicators compared to Pool
-  let referencingPoolMaxPool = Math.max(
-    ...referencingPool.filter((line, i) => !relevantArray[i])
-  );
-  let referencingPoolMaxRelevant = Math.max(
-    ...referencingPool.filter((line, i) => relevantArray[i])
-  );
-  referencingPool.forEach((line, index) => {
-    if (relevantArray[index]) {
-      items[index].indicators[0] =
-        0.01 *
-        Math.round(
-          10000 *
-            (referencingPool[index] / Math.max(1, referencingPoolMaxRelevant))
-        );
-    } else {
-      items[index].indicators[0] =
-        0.01 *
-        Math.round(
-          10000 * (referencingPool[index] / Math.max(1, referencingPoolMaxPool))
-        );
-    }
-  });
-
-  let referencedPoolMaxPool = Math.max(
-    ...referencedPool.filter((line, i) => !relevantArray[i])
-  );
-  let referencedPoolMaxRelevant = Math.max(
-    ...referencedPool.filter((line, i) => relevantArray[i])
-  );
-  referencedPool.forEach((line, index) => {
-    if (relevantArray[index]) {
-      items[index].indicators[1] =
-        0.01 *
-        Math.round(
-          10000 *
-            (referencedPool[index] / Math.max(1, referencedPoolMaxRelevant))
-        );
-    } else {
-      items[index].indicators[1] =
-        0.01 *
-        Math.round(
-          10000 * (referencedPool[index] / Math.max(1, referencedPoolMaxPool))
-        );
-    }
-  });
-
-  let cocitationPoolMaxPool = Math.max(
-    ...cocitationPool.filter((line, i) => !relevantArray[i])
-  );
-  let cocitationPoolMaxRelevant = Math.max(
-    ...cocitationPool.filter((line, i) => relevantArray[i])
-  );
-  cocitationPool.forEach((line, index) => {
-    if (relevantArray[index]) {
-      items[index].indicators[2] =
-        0.01 *
-        Math.round(
-          10000 *
-            (cocitationPool[index] / Math.max(1, cocitationPoolMaxRelevant))
-        );
-    } else {
-      items[index].indicators[2] =
-        0.01 *
-        Math.round(
-          10000 * (cocitationPool[index] / Math.max(1, cocitationPoolMaxPool))
-        );
-    }
-  });
-
-  let bibliographicPoolMaxPool = Math.max(
-    ...bibliographicPool.filter((line, i) => !relevantArray[i])
-  );
-  let bibliographicPoolMaxRelevant = Math.max(
-    ...bibliographicPool.filter((line, i) => relevantArray[i])
-  );
-  bibliographicPool.forEach((line, index) => {
-    if (relevantArray[index]) {
-      items[index].indicators[3] =
-        0.01 *
-        Math.round(
-          10000 *
-            (bibliographicPool[index] /
-              Math.max(1, bibliographicPoolMaxRelevant))
-        );
-    } else {
-      items[index].indicators[3] =
-        0.01 *
-        Math.round(
-          10000 *
-            (bibliographicPool[index] / Math.max(1, bibliographicPoolMaxPool))
-        );
-    }
-  });
-
-  //indicators compared to Relevant Papers
-  let referencingRelevantMaxPool = Math.max(
-    ...referencingRelevant.filter((line, i) => !relevantArray[i])
-  );
-  let referencingRelevantMaxRelevant = Math.max(
-    ...referencingRelevant.filter((line, i) => relevantArray[i])
-  );
-  referencingRelevant.forEach((line, index) => {
-    if (relevantArray[index]) {
-      items[index].indicators[4] =
-        0.01 *
-        Math.round(
-          10000 *
-            (referencingRelevant[index] /
-              Math.max(1, referencingRelevantMaxRelevant))
-        );
-    } else {
-      items[index].indicators[4] =
-        0.01 *
-        Math.round(
-          10000 *
-            (referencingRelevant[index] /
-              Math.max(1, referencingRelevantMaxPool))
-        );
-    }
-  });
-
-  let referencedRelevantMaxPool = Math.max(
-    ...referencedRelevant.filter((line, i) => !relevantArray[i])
-  );
-  let referencedRelevantMaxRelevant = Math.max(
-    ...referencedRelevant.filter((line, i) => relevantArray[i])
-  );
-  referencedRelevant.forEach((line, index) => {
-    if (relevantArray[index]) {
-      items[index].indicators[5] =
-        0.01 *
-        Math.round(
-          10000 *
-            (referencedRelevant[index] /
-              Math.max(1, referencedRelevantMaxRelevant))
-        );
-    } else {
-      items[index].indicators[5] =
-        0.01 *
-        Math.round(
-          10000 *
-            (referencedRelevant[index] / Math.max(1, referencedRelevantMaxPool))
-        );
-    }
-  });
-
-  let cocitationRelevantMaxPool = Math.max(
-    ...cocitationRelevant.filter((line, i) => !relevantArray[i])
-  );
-  let cocitationRelevantMaxRelevant = Math.max(
-    ...cocitationRelevant.filter((line, i) => relevantArray[i])
-  );
-  cocitationRelevant.forEach((line, index) => {
-    if (relevantArray[index]) {
-      items[index].indicators[6] =
-        0.01 *
-        Math.round(
-          10000 *
-            (cocitationRelevant[index] /
-              Math.max(1, cocitationRelevantMaxRelevant))
-        );
-    } else {
-      items[index].indicators[6] =
-        0.01 *
-        Math.round(
-          10000 *
-            (cocitationRelevant[index] / Math.max(1, cocitationRelevantMaxPool))
-        );
-    }
-  });
-
-  let bibliographicRelevantMaxPool = Math.max(
-    ...bibliographicRelevant.filter((line, i) => !relevantArray[i])
-  );
-  let bibliographicRelevantMaxRelevant = Math.max(
-    ...bibliographicRelevant.filter((line, i) => relevantArray[i])
-  );
-  bibliographicRelevant.forEach((line, index) => {
-    if (relevantArray[index]) {
-      items[index].indicators[7] =
-        0.01 *
-        Math.round(
-          10000 *
-            (bibliographicRelevant[index] /
-              Math.max(1, bibliographicRelevantMaxRelevant))
-        );
-    } else {
-      items[index].indicators[7] =
-        0.01 *
-        Math.round(
-          10000 *
-            (bibliographicRelevant[index] /
-              Math.max(1, bibliographicRelevantMaxPool))
-        );
-    }
-  });
-
-  items.forEach((item, index) => {
-    let indicatorsforscore = relevantArray[index]
-      ? item.indicators.slice(4, 8)
-      : item.indicators;
-    console.log(indicatorsforscore);
-    let score = 0;
-    let size = indicatorsforscore.length;
-    indicatorsforscore.forEach((indicator) => {
-      score = score + (1 / size) * indicator;
-    });
-    item.relevance = 0.01 * Math.round(score * 100);
-  });
-
-  console.log(items);
-
-  return items;
+    return papers;
+  }
 }

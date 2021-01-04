@@ -1,12 +1,8 @@
 import {
-  DetailsList,
-  MarqueeSelection,
+  ShimmeredDetailsList,
   Selection,
   SelectionMode,
   DetailsListLayoutMode,
-  Fabric,
-  ScrollablePane,
-  ScrollbarVisibility,
   mergeStyleSets,
 } from "@fluentui/react";
 
@@ -15,41 +11,11 @@ import React, { Component } from "react";
 const classNames = mergeStyleSets({
   scrollWrapper: {
     position: "relative",
-    height: "70vh",
-  },
-  fileIconHeaderIcon: {
-    padding: 0,
-    fontSize: "16px",
-  },
-  fileIconCell: {
-    textAlign: "center",
-    selectors: {
-      "&:before": {
-        content: ".",
-        display: "inline-block",
-        verticalAlign: "middle",
-        height: "100%",
-        width: "0px",
-        visibility: "hidden",
-      },
-    },
-  },
-  fileIconImg: {
-    verticalAlign: "middle",
-    maxHeight: "16px",
-    maxWidth: "16px",
+    height: "65vh",
   },
   controlWrapper: {
     display: "flex",
     flexWrap: "wrap",
-  },
-  exampleToggle: {
-    display: "inline-block",
-    marginBottom: "10px",
-    marginRight: "30px",
-  },
-  selectionDetails: {
-    marginBottom: "20px",
   },
 });
 
@@ -67,20 +33,21 @@ export default class ResultList extends Component {
         name: "Relevance",
         fieldName: "relevance",
         minWidth: 30,
-        maxWidth: 60,
-        isRowHeader: true,
+        maxWidth: 50,
         isSorted: true,
         isSortedDescending: true,
         onColumnClick: this._onColumnClick,
-        data: "number",
+        onRender: (item) => {
+          return <span>{(item.relevance * 100).toFixed(2) + "%"}</span>;
+        },
+        data: "string",
         isPadded: true,
       },
       {
         key: "column2",
         name: "Name",
         fieldName: "name",
-        minWidth: 300,
-        maxWidth: 500,
+        maxWidth: 350,
         sortAscendingAriaLabel: "Sorted A to Z",
         sortDescendingAriaLabel: "Sorted Z to A",
         onColumnClick: this._onColumnClick,
@@ -90,24 +57,21 @@ export default class ResultList extends Component {
       },
       {
         key: "column3",
-        name: "Authors",
+        name: "Author/Year",
         fieldName: "authors",
         minWidth: 75,
-        maxWidth: 100,
+        maxWidth: 150,
         onColumnClick: this._onColumnClick,
         data: "string",
+        onRender: (item) => {
+          return (
+            <span>
+              {item.authors} ({item.year})
+            </span>
+          );
+        },
         isPadded: true,
         isMultiline: true,
-      },
-      {
-        key: "column4",
-        name: "Year",
-        fieldName: "year",
-        minWidth: 50,
-        maxWidth: 75,
-        onColumnClick: this._onColumnClick,
-        data: "string",
-        isPadded: true,
       },
     ];
 
@@ -117,118 +81,47 @@ export default class ResultList extends Component {
         if (selectionCount === 1) {
           onSelectSingle(this._selection.getSelection()[0]);
         }
-
-        this.setState({
-          selectionDetails: this._getSelectionDetails(),
-        });
       },
     });
 
     this.state = {
       announcedMessage: null,
       columns: columns,
-      selectionDetails: this._getSelectionDetails(),
       selectedItem: null,
       isModalSelection: false,
       isCompactMode: false,
-
-      //commandBarFarItems: commandBarFarItems,
-      //commandBarItems: commandBarItems,
-      //commandBarOverflowItems: commandBarOverflowItems,
     };
   }
 
   render() {
     const { columns } = this.state;
 
-    const { items } = this.props;
+    const { items, isLoading } = this.props;
 
     return (
-      <ScrollablePane
-        className={classNames.scrollWrapper}
-        scrollbarVisibility={ScrollbarVisibility.auto}
-      >
-        {/*<div className={classNames.controlWrapper}>
-          <CommandBar
-            items={commandBarItems}
-            overflowItems={commandBarOverflowItems}
-            overflowButtonProps={{ ariaLabel: "More Commands" }}
-            farItems={commandBarFarItems}
-            ariaLabel="Use left and right arrow keys to navigate between commands"
-          />
-          <Toggle
-            label="Enable compact mode"
-            checked={isCompactMode}
-            onChange={this._onChangeCompactMode}
-            onText="Compact"
-            offText="Normal"
-            styles={controlStyles}
-          />
-          <TextField
-            label="Filter by name:"
-            onChange={this._onChangeText}
-            styles={controlStyles}
-          />
-          <Announced message={announcedMessage} />
-        </div>
-          <Announced
-            message={`Number of items after filter applied: ${items.length}.`}
-          />
-        </div>*/}
-        <MarqueeSelection selection={this._selection}>
-          <DetailsList
-            items={items}
-            compact={true}
-            columns={columns}
-            selectionMode={SelectionMode.multiple}
-            getKey={this._getKey}
-            setKey="multiple"
-            layoutMode={DetailsListLayoutMode.justified}
-            isHeaderVisible={true}
-            selection={this._selection}
-            selectionPreservedOnEmptyClick={true}
-            onItemInvoked={this._onItemInvoked}
-            enterModalSelectionOnTouch={true}
-            ariaLabelForSelectionColumn="Toggle selection"
-            ariaLabelForSelectAllCheckbox="Toggle selection for all items"
-            checkButtonAriaLabel="Row checkbox"
-          />
-        </MarqueeSelection>
-      </ScrollablePane>
+      <ShimmeredDetailsList
+        items={items}
+        enableShimmer={isLoading || items.length === 0}
+        compact={false}
+        onColumnClick={this._onColumnClick}
+        columns={columns}
+        selectionMode={SelectionMode.single}
+        getKey={this._getKey}
+        setKey="multiple"
+        layoutMode={DetailsListLayoutMode.fixedColumns}
+        isHeaderVisible={true}
+        selection={this._selection}
+        selectionPreservedOnEmptyClick={true}
+        enterModalSelectionOnTouch={true}
+        ariaLabelForSelectionColumn="Toggle selection"
+        ariaLabelForSelectAllCheckbox="Toggle selection for all items"
+        checkButtonAriaLabel="Row checkbox"
+      />
     );
   }
 
-  _componentDidUpdate(previousProps, previousState) {
-    if (
-      previousState.isModalSelection !== this.state.isModalSelection &&
-      !this.state.isModalSelection
-    ) {
-      this._selection.setAllSelected(false);
-    }
-  }
-
   _getKey(item, index) {
-    return item.key;
-  }
-
-  _onChangeText = (ev, text) => {
-    this.setState({
-      items: text
-        ? this._allItems.filter((i) => i.name.toLowerCase().indexOf(text) > -1)
-        : this._allItems,
-    });
-  };
-
-  _getSelectionDetails() {
-    const selectionCount = this._selection.getSelectedCount();
-    switch (selectionCount) {
-      case 0:
-        return "No items selected";
-      case 1:
-        return "1 item selected: " + this._selection.getSelection()[0].name;
-      default:
-        return `${selectionCount} items selected`;
-    }
+    return item ? item.key : index;
   }
 
   _onColumnClick = (ev, column) => {
