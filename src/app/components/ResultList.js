@@ -15,8 +15,7 @@ import React, { Component } from "react";
 const classNames = mergeStyleSets({
   scrollWrapper: {
     position: "relative",
-    height: "80vh",
-    width: "50vw",
+    height: "70vh",
   },
   fileIconHeaderIcon: {
     padding: 0,
@@ -53,12 +52,6 @@ const classNames = mergeStyleSets({
     marginBottom: "20px",
   },
 });
-const controlStyles = {
-  root: {
-    margin: "0 30px 20px 0",
-    maxWidth: "300px",
-  },
-};
 
 export default class ResultList extends Component {
   _selection;
@@ -146,20 +139,15 @@ export default class ResultList extends Component {
   }
 
   render() {
-    const {
-      columns,
-      isCompactMode,
-      selectionDetails,
-      announcedMessage,
-      commandBarFarItems,
-      commandBarOverflowItems,
-      commandBarItems,
-    } = this.state;
+    const { columns } = this.state;
 
     const { items } = this.props;
 
     return (
-      <Fabric>
+      <ScrollablePane
+        className={classNames.scrollWrapper}
+        scrollbarVisibility={ScrollbarVisibility.auto}
+      >
         {/*<div className={classNames.controlWrapper}>
           <CommandBar
             items={commandBarItems}
@@ -187,31 +175,26 @@ export default class ResultList extends Component {
             message={`Number of items after filter applied: ${items.length}.`}
           />
         </div>*/}
-        <ScrollablePane
-          className={classNames.scrollWrapper}
-          scrollbarVisibility={ScrollbarVisibility.auto}
-        >
-          <MarqueeSelection selection={this._selection}>
-            <DetailsList
-              items={items}
-              compact={true}
-              columns={columns}
-              selectionMode={SelectionMode.multiple}
-              getKey={this._getKey}
-              setKey="multiple"
-              layoutMode={DetailsListLayoutMode.justified}
-              isHeaderVisible={true}
-              selection={this._selection}
-              selectionPreservedOnEmptyClick={true}
-              onItemInvoked={this._onItemInvoked}
-              enterModalSelectionOnTouch={true}
-              ariaLabelForSelectionColumn="Toggle selection"
-              ariaLabelForSelectAllCheckbox="Toggle selection for all items"
-              checkButtonAriaLabel="Row checkbox"
-            />
-          </MarqueeSelection>
-        </ScrollablePane>
-      </Fabric>
+        <MarqueeSelection selection={this._selection}>
+          <DetailsList
+            items={items}
+            compact={true}
+            columns={columns}
+            selectionMode={SelectionMode.multiple}
+            getKey={this._getKey}
+            setKey="multiple"
+            layoutMode={DetailsListLayoutMode.justified}
+            isHeaderVisible={true}
+            selection={this._selection}
+            selectionPreservedOnEmptyClick={true}
+            onItemInvoked={this._onItemInvoked}
+            enterModalSelectionOnTouch={true}
+            ariaLabelForSelectionColumn="Toggle selection"
+            ariaLabelForSelectAllCheckbox="Toggle selection for all items"
+            checkButtonAriaLabel="Row checkbox"
+          />
+        </MarqueeSelection>
+      </ScrollablePane>
     );
   }
 

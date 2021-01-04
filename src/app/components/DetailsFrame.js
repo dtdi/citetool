@@ -21,10 +21,6 @@ const classNames = mergeStyleSets({
   },
 });
 export default class DetailsFrame extends Component {
-  constructor(props) {
-    super(props);
-  }
-
   render() {
     const { selectedPaper, onPaperAction } = this.props;
     if (!selectedPaper) {
@@ -32,7 +28,7 @@ export default class DetailsFrame extends Component {
     }
 
     return (
-      <Stack tokens={{ padding: 20, childrenGap: 5 }}>
+      <Stack tokens={{ childrenGap: 5 }}>
         <Stack horizontal tokens={{ childrenGap: 5 }}>
           <ActionButton
             text="To Paper Pool"

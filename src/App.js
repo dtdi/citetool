@@ -2,20 +2,15 @@ import React, { Component } from "react";
 import {
   Stack,
   StackItem,
+  CommandBar,
   Pivot,
   PivotItem,
+  Image,
   mergeStyleSets,
   SearchBox,
-  Fabric,
   PivotLinkFormat,
-  ActionButton,
-  Modal,
+  DefaultButton,
   getTheme,
-  FontWeights,
-  TextField,
-  PrimaryButton,
-  Text,
-  IconButton,
 } from "@fluentui/react";
 
 import result from "./data/scopusresult.json";
@@ -25,64 +20,19 @@ import DetailsFrame from "./app/components/DetailsFrame";
 import header from "./img/header.jpg";
 import "./style.css";
 
-import semanticscholarresult1 from "./data/semanticscholarresult1.json";
-import semanticscholarresult2 from "./data/semanticscholarresult2.json";
-import semanticscholarresult3 from "./data/semanticscholarresult3.json";
-import semanticscholarresult4 from "./data/semanticscholarresult4.json";
-import semanticscholarresult5 from "./data/semanticscholarresult5.json";
-import semanticscholarresult6 from "./data/semanticscholarresult6.json";
-import semanticscholarresult7 from "./data/semanticscholarresult7.json";
+import ApiModal from "./app/components/ApiModal";
 
+const theme = getTheme();
 const classNames = mergeStyleSets({
   paperFrame: {
     width: "40vw",
+    padding: 20,
+    background: theme.palette.white,
+  },
+  searchBar: {
+    background: theme.palette.white,
   },
 });
-
-const theme = getTheme();
-const contentStyles = mergeStyleSets({
-  container: {
-    display: "flex",
-    flexFlow: "column nowrap",
-    alignItems: "stretch",
-    width: "1000px",
-    maxWidth: "100%",
-  },
-  header: [
-    theme.fonts.xLargePlus,
-    {
-      flex: "1 1 auto",
-      borderTop: `4px solid ${theme.palette.themePrimary}`,
-      color: theme.palette.neutralPrimary,
-      display: "flex",
-      alignItems: "center",
-      fontWeight: FontWeights.semibold,
-      padding: "12px 12px 14px 24px",
-    },
-  ],
-  body: {
-    flex: "4 4 auto",
-    padding: "0 24px 24px 24px",
-    overflowY: "hidden",
-    selectors: {
-      p: { margin: "14px 0" },
-      "p:first-child": { marginTop: 0 },
-      "p:last-child": { marginBottom: 0 },
-    },
-  },
-});
-
-const iconButtonStyles = {
-  root: {
-    color: theme.palette.neutralPrimary,
-    marginLeft: "auto",
-    marginTop: "4px",
-    marginRight: "2px",
-  },
-  rootHovered: {
-    color: theme.palette.neutralDark,
-  },
-};
 
 const LIST_RESULT = "result";
 const LIST_RELEVANT = "relevant";
@@ -99,8 +49,8 @@ export default class App extends Component {
       relevantList: [],
       notRelevantList: [],
       selectedTabId: "searchResultsList",
-      APIKey: "1f1787f55e2084eca33a02829ff7fe6c",
-      modalOpen: true,
+      apiKey: "1f1787f55e2084eca33a02829ff7fe6c",
+      modalOpen: false,
     };
   }
 
@@ -111,7 +61,7 @@ export default class App extends Component {
   _filterPapers(listType) {
     const { paperList } = this.state;
     return paperList.filter((paper) => {
-      return paper.inList == listType;
+      return paper.inList === listType;
     });
   }
 
@@ -129,10 +79,7 @@ export default class App extends Component {
     this.setState({
       selectedPaper: elem,
     });
-    console.log("onSelectSingle", elem);
-
-    const semanticScholarPaper = await this.onLoadSemanticScholar(elem.doi);
-    elem.semanticScholarEntry = semanticScholarPaper;
+    const semanticScholarPaper = await this.loadSemScholar(elem.doi);
     this.onPaperAction(elem, "update-paper");
   };
 
@@ -140,7 +87,7 @@ export default class App extends Component {
     this.processSearchResults(result);
   };
 
-  onLoadSemanticScholar = async (doi) => {
+  loadSemScholar = async (doi) => {
     class PaperCache {
       prefix = "paper_";
 
@@ -157,7 +104,7 @@ export default class App extends Component {
           );
 
           if (!response.ok) {
-            if (response.status == "404") {
+            if (response.status === 404) {
               const body = await response.json();
               localStorage.setItem(key, JSON.stringify(body));
               return body;
@@ -188,7 +135,7 @@ export default class App extends Component {
   };
 
   onLoadData = (searchString) => {
-    const { APIKey } = this.state;
+    const { apiKey: APIKey } = this.state;
     const apiKey = APIKey;
     const query = `all("${searchString}")`;
     fetch(
@@ -208,43 +155,6 @@ export default class App extends Component {
         }
       );
   };
-
-  processSearchResults(result) {
-    let items = [];
-    const entries = result["search-results"].entry;
-    entries.forEach((entry) => {
-      let abstractlink = "test";
-      let links = entry["link"];
-      links.forEach((link) => {
-        let linktype = link["@ref"];
-        if (linktype === "scopus") {
-          abstractlink = link["@href"];
-        }
-      });
-
-      items.push({
-        key: entry["dc:identifier"],
-        name: entry["dc:title"],
-        abstractlink: abstractlink,
-        authors: entry["dc:creator"], // @todo: replace with full list of authors.
-        publication: `${entry["prism:publicationName"]} ${entry["prism:volume"]}`,
-        year: entry["prism:coverDate"].substr(0, 4),
-        relevance: (Math.random() * 100).toFixed(2),
-        doi: entry["prism:doi"],
-        type: entry["subtypeDescription"],
-        citedbycount: entry["citedby-count"],
-        scopusEntry: entry,
-        semanticScholarEntry: null,
-        inList: LIST_RESULT,
-      });
-    });
-
-    items = items.sort((a, b) => Number(b.relevance) - Number(a.relevance));
-    this.setState({
-      paperList: items,
-    });
-    this.onSelectSingle(items[0]);
-  }
 
   handleTabLinkClick = (item) => {
     this.setState({
@@ -306,6 +216,7 @@ export default class App extends Component {
       notRelevantList,
       selectedTabId,
       modalOpen,
+      apiKey,
     } = this.state;
 
     let listItems;
@@ -325,104 +236,118 @@ export default class App extends Component {
         break;
     }
 
+    const _items = [
+      {
+        key: "upload",
+        text: "Upload",
+        disabled: true,
+        iconProps: { iconName: "Upload" },
+        href: "https://developer.microsoft.com/en-us/fluentui",
+      },
+      {
+        key: "share",
+        text: "Share",
+        disabled: true,
+        iconProps: { iconName: "Share" },
+        onClick: () => console.log("Share"),
+      },
+      {
+        key: "download",
+        text: "Download",
+        disabled: true,
+        iconProps: { iconName: "Download" },
+        onClick: () => console.log("Download"),
+      },
+    ];
+
+    const _overflowItems = [
+      {
+        key: "move",
+        text: "Move to...",
+        disabled: true,
+        onClick: () => console.log("Move to"),
+        iconProps: { iconName: "MoveToFolder" },
+      },
+      {
+        key: "copy",
+        text: "Copy to...",
+        disabled: true,
+        onClick: () => console.log("Copy to"),
+        iconProps: { iconName: "Copy" },
+      },
+      {
+        key: "rename",
+        text: "Rename...",
+        disabled: true,
+        onClick: () => console.log("Rename"),
+        iconProps: { iconName: "Edit" },
+      },
+    ];
+
+    const _farItems = [
+      {
+        key: "settings",
+        text: "Help & Settings",
+        // This needs an ariaLabel since it's icon-only
+        ariaLabel: "Help & Settings",
+        iconOnly: true,
+        iconProps: { iconName: "Settings" },
+        onClick: this.onSettingsOpenClose,
+      },
+      {
+        key: "info",
+        text: "Info",
+        // This needs an ariaLabel since it's icon-only
+        ariaLabel: "Info",
+        iconOnly: true,
+        iconProps: { iconName: "Info" },
+        onClick: () => console.log("Info"),
+      },
+    ];
+
     return (
-      <Stack>
-        <img class="header" src={header} alt="Header" />
-        <ActionButton
-          text="Help & Settings"
-          iconProps={{ iconName: "Settings" }}
-          title="settings"
-          ariaLabel="Settings"
-          disabled={false}
-          onClick={this.onSettingsOpenClose}
-          className="settingsbutton"
-        />
-        <Modal
+      <>
+        <ApiModal
           isOpen={modalOpen}
-          isBlocking={false}
-          containerClassName={contentStyles.container}
-        >
-          <div className="settings">
-            <div className={contentStyles.header}>
-              <span>Welcome to Potatosearch</span>
-              <IconButton
-                styles={iconButtonStyles}
-                iconProps={{ iconName: "Cancel" }}
-                ariaLabel="Close popup modal"
-                onClick={this.onSettingsOpenClose}
-              />
-            </div>
-            <div className={contentStyles.body}>
-              <Stack>
-                <Text variant="mediumPlus">
-                  <b>
-                    This website helps to discover exciting new papers in three
-                    easy steps:
-                  </b>
-                </Text>
-                <br />
-                <Text>
-                  <p>
-                    <b>I) </b>To get started, use the search box above to start
-                    a search query on Scopus.{" "}
-                  </p>
-                </Text>
-                <Text>
-                  <b>II) </b>Based on the results, we suggest relevant papers on
-                  the left, which you can mark as relevant or irrelevant using
-                  the buttons at the top. Your vote will automatically move the
-                  paper to the lists on the right side of the page. Based on the
-                  papers you rated as relevant, we will suggest new papers to
-                  rate. For this purpose, we use bibliometric data (i.e.,
-                  co-citation & bibliometric coupling) to find papers that have
-                  a particularly high overlap with your selection.
-                </Text>
-                <Text>
-                  <b>III) </b>If you have identified enough papers or if our
-                  suggestions do not contain any more relevant papers, use the
-                  download function in the header to export your results as a
-                  list.
-                </Text>
-                <br />
-                <Text variant="mediumPlus">
-                  <b>Before you start: Please change your Scopus API-Key:</b>
-                </Text>
-                <br />
-                <Stack horizontal>
-                  <TextField
-                    placeholder="Type in your API Code"
-                    id="apiKeyTextField"
-                    value={this.state.APIKey}
-                    onChange={this.handleAPIKeyChange}
-                    className="apikeytextfield"
-                  />
-                  <PrimaryButton>Save</PrimaryButton>
-                </Stack>
-              </Stack>
-            </div>
-          </div>
-        </Modal>
-        <div className="searchbar">
-          <Stack>
-            <SearchBox placeholder="Search" onSearch={this.onSearch} />
+          apiKey={apiKey}
+          onClose={this.onSettingsOpenClose}
+        />
+        <Stack tokens={{ padding: 25, childrenGap: 20 }}>
+          <Image className="header" src={header} alt="Header" />
+
+          <Stack
+            horizontal
+            horizontalAlign={"space-around"}
+            verticalAlign={"center"}
+            tokens={{ childrenGap: 20 }}
+            className={classNames.searchBar}
+          >
+            <SearchBox
+              styles={{ root: { width: 400 } }}
+              placeholder="Search"
+              onSearch={this.onSearch}
+            />
+            <CommandBar
+              items={_items}
+              overflowItems={_overflowItems}
+              overflowButtonProps={{ ariaLabel: "More Comands" }}
+              farItems={_farItems}
+              ariaLabel="Use left and right arrow keys to navigate between commands"
+            />
           </Stack>
-        </div>
-        <Stack style={{ zIndex: 1 }} tokens={{ padding: 10, childrenGap: 5 }}>
-          <Stack className="paperarea" tokens={{ padding: 10, childrenGap: 5 }}>
+          <Stack className="" tokens={{ childrenGap: 5 }}>
             <Stack
               horizontal
               horizontalAlign="space-evenly"
-              tokens={{ padding: 10, childrenGap: 10 }}
+              tokens={{ childrenGap: 10 }}
             >
               <StackItem disableShrink className={classNames.paperFrame}>
-                <div className="detailsframe">
-                  <DetailsFrame
-                    selectedPaper={selectedPaper}
-                    onPaperAction={this.onPaperAction}
-                  />
-                </div>
+                <DetailsFrame
+                  selectedPaper={selectedPaper}
+                  onPaperAction={this.onPaperAction}
+                />
               </StackItem>
-              <StackItem grow={2}>
+              <StackItem grow={2} className={classNames.paperFrame}>
                 <Pivot
                   selectedKey={selectedTabId}
                   onLinkClick={this.handleTabLinkClick}
@@ -456,69 +381,183 @@ export default class App extends Component {
             </Stack>
           </Stack>
         </Stack>
-      </Stack>
+      </>
     );
+  }
+
+  async processSearchResults(result) {
+    let items = [];
+    const entries = result["search-results"].entry;
+
+    entries.forEach((entry) => {
+      let abstractlink = "test";
+      let links = entry["link"];
+      links.forEach((link) => {
+        let linktype = link["@ref"];
+        if (linktype === "scopus") {
+          abstractlink = link["@href"];
+        }
+      });
+
+      items.push({
+        key: entry["dc:identifier"],
+        name: entry["dc:title"],
+        abstractlink: abstractlink,
+        authors: entry["dc:creator"], // @todo: replace with full list of authors.
+        publication: `${entry["prism:publicationName"]} ${entry["prism:volume"]}`,
+        year: entry["prism:coverDate"].substr(0, 4),
+        doi: entry["prism:doi"],
+        type: entry["subtypeDescription"],
+        citedbycount: entry["citedby-count"],
+        raw: {
+          scopusEntry: entry,
+          semScholar: null,
+        },
+        inList: LIST_RESULT,
+        refs: [],
+      });
+    });
+
+    items = await Promise.all(
+      items.map(async (paper) => {
+        const semScholar = await this.loadSemScholar(paper.doi);
+
+        const newPaper = {
+          abstract: semScholar.abstract,
+          refs: semScholar.references || [],
+          cites: semScholar.citations || [],
+          ids: semScholar.references
+            ? semScholar.references.map((ref) => {
+                return ref.doi || ref.paperId;
+              })
+            : [],
+        };
+
+        const updatedPaper = {
+          ...paper,
+          ...newPaper,
+        };
+        updatedPaper.raw.semScholar = semScholar;
+
+        return updatedPaper;
+      })
+    );
+
+    console.log(items);
+
+    //Build matrix (Step1) -> direct references.
+    const matrix = new Array(items.length);
+    const itemIDs = items.map((paper) => paper.doi);
+    console.log(itemIDs);
+    items.forEach((paper, i) => {
+      let row = new Array(items.length).fill(0);
+      paper.ids.forEach((id) => {
+        let idx = itemIDs.indexOf(id);
+        if (idx >= 0) row[idx] = 1;
+      });
+      matrix[i] = row;
+    });
+
+    console.log(matrix);
+
+    //////Prepare Calculation of Indicators
+    const relevantItems = items.map((paper) => paper.inList === LIST_RELEVANT);
+    console.log(relevantItems);
+    //calculate row sums
+    let rowSums = new Array(items.length);
+    matrix.forEach((row, i) => {
+      let referencingRelevant = row
+        .filter((l, idx) => relevantItems[idx])
+        .reduce((a, b) => a + b, 0);
+
+      let referencingPool = row
+        .filter((l, idx) => !relevantItems[idx])
+        .reduce((a, b) => a + b, 0);
+      rowSums[i] = [referencingPool, referencingRelevant];
+    });
+
+    //calculate Column Sums
+    let colSums_relevant = new Array(items.length).fill(0);
+    let colSums_pool = new Array(items.length).fill(0);
+    let colSums = new Array(items.length).fill([]);
+
+    matrix.forEach((row, row_idx) => {
+      row.forEach((value, col_idx) => {
+        if (relevantItems[row_idx]) {
+          colSums_relevant[col_idx] = colSums_relevant[col_idx] + value;
+        } else {
+          colSums_pool[col_idx] = colSums_pool[col_idx] + value;
+        }
+      });
+    });
+    colSums_relevant.forEach((column, index) => {
+      colSums[index] = [colSums_pool[index], colSums_relevant[index]];
+    });
+
+    //Calculate Indicators (Step2)
+    //Referencing Count - a)
+    let referencingPool = new Array(items.length).fill(0);
+    let referencingRelevant = new Array(items.length).fill(0);
+    matrix.forEach((line, i) => {
+      referencingPool[i] = rowSums[i][0];
+      referencingRelevant[i] = rowSums[i][1];
+    });
+
+    //Referenced Count - b)
+    let referencedPool = new Array(items.length).fill(0);
+    let referencedRelevant = new Array(items.length).fill(0);
+    matrix.forEach((line, i) => {
+      referencedPool[i] = colSums[i][0];
+      referencedRelevant[i] = colSums[i][1];
+    });
+
+    //Cocitation Count - c)
+    let cocitationPool = new Array(items.length).fill(0);
+    let cocitationRelevant = new Array(items.length).fill(0);
+    matrix.forEach((column, col_idx) => {
+      matrix.forEach((line, lin_idx) => {
+        //calculate Cocitation Pool
+        cocitationPool[col_idx] =
+          cocitationPool[col_idx] +
+          (line[col_idx] === 1 &&
+            rowSums[lin_idx][0] - (!relevantItems[col_idx] && 1));
+        //Calculate Cocitation Relevant
+        cocitationRelevant[col_idx] =
+          cocitationRelevant[col_idx] +
+          (line[col_idx] === 1 &&
+            rowSums[lin_idx][1] - (relevantItems[col_idx] && 1));
+      });
+    });
+
+    //Bibliographic Count - d)
+    let bibliographicPool = new Array(items.length).fill(0);
+    let bibliographicRelevant = new Array(items.length).fill(0);
+    matrix.forEach((line, lin_idx) => {
+      matrix.forEach((c, col_idx) => {
+        //calculate Bibliographic Pool
+        bibliographicPool[lin_idx] =
+          bibliographicPool[lin_idx] +
+          (line[col_idx] === 1 &&
+            colSums[col_idx][0] - (!relevantItems[lin_idx] && 1));
+        //Calculate Bibliographic Relevant
+        bibliographicRelevant[lin_idx] =
+          bibliographicRelevant[lin_idx] +
+          (line[col_idx] === 1 &&
+            colSums[col_idx][1] - (relevantItems[lin_idx] && 1));
+      });
+    });
+
+    console.log(colSums);
+
+    this.setState({
+      paperList: items,
+    });
+    this.onSelectSingle(items[0]);
   }
 }
 
 function processSearchResults(scopusresult) {
-  const items = [];
-  let entries = scopusresult["search-results"].entry;
-  //console.log(entries);
-  entries.forEach((entry) => {
-    let abstractlink = "test";
-    let links = entry["link"];
-    links.forEach((link) => {
-      let linktype = link["@ref"];
-      if (linktype === "scopus") {
-        abstractlink = link["@href"];
-      }
-    });
-
-    //API Call for Crossrefresult and semanticscholarresult
-
-    items.push({
-      key: entry["dc:identifier"],
-      name: entry["dc:title"],
-      abstractlink: abstractlink,
-      authors: entry["dc:creator"],
-      year: entry["prism:coverDate"].substr(0, 4),
-      relevance: (Math.random() * 100).toFixed(2),
-      doi: entry["prism:doi"],
-      type: entry["subtypeDescription"],
-      citedbycount: entry["citedby-count"],
-      value: entry,
-    });
-  });
-
-  items[0].abstract = semanticscholarresult1["abstract"];
-  items[1].abstract = semanticscholarresult2["abstract"];
-  items[2].abstract = semanticscholarresult3["abstract"];
-  items[3].abstract = semanticscholarresult4["abstract"];
-  items[4].abstract = semanticscholarresult5["abstract"];
-  items[5].abstract = semanticscholarresult6["abstract"];
-  items[6].abstract = semanticscholarresult7["abstract"];
-  items[0].references = semanticscholarresult1["references"];
-  items[1].references = semanticscholarresult2["references"];
-  items[2].references = semanticscholarresult3["references"];
-  items[3].references = semanticscholarresult4["references"];
-  items[4].references = semanticscholarresult5["references"];
-  items[5].references = semanticscholarresult6["references"];
-  items[6].references = semanticscholarresult7["references"];
-
-  //Extract DOIs into array from references
-  items.forEach((item) => {
-    if (item["references"] == undefined) {
-      item.referencingdois = [];
-    } else {
-      let referencearray = [];
-      item.references.forEach((reference, i) => {
-        referencearray[i] = reference.doi;
-      });
-      item.referencingdois = referencearray;
-    }
-  });
-
+  let items = [];
   //Hard coded list separation
   const relevantItems = [items[0], items[2], items[3], items[5]];
   const paperPool = [items[1], items[4], items[6]];
