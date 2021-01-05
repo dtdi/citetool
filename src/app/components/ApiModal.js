@@ -5,6 +5,7 @@ import {
   Text,
   TextField,
   mergeStyleSets,
+  DefaultButton,
   getTheme,
   Link,
   FontWeights,
@@ -14,7 +15,7 @@ import {
 const theme = getTheme();
 
 export default function ApiModal(props) {
-  const { isOpen, onClose, apiKey, onApiKeyChange } = props;
+  const { isOpen, onClose, apiKey, onApiKeyChange, onClearCache } = props;
 
   return (
     <Modal
@@ -77,6 +78,7 @@ export default function ApiModal(props) {
               onChange={onApiKeyChange}
             />
             <PrimaryButton onClick={onClose}>Save</PrimaryButton>
+            <DefaultButton onClick={onClearCache}>Clear Cache</DefaultButton>
           </Stack>
         </Stack>
       </div>
