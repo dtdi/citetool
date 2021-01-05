@@ -1,4 +1,27 @@
-# Getting Started with Create React App
+# Potatosearch
+
+This website helps to discover exciting new papers in three easy steps: 
+
+1. To get started, use the search box above to start a search query on Scopus. 
+2. Based on the results, we suggest relevant papers on the left, which you can mark as relevant or irrelevant using the buttons at the top. Your vote will automatically move the paper to the lists on the right side of the page. Based on the papers you rated as relevant, we will suggest new papers to rate. For this purpose, we use bibliometric data (i.e., co-citation & bibliometric coupling) to find papers that have a particularly high overlap with your selection. 
+3. If you have identified enough papers or if our suggestions do not contain any more relevant papers, use the download function in the header to export your results as a list. 
+
+## Hypothesen
+
+1. Die Suche nach relevanten Papern über einen Search String (bei Google Scholar) ist sehr mühselig und führt nicht schnell zu relevanten Papern
+2. Forward- Backward- Search führt häufig zu relevanten Papern -> unübersichtlich (Excel-Tabelle)
+3. Durch smarte Berechnung von Zitations- und Co-Word-Kennzahlen können schnell (ca. 10 – 20 manuelle Einordnungen) die relevantesten Paper eines Forschungsbereichs identifiziert werden
+4. Kennzahlen sind Co-Zitationen und Bibliographic Coupling
+5. Die für uns relevanten Zitations-Daten sind (kostenlos) verfügbar
+
+## Ressources
+
+
+* [Changelog](./CHANGELOG.md)
+* [Live Demo]()
+* [Issures](https://github.com/dtdi/citetool/issues)
+* [User Documentation](https://github.com/dtdi/citetool/wiki/User-Documentation)
+
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
@@ -29,29 +52,6 @@ Your app is ready to be deployed!
 
 See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-### `yarn eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
 
 ### Making a Progressive Web App
 
@@ -64,8 +64,3 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/a
 ### Deployment
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `yarn build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
-=======
