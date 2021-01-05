@@ -9,6 +9,8 @@ import {
   mergeStyleSets,
   Text,
   SearchBox,
+  IconButton,
+  TeachingBubble,
   PivotLinkFormat,
   ProgressIndicator,
   Link,
@@ -92,6 +94,7 @@ export default class App extends Component {
     this.state = {
       paperList: [],
       selectedPaper: null,
+      isSearchHelper: false,
       searchResultsList: [],
       relevantList: [],
       notRelevantList: [],
@@ -99,7 +102,7 @@ export default class App extends Component {
       apiKey: "",
       isApiKeyModalOpen: true,
       isLoading: false,
-      searchString: "",
+      searchString: `TITLE-ABS-KEY("heart attack")`,
     };
   }
 
@@ -159,18 +162,31 @@ export default class App extends Component {
       searchString: searchString,
     });
     const { apiKey } = this.state;
-    const query = `all("${searchString}")`;
+
+    const query = encodeURIComponent(searchString);
+    const count = 25;
+    const start = 0;
+    const sort = "relevancy";
 
     try {
       const response = await fetch(
-        `https://api.elsevier.com/content/search/scopus?apiKey=${apiKey}&query=${query}&count=25&start=0`
+        `https://api.elsevier.com/content/search/scopus?apiKey=${apiKey}&query=${query}&count=${count}&start=${start}&sort=${sort}`
       );
       if (!response.ok) {
-        const error = `An error has occured: ${response.status}`;
+        let error = "";
+
+        if (response.status === 400) {
+          const body = await response.json();
+          error = `An error has occured (${response.status}) ${body["service-error"].status.statusCode}: ${body["service-error"].status.statusText}`;
+        } else {
+          error = `An error has occured (${response.status})`;
+        }
+
         this.setState({
           isLoading: false,
           apiError: error,
         });
+        return;
       }
       const body = await response.json();
 
@@ -283,11 +299,16 @@ export default class App extends Component {
     this.setState({ apiError: null });
   };
 
+  toggleSearchHelper = (ev) => {
+    this.setState({ isSearchHelper: !this.state.isSearchHelper });
+  };
+
   render() {
     const {
       selectedPaper,
       searchResultsList,
       searchString,
+      isSearchHelper,
       relevantList,
       notRelevantList,
       selectedTabId,
@@ -403,12 +424,45 @@ export default class App extends Component {
             className={classNames.searchBar}
           >
             <Text style={{ fontWeight: "bolder" }}>Potatosearch</Text>
-            <SearchBox
-              styles={{ root: { width: 400 } }}
-              placeholder="Search"
-              onSearch={this.onLoadData}
-              value={searchString}
-            />
+            <StackItem>
+              <Stack horizontal>
+                <SearchBox
+                  styles={{ root: { width: 400 } }}
+                  placeholder="Search"
+                  onSearch={this.onLoadData}
+                  value={searchString}
+                />
+                <IconButton
+                  iconProps={{ iconName: "Help" }}
+                  title="Help"
+                  id="searchHelpButton"
+                  ariaLabel="Help"
+                  onClick={this.toggleSearchHelper}
+                />
+                {isSearchHelper && (
+                  <TeachingBubble
+                    target="#searchHelpButton"
+                    hasCloseButton={true}
+                    closeButtonAriaLabel="Close"
+                    primaryButtonProps={{
+                      children: "Explore Search Tips",
+                      target: "_blank",
+                      href:
+                        "http://schema.elsevier.com/dtds/document/bkapi/search/SCOPUSSearchTips.htm",
+                    }}
+                    onDismiss={this.toggleSearchHelper}
+                    headline="SCOPUS Search Tips"
+                  >
+                    SCOPUS Search API supports a Boolean syntax, which is a type
+                    of search allowing users to combine keywords with operators
+                    such as AND, NOT and OR to further produce more relevant
+                    results. For example, a Boolean search could be "heart" AND
+                    "brain". This would limit the search results to only those
+                    documents containing the two keywords.
+                  </TeachingBubble>
+                )}
+              </Stack>
+            </StackItem>
             <CommandBar
               items={_items}
               overflowItems={_overflowItems}
@@ -526,7 +580,16 @@ export default class App extends Component {
 
   async processSearchResults(result) {
     let items = [];
-    const entries = result["search-results"].entry;
+
+    if (!result || !result["search-results"]) {
+      return;
+    }
+
+    const searchResults = result["search-results"];
+
+    const searchQuery = searchResults["opensearch:Query"]["@searchTerms"];
+
+    const entries = searchResults.entry;
 
     entries.forEach((entry) => {
       let abstractlink = "test";
@@ -567,6 +630,7 @@ export default class App extends Component {
     items = items.sort((a, b) => b.relevance - a.relevance);
 
     this.setState({
+      searchString: searchQuery,
       paperList: items,
       isLoading: false,
     });
