@@ -11,6 +11,9 @@ import {
   SearchBox,
   PivotLinkFormat,
   ProgressIndicator,
+  Link,
+  MessageBar,
+  MessageBarType,
   getTheme,
 } from "@fluentui/react";
 
@@ -91,8 +94,8 @@ export default class App extends Component {
       relevantList: [],
       notRelevantList: [],
       selectedTabId: "searchResultsList",
-      apiKey: "2c5e602184bf30476e78ee024bcc2fe5",
-      modalOpen: false,
+      apiKey: "",
+      isApiKeyModalOpen: true,
       isLoading: false,
       searchString: "",
     };
@@ -100,6 +103,13 @@ export default class App extends Component {
 
   async componentDidMount() {
     const lastSearch = JSON.parse(localStorage.getItem("lastSearch"));
+    const apiKey = localStorage.getItem("apiKey");
+    if (apiKey) {
+      this.setState({
+        apiKey: apiKey,
+        isApiKeyModalOpen: false,
+      });
+    }
     if (lastSearch) {
       this.setState({ isLoading: true, searchString: lastSearch.searchString });
       await this.processSearchResults(lastSearch.result);
@@ -142,32 +152,36 @@ export default class App extends Component {
       selectedPaper: null,
       searchString: searchString,
     });
-    const { apiKey: APIKey } = this.state;
-    const apiKey = APIKey;
+    const { apiKey } = this.state;
     const query = `all("${searchString}")`;
 
-    const response = await fetch(
-      `https://api.elsevier.com/content/search/scopus?apiKey=${apiKey}&query=${query}&count=25&start=0`
-    );
+    try {
+      const response = await fetch(
+        `https://api.elsevier.com/content/search/scopus?apiKey=${apiKey}&query=${query}&count=25&start=0`
+      );
+      if (!response.ok) {
+        const error = `An error has occured: ${response.status}`;
+        this.setState({
+          isLoading: false,
+          apiError: error,
+        });
+      }
+      const body = await response.json();
 
-    if (!response.ok) {
-      const error = `An error has occured: ${response.status}`;
+      localStorage.setItem(
+        "lastSearch",
+        JSON.stringify({ searchString: this.state.searchString, result: body })
+      );
+      await this.processSearchResults(body);
       this.setState({
         isLoading: false,
-        error,
+      });
+    } catch (e) {
+      this.setState({
+        isLoading: false,
+        apiError: e.message,
       });
     }
-    const body = await response.json();
-
-    localStorage.setItem(
-      "lastSearch",
-      JSON.stringify({ searchString: this.state.searchString, result: body })
-    );
-
-    await this.processSearchResults(body);
-    this.setState({
-      isLoading: false,
-    });
   };
 
   handleTabLinkClick = (item) => {
@@ -243,18 +257,24 @@ export default class App extends Component {
   };
 
   onSettingsOpenClose = () => {
-    const { modalOpen } = this.state;
-
-    const isModalOpen = modalOpen ? false : true;
-
-    this.setState({
-      modalOpen: isModalOpen,
-    });
+    const { isApiKeyModalOpen, apiKey } = this.state;
+    if (apiKey) {
+      localStorage.setItem("apiKey", apiKey);
+      this.setState({
+        isApiKeyModalOpen: !isApiKeyModalOpen,
+      });
+    } else {
+      const error = "api key not provided.";
+      this.setState(error);
+    }
   };
 
-  //@TODO: local storage einbauen
-  handleAPIKeyChange = (e) => {
-    this.setState({ APIKey: e.target.value });
+  onApiKeyChange = (ev, newVal) => {
+    this.setState({ apiKey: newVal });
+  };
+
+  closeMessageBar = (ev) => {
+    this.setState({ apiError: null });
   };
 
   render() {
@@ -265,9 +285,10 @@ export default class App extends Component {
       relevantList,
       notRelevantList,
       selectedTabId,
-      modalOpen,
+      isApiKeyModalOpen,
       apiKey,
       isLoading,
+      apiError,
     } = this.state;
 
     let listItems;
@@ -359,8 +380,9 @@ export default class App extends Component {
     return (
       <>
         <ApiModal
-          isOpen={modalOpen}
+          isOpen={isApiKeyModalOpen}
           apiKey={apiKey}
+          onApiKeyChange={this.onApiKeyChange}
           onClose={this.onSettingsOpenClose}
         />
         <Stack tokens={{ padding: 25, childrenGap: 20 }}>
@@ -402,42 +424,60 @@ export default class App extends Component {
                 />
               </StackItem>
               <StackItem grow={2} className={classNames.paperFrame}>
-                <Pivot
-                  selectedKey={selectedTabId}
-                  onLinkClick={this.handleTabLinkClick}
-                  headersOnly={true}
-                  linkFormat={PivotLinkFormat.tabs}
-                >
-                  <PivotItem
-                    itemKey={"searchResultsList"}
-                    itemIcon="AllApps"
-                    headerText="Paper Pool"
-                    itemCount={searchResultsList.length}
-                  ></PivotItem>
-                  <PivotItem
-                    itemKey={"relevantList"}
-                    itemIcon="Accept"
-                    headerText="Relevant Paper"
-                    itemCount={relevantList.length}
-                  ></PivotItem>
-                  <PivotItem
-                    itemKey={"notRelevantList"}
-                    itemIcon="StatusCircleErrorX"
-                    headerText="Not Relevant"
-                    itemCount={notRelevantList.length}
-                  ></PivotItem>
-                </Pivot>
-                {isLoading && (
-                  <ProgressIndicator
-                    label="We're Loading"
-                    description="Lots of data from semantic Scholar"
+                <Stack tokens={{ childrenGap: 5 }}>
+                  <Pivot
+                    selectedKey={selectedTabId}
+                    onLinkClick={this.handleTabLinkClick}
+                    headersOnly={true}
+                    linkFormat={PivotLinkFormat.tabs}
+                  >
+                    <PivotItem
+                      itemKey={"searchResultsList"}
+                      itemIcon="AllApps"
+                      headerText="Paper Pool"
+                      itemCount={searchResultsList.length}
+                    ></PivotItem>
+                    <PivotItem
+                      itemKey={"relevantList"}
+                      itemIcon="Accept"
+                      headerText="Relevant Paper"
+                      itemCount={relevantList.length}
+                    ></PivotItem>
+                    <PivotItem
+                      itemKey={"notRelevantList"}
+                      itemIcon="StatusCircleErrorX"
+                      headerText="Not Relevant"
+                      itemCount={notRelevantList.length}
+                    ></PivotItem>
+                  </Pivot>
+                  {isLoading && (
+                    <ProgressIndicator
+                      label="We're Loading"
+                      description="Lots of data from semantic Scholar"
+                    />
+                  )}
+                  {apiError && (
+                    <MessageBar
+                      messageBarType={MessageBarType.error}
+                      isMultiline={false}
+                      onDismiss={this.closeMessageBar}
+                      dismissButtonAriaLabel="Close"
+                    >
+                      {apiError}
+                      <Link
+                        href="https://github.com/dtdi/citetool/wiki/API-Key"
+                        target="_blank"
+                      >
+                        Did you provide your API Key?
+                      </Link>
+                    </MessageBar>
+                  )}
+                  <ResultList
+                    items={listItems}
+                    isLoading={isLoading}
+                    onSelectSingle={this.onSelectSingle}
                   />
-                )}
-                <ResultList
-                  items={listItems}
-                  isLoading={isLoading}
-                  onSelectSingle={this.onSelectSingle}
-                />
+                </Stack>
               </StackItem>
             </Stack>
           </Stack>

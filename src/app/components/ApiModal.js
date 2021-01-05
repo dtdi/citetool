@@ -6,6 +6,7 @@ import {
   TextField,
   mergeStyleSets,
   getTheme,
+  Link,
   FontWeights,
   PrimaryButton,
 } from "@fluentui/react";
@@ -62,6 +63,12 @@ export default function ApiModal(props) {
           <Text variant="mediumPlus">
             Before you start: Please provide your Scopus API-Key:
           </Text>
+          <Link
+            href="https://github.com/dtdi/citetool/wiki/API-Key"
+            target="_blank"
+          >
+            Read here, how to obtain and configure your api key.
+          </Link>
           <Stack horizontal verticalAlign="end" tokens={{ childrenGap: 10 }}>
             <TextField
               label="Provide in your API Code"
