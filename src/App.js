@@ -91,7 +91,7 @@ export default class App extends Component {
       relevantList: [],
       notRelevantList: [],
       selectedTabId: "searchResultsList",
-      apiKey: "1f1787f55e2084eca33a02829ff7fe6c",
+      apiKey: "2c5e602184bf30476e78ee024bcc2fe5",
       modalOpen: false,
       isLoading: false,
       searchString: "",
