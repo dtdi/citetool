@@ -17,6 +17,8 @@ import {
   getTheme,
 } from "@fluentui/react";
 
+import { get, set, keys, del, clear, Store } from "idb-keyval";
+
 // import result from "./data/scopusresult.json";
 
 import ResultList from "./app/components/ResultList";
@@ -51,7 +53,7 @@ class PaperCache {
 
   async getOrLoad(doi) {
     const key = this._getKey(doi);
-    const item = localStorage.getItem(key);
+    const item = await get(key);
     if (!item) {
       const response = await fetch(
         `https://api.semanticscholar.org/v1/paper/${doi}?include_unknown_references=true`
@@ -60,7 +62,7 @@ class PaperCache {
       if (!response.ok) {
         if (response.status === 404) {
           const body = await response.json();
-          localStorage.setItem(key, JSON.stringify(body));
+          set(key, body);
           return body;
         } else {
           const message = `An error has occured: ${response.status}`;
@@ -70,16 +72,16 @@ class PaperCache {
 
       const body = await response.json();
       try {
-        localStorage.setItem(key, JSON.stringify(body));
+        set(key, body);
       } catch (e) {
         console.log(e);
       }
       return body;
-    } else return JSON.parse(item);
+    } else return item;
   }
 
   remove(doi) {
-    localStorage.removeItem(this._getKey(doi));
+    del(this._getKey(doi));
   }
 }
 
@@ -102,8 +104,8 @@ export default class App extends Component {
   }
 
   async componentDidMount() {
-    const lastSearch = JSON.parse(localStorage.getItem("lastSearch"));
-    const apiKey = localStorage.getItem("apiKey");
+    const lastSearch = await get("lastSearch");
+    const apiKey = await get("apiKey");
     if (apiKey) {
       this.setState({
         apiKey: apiKey,
@@ -140,6 +142,10 @@ export default class App extends Component {
     });
   };
 
+  onClearCache = async (ev) => {
+    clear();
+  };
+
   loadSemScholar = async (doi) => {
     let cache = new PaperCache();
     const item = await cache.getOrLoad(doi);
@@ -168,10 +174,10 @@ export default class App extends Component {
       }
       const body = await response.json();
 
-      localStorage.setItem(
-        "lastSearch",
-        JSON.stringify({ searchString: this.state.searchString, result: body })
-      );
+      set("lastSearch", {
+        searchString: this.state.searchString,
+        result: body,
+      });
       await this.processSearchResults(body);
       this.setState({
         isLoading: false,
@@ -259,7 +265,7 @@ export default class App extends Component {
   onSettingsOpenClose = () => {
     const { isApiKeyModalOpen, apiKey } = this.state;
     if (apiKey) {
-      localStorage.setItem("apiKey", apiKey);
+      set("apiKey", apiKey);
       this.setState({
         isApiKeyModalOpen: !isApiKeyModalOpen,
       });
@@ -382,6 +388,7 @@ export default class App extends Component {
         <ApiModal
           isOpen={isApiKeyModalOpen}
           apiKey={apiKey}
+          onClearCache={this.onClearCache}
           onApiKeyChange={this.onApiKeyChange}
           onClose={this.onSettingsOpenClose}
         />
@@ -706,9 +713,6 @@ export default class App extends Component {
           8;
       }
     });
-
-    console.log("papers,", papers);
-
     return papers;
   }
 }
