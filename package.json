@@ -2,6 +2,7 @@
   "name": "citer",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://dtdi.de/citer",
   "dependencies": {
     "@fluentui/react": "^7.155.3",
     "@testing-library/jest-dom": "^5.11.4",
