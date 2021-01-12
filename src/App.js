@@ -204,6 +204,15 @@ export default class App extends Component {
           totalResults = Number(
             results["search-results"]["opensearch:totalResults"]
           );
+
+          if (totalResults === 0) {
+            errorState = {
+              isLoading: false,
+              paperList: [],
+              apiError: "Search did not return any results",
+            };
+            break;
+          }
         } else {
           results["search-results"].entry.push(...body["search-results"].entry);
         }
@@ -215,15 +224,12 @@ export default class App extends Component {
         break;
       }
       start += count;
-      console.log(start, count, limit);
     } while (start < limit && start <= totalResults);
 
     if (errorState) {
       this.setState(errorState);
       return;
     }
-    console.log(results);
-
     await set("lastSearch", {
       searchString: this.state.searchString,
       result: results,
