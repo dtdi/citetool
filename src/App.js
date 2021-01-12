@@ -19,7 +19,7 @@ import {
   getTheme,
 } from "@fluentui/react";
 
-import { get, set, keys, del, clear, Store } from "idb-keyval";
+import { get, set, del, clear } from "idb-keyval";
 
 // import result from "./data/scopusresult.json";
 
@@ -100,7 +100,7 @@ export default class App extends Component {
       notRelevantList: [],
       selectedTabId: "searchResultsList",
       apiKey: "",
-      isApiKeyModalOpen: true,
+      isApiKeyModalOpen: false,
       isLoading: false,
       searchString: `TITLE-ABS-KEY("heart attack")`,
     };
@@ -112,7 +112,10 @@ export default class App extends Component {
     if (apiKey) {
       this.setState({
         apiKey: apiKey,
-        isApiKeyModalOpen: false,
+      });
+    } else {
+      this.setState({
+        isApiKeyModalOpen: true,
       });
     }
     if (lastSearch) {
@@ -165,45 +168,70 @@ export default class App extends Component {
 
     const query = encodeURIComponent(searchString);
     const count = 25;
-    const start = 0;
+    const limit = 100;
+    let start = 0;
     const sort = "relevancy";
 
-    try {
-      const response = await fetch(
-        `https://api.elsevier.com/content/search/scopus?apiKey=${apiKey}&query=${query}&count=${count}&start=${start}&sort=${sort}`
-      );
-      if (!response.ok) {
-        let error = "";
+    let errorState;
+    let results;
+    let totalResults = 0;
 
-        if (response.status === 400) {
-          const body = await response.json();
-          error = `An error has occured (${response.status}) ${body["service-error"].status.statusCode}: ${body["service-error"].status.statusText}`;
-        } else {
-          error = `An error has occured (${response.status})`;
+    do {
+      try {
+        const response = await fetch(
+          `https://api.elsevier.com/content/search/scopus?apiKey=${apiKey}&query=${query}&count=${count}&start=${start}&sort=${sort}`
+        );
+        if (!response.ok) {
+          let error = "";
+
+          if (response.status === 400) {
+            const body = await response.json();
+            error = `An error has occured (${response.status}) ${body["service-error"].status.statusCode}: ${body["service-error"].status.statusText}`;
+          } else {
+            error = `An error has occured (${response.status})`;
+          }
+
+          errorState = {
+            isLoading: false,
+            apiError: error,
+          };
+          break;
         }
 
-        this.setState({
+        const body = await response.json();
+        if (!results) {
+          results = body;
+          totalResults = Number(
+            results["search-results"]["opensearch:totalResults"]
+          );
+        } else {
+          results["search-results"].entry.push(...body["search-results"].entry);
+        }
+      } catch (e) {
+        errorState = {
           isLoading: false,
-          apiError: error,
-        });
-        return;
+          apiError: e.message,
+        };
+        break;
       }
-      const body = await response.json();
+      start += count;
+      console.log(start, count, limit);
+    } while (start < limit && start <= totalResults);
 
-      set("lastSearch", {
-        searchString: this.state.searchString,
-        result: body,
-      });
-      await this.processSearchResults(body);
-      this.setState({
-        isLoading: false,
-      });
-    } catch (e) {
-      this.setState({
-        isLoading: false,
-        apiError: e.message,
-      });
+    if (errorState) {
+      this.setState(errorState);
+      return;
     }
+    console.log(results);
+
+    await set("lastSearch", {
+      searchString: this.state.searchString,
+      result: results,
+    });
+    await this.processSearchResults(results);
+    this.setState({
+      isLoading: false,
+    });
   };
 
   handleTabLinkClick = (item) => {
@@ -304,6 +332,21 @@ export default class App extends Component {
 
   toggleSearchHelper = (ev) => {
     this.setState({ isSearchHelper: !this.state.isSearchHelper });
+  };
+
+  clearSearch = async (ev) => {
+    await del("lastSearch");
+    this.setState({
+      paperList: [],
+      selectedPaper: null,
+      isSearchHelper: false,
+      searchResultsList: [],
+      relevantList: [],
+      notRelevantList: [],
+      selectedTabId: "searchResultsList",
+      isLoading: false,
+      searchString: `TITLE-ABS-KEY("heart attack")`,
+    });
   };
 
   render() {
@@ -434,6 +477,13 @@ export default class App extends Component {
                   placeholder="Search"
                   onSearch={this.onLoadData}
                   value={searchString}
+                />
+                <IconButton
+                  iconProps={{ iconName: "Delete" }}
+                  title="Clear current Search"
+                  id="clearSearch"
+                  ariaLabel="Help"
+                  onClick={this.clearSearch}
                 />
                 <IconButton
                   iconProps={{ iconName: "Help" }}
@@ -628,6 +678,11 @@ export default class App extends Component {
     });
 
     items = await this.loadSemScholarForMany(items);
+
+    const { paperList: oldItems } = this.state;
+
+    // add to existing papers if exisiting
+    items.push(...oldItems);
 
     items = this.getPaperScores(items);
     items = items.sort((a, b) => b.relevance - a.relevance);
