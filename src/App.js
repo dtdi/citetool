@@ -9,6 +9,8 @@ import {
   mergeStyleSets,
   Text,
   SearchBox,
+  IconButton,
+  TeachingBubble,
   PivotLinkFormat,
   ProgressIndicator,
   Link,
@@ -16,6 +18,8 @@ import {
   MessageBarType,
   getTheme,
 } from "@fluentui/react";
+
+import { get, set, del, clear } from "idb-keyval";
 
 // import result from "./data/scopusresult.json";
 
@@ -51,7 +55,7 @@ class PaperCache {
 
   async getOrLoad(doi) {
     const key = this._getKey(doi);
-    const item = localStorage.getItem(key);
+    const item = await get(key);
     if (!item) {
       const response = await fetch(
         `https://api.semanticscholar.org/v1/paper/${doi}?include_unknown_references=true`
@@ -60,7 +64,7 @@ class PaperCache {
       if (!response.ok) {
         if (response.status === 404) {
           const body = await response.json();
-          localStorage.setItem(key, JSON.stringify(body));
+          set(key, body);
           return body;
         } else {
           const message = `An error has occured: ${response.status}`;
@@ -70,16 +74,16 @@ class PaperCache {
 
       const body = await response.json();
       try {
-        localStorage.setItem(key, JSON.stringify(body));
+        set(key, body);
       } catch (e) {
         console.log(e);
       }
       return body;
-    } else return JSON.parse(item);
+    } else return item;
   }
 
   remove(doi) {
-    localStorage.removeItem(this._getKey(doi));
+    del(this._getKey(doi));
   }
 }
 
@@ -90,24 +94,28 @@ export default class App extends Component {
     this.state = {
       paperList: [],
       selectedPaper: null,
+      isSearchHelper: false,
       searchResultsList: [],
       relevantList: [],
       notRelevantList: [],
       selectedTabId: "searchResultsList",
       apiKey: "",
-      isApiKeyModalOpen: true,
+      isApiKeyModalOpen: false,
       isLoading: false,
-      searchString: "",
+      searchString: `TITLE-ABS-KEY("heart attack")`,
     };
   }
 
   async componentDidMount() {
-    const lastSearch = JSON.parse(localStorage.getItem("lastSearch"));
-    const apiKey = localStorage.getItem("apiKey");
+    const lastSearch = await get("lastSearch");
+    const apiKey = await get("apiKey");
     if (apiKey) {
       this.setState({
         apiKey: apiKey,
-        isApiKeyModalOpen: false,
+      });
+    } else {
+      this.setState({
+        isApiKeyModalOpen: true,
       });
     }
     if (lastSearch) {
@@ -140,6 +148,10 @@ export default class App extends Component {
     });
   };
 
+  onClearCache = async (ev) => {
+    clear();
+  };
+
   loadSemScholar = async (doi) => {
     let cache = new PaperCache();
     const item = await cache.getOrLoad(doi);
@@ -153,35 +165,73 @@ export default class App extends Component {
       searchString: searchString,
     });
     const { apiKey } = this.state;
-    const query = `all("${searchString}")`;
 
-    try {
-      const response = await fetch(
-        `https://api.elsevier.com/content/search/scopus?apiKey=${apiKey}&query=${query}&count=25&start=0`
-      );
-      if (!response.ok) {
-        const error = `An error has occured: ${response.status}`;
-        this.setState({
+    const query = encodeURIComponent(searchString);
+    const count = 25;
+    const limit = 50;
+    let start = 0;
+    const sort = "relevancy";
+
+    let errorState;
+    let results;
+    let totalResults = 0;
+
+    do {
+      try {
+        const response = await fetch(
+          `https://api.elsevier.com/content/search/scopus?apiKey=${apiKey}&query=${query}&count=${count}&start=${start}&sort=${sort}`
+        );
+        if (!response.ok) {
+          let error = "";
+
+          if (response.status === 400) {
+            const body = await response.json();
+            error = `An error has occured (${response.status}) ${body["service-error"].status.statusCode}: ${body["service-error"].status.statusText}`;
+          } else {
+            error = `An error has occured (${response.status})`;
+          }
+
+          errorState = {
+            isLoading: false,
+            apiError: error,
+          };
+          break;
+        }
+
+        const body = await response.json();
+        if (!results) {
+          results = body;
+          totalResults = Number(
+            results["search-results"]["opensearch:totalResults"]
+          );
+        } else {
+          results["search-results"].entry.push(...body["search-results"].entry);
+        }
+      } catch (e) {
+        errorState = {
           isLoading: false,
-          apiError: error,
-        });
+          apiError: e.message,
+        };
+        break;
       }
-      const body = await response.json();
+      start += count;
+      console.log(start, count, limit);
+    } while (start < limit && start <= totalResults);
 
-      localStorage.setItem(
-        "lastSearch",
-        JSON.stringify({ searchString: this.state.searchString, result: body })
-      );
-      await this.processSearchResults(body);
-      this.setState({
-        isLoading: false,
-      });
-    } catch (e) {
-      this.setState({
-        isLoading: false,
-        apiError: e.message,
-      });
+    if (errorState) {
+      this.setState(errorState);
+      return;
     }
+    console.log(results);
+
+    await set("lastSearch", {
+      searchString: this.state.searchString,
+      result: results,
+    });
+    await this.processSearchResults(results);
+    this.setState({
+      isLoading: false,
+    });
   };
 
   handleTabLinkClick = (item) => {
@@ -249,17 +299,20 @@ export default class App extends Component {
       newList = await this.loadSemScholarForMany(newList);
     }
 
-    newList = this.getPaperScores(newList);
+    newList = this.getPaperScores(newList).sort(
+      (a, b) => b.relevance - a.relevance
+    );
     this.setState({
-      paperList: newList.sort((a, b) => b.relevance - a.relevance),
+      paperList: newList,
       isLoading: false,
     });
+    this.onSelectSingle(newList[0]);
   };
 
   onSettingsOpenClose = () => {
     const { isApiKeyModalOpen, apiKey } = this.state;
     if (apiKey) {
-      localStorage.setItem("apiKey", apiKey);
+      set("apiKey", apiKey);
       this.setState({
         isApiKeyModalOpen: !isApiKeyModalOpen,
       });
@@ -277,11 +330,31 @@ export default class App extends Component {
     this.setState({ apiError: null });
   };
 
+  toggleSearchHelper = (ev) => {
+    this.setState({ isSearchHelper: !this.state.isSearchHelper });
+  };
+
+  clearSearch = async (ev) => {
+    await del("lastSearch");
+    this.setState({
+      paperList: [],
+      selectedPaper: null,
+      isSearchHelper: false,
+      searchResultsList: [],
+      relevantList: [],
+      notRelevantList: [],
+      selectedTabId: "searchResultsList",
+      isLoading: false,
+      searchString: `TITLE-ABS-KEY("heart attack")`,
+    });
+  };
+
   render() {
     const {
       selectedPaper,
       searchResultsList,
       searchString,
+      isSearchHelper,
       relevantList,
       notRelevantList,
       selectedTabId,
@@ -382,6 +455,7 @@ export default class App extends Component {
         <ApiModal
           isOpen={isApiKeyModalOpen}
           apiKey={apiKey}
+          onClearCache={this.onClearCache}
           onApiKeyChange={this.onApiKeyChange}
           onClose={this.onSettingsOpenClose}
         />
@@ -396,12 +470,52 @@ export default class App extends Component {
             className={classNames.searchBar}
           >
             <Text style={{ fontWeight: "bolder" }}>Potatosearch</Text>
-            <SearchBox
-              styles={{ root: { width: 400 } }}
-              placeholder="Search"
-              onSearch={this.onLoadData}
-              value={searchString}
-            />
+            <StackItem>
+              <Stack horizontal>
+                <SearchBox
+                  styles={{ root: { width: 400 } }}
+                  placeholder="Search"
+                  onSearch={this.onLoadData}
+                  value={searchString}
+                />
+                <IconButton
+                  iconProps={{ iconName: "Delete" }}
+                  title="Clear current Search"
+                  id="clearSearch"
+                  ariaLabel="Help"
+                  onClick={this.clearSearch}
+                />
+                <IconButton
+                  iconProps={{ iconName: "Help" }}
+                  title="Help"
+                  id="searchHelpButton"
+                  ariaLabel="Help"
+                  onClick={this.toggleSearchHelper}
+                />
+                {isSearchHelper && (
+                  <TeachingBubble
+                    target="#searchHelpButton"
+                    hasCloseButton={true}
+                    closeButtonAriaLabel="Close"
+                    primaryButtonProps={{
+                      children: "Explore Search Tips",
+                      target: "_blank",
+                      href:
+                        "http://schema.elsevier.com/dtds/document/bkapi/search/SCOPUSSearchTips.htm",
+                    }}
+                    onDismiss={this.toggleSearchHelper}
+                    headline="SCOPUS Search Tips"
+                  >
+                    SCOPUS Search API supports a Boolean syntax, which is a type
+                    of search allowing users to combine keywords with operators
+                    such as AND, NOT and OR to further produce more relevant
+                    results. For example, a Boolean search could be "heart" AND
+                    "brain". This would limit the search results to only those
+                    documents containing the two keywords.
+                  </TeachingBubble>
+                )}
+              </Stack>
+            </StackItem>
             <CommandBar
               items={_items}
               overflowItems={_overflowItems}
@@ -519,7 +633,16 @@ export default class App extends Component {
 
   async processSearchResults(result) {
     let items = [];
-    const entries = result["search-results"].entry;
+
+    if (!result || !result["search-results"]) {
+      return;
+    }
+
+    const searchResults = result["search-results"];
+
+    const searchQuery = searchResults["opensearch:Query"]["@searchTerms"];
+
+    const entries = searchResults.entry;
 
     entries.forEach((entry) => {
       let abstractlink = "test";
@@ -556,10 +679,16 @@ export default class App extends Component {
 
     items = await this.loadSemScholarForMany(items);
 
+    const { paperList: oldItems } = this.state;
+
+    // add to existing papers if exisiting
+    items.push(...oldItems);
+
     items = this.getPaperScores(items);
     items = items.sort((a, b) => b.relevance - a.relevance);
 
     this.setState({
+      searchString: searchQuery,
       paperList: items,
       isLoading: false,
     });
@@ -706,9 +835,6 @@ export default class App extends Component {
           8;
       }
     });
-
-    console.log("papers,", papers);
-
     return papers;
   }
 }
