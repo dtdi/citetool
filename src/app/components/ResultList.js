@@ -8,17 +8,6 @@ import {
 
 import React, { Component } from "react";
 
-const classNames = mergeStyleSets({
-  scrollWrapper: {
-    position: "relative",
-    height: "65vh",
-  },
-  controlWrapper: {
-    display: "flex",
-    flexWrap: "wrap",
-  },
-});
-
 export default class ResultList extends Component {
   _selection;
 

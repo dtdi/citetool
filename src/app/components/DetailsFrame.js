@@ -12,16 +12,6 @@ import {
 import React, { Component } from "react";
 import { LIST_NOT_RELEVANT, LIST_RELEVANT, LIST_RESULT } from "../../App";
 
-const classNames = mergeStyleSets({
-  detailsStack: {
-    height: "80vh",
-  },
-  scrollWrapper: {
-    position: "relative",
-    height: "40vh",
-  },
-  scroller: {},
-});
 export default class DetailsFrame extends Component {
   customElements() {
     return (

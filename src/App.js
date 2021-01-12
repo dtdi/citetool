@@ -53,33 +53,47 @@ class PaperCache {
     return this.prefix + encodeURIComponent(doi);
   }
 
-  async getOrLoad(doi) {
+  async getOrLoad(doi, controller, signal) {
     const key = this._getKey(doi);
     const item = await get(key);
-    if (!item) {
-      const response = await fetch(
-        `https://api.semanticscholar.org/v1/paper/${doi}?include_unknown_references=true`
-      );
-
+    if (item) {
+      return item;
+    } else {
+      let response;
+      try {
+        response = await fetch(
+          `https://api.semanticscholar.org/v1/paper/${doi}?include_unknown_references=true`,
+          { signal }
+        );
+      } catch (e) {
+        if (e instanceof TypeError) {
+          controller.abort();
+          throw e;
+        } else {
+          throw e;
+          return;
+        }
+      }
       if (!response.ok) {
         if (response.status === 404) {
           const body = await response.json();
           set(key, body);
+          console.log(404);
           return body;
         } else {
           const message = `An error has occured: ${response.status}`;
           throw new Error(message);
         }
       }
-
       const body = await response.json();
       try {
         set(key, body);
       } catch (e) {
-        console.log(e);
+        const message = `Unknown error`;
+        throw new Error(message, e);
       }
       return body;
-    } else return item;
+    }
   }
 
   remove(doi) {
@@ -152,10 +166,14 @@ export default class App extends Component {
     clear();
   };
 
-  loadSemScholar = async (doi) => {
+  loadSemScholar = async (doi, controller, signal) => {
     let cache = new PaperCache();
-    const item = await cache.getOrLoad(doi);
-    return item;
+    try {
+      const item = await cache.getOrLoad(doi, controller, signal);
+      return item;
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   onLoadData = async (searchString) => {
@@ -168,7 +186,7 @@ export default class App extends Component {
 
     const query = encodeURIComponent(searchString);
     const count = 25;
-    const limit = 50;
+    const limit = 25;
     let start = 0;
     const sort = "relevancy";
 
@@ -607,10 +625,19 @@ export default class App extends Component {
   }
 
   async loadSemScholarForMany(items) {
+    const controller = new AbortController();
+    const signal = controller.signal;
+
     items = await Promise.all(
       items.map(async (paper) => {
-        const semScholar = await this.loadSemScholar(paper.doi);
-
+        const semScholar = await this.loadSemScholar(
+          paper.doi,
+          controller,
+          signal
+        );
+        if (!semScholar) {
+          return paper;
+        }
         const newPaper = {
           abstract: semScholar.abstract,
           refs: semScholar.references || [],
@@ -702,6 +729,7 @@ export default class App extends Component {
   }
 
   getPaperScores(papers) {
+    console.log(papers);
     //Build matrix (Step1) -> direct references.
     /** @description matrix for direct references */
     let matrix = new Array(papers.length);
