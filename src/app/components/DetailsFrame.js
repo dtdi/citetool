@@ -44,7 +44,32 @@ export default class DetailsFrame extends Component {
     if (!selectedPaper) {
       return (
         <Stack>
-          <Text>Howdy, Partner! Try to start from a search result!</Text>
+          <Text>Howdy, Partner!</Text>
+          <Text>
+            This website helps to discover exciting new papers in three easy
+            steps:
+            <ol>
+              <li>
+                To get started, use the search box above to start a search query
+                on Scopus.
+              </li>
+              <li>
+                Based on the results, we suggest relevant papers on the left,
+                which you can mark as relevant or irrelevant using the buttons
+                at the top. Your vote will automatically move the paper to the
+                lists on the right side of the page. Based on the papers you
+                rated as relevant, we will suggest new papers to rate. For this
+                purpose, we use bibliometric data (i.e., co-citation &
+                bibliometric coupling) to find papers that have a particularly
+                high overlap with your selection.
+              </li>
+              <li>
+                If you have identified enough papers or if our suggestions do
+                not contain any more relevant papers, use the download function
+                in the header to export your results as a list.
+              </li>
+            </ol>
+          </Text>
         </Stack>
       );
     }

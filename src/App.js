@@ -271,11 +271,14 @@ export default class App extends Component {
       newList = await this.loadSemScholarForMany(newList);
     }
 
-    newList = this.getPaperScores(newList);
+    newList = this.getPaperScores(newList).sort(
+      (a, b) => b.relevance - a.relevance
+    );
     this.setState({
-      paperList: newList.sort((a, b) => b.relevance - a.relevance),
+      paperList: newList,
       isLoading: false,
     });
+    this.onSelectSingle(newList[0]);
   };
 
   onSettingsOpenClose = () => {
