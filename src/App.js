@@ -29,6 +29,7 @@ import header from "./img/header.jpg";
 import "./style.css";
 
 import ApiModal from "./app/components/ApiModal";
+import LoadFileModal from "./app/components/LoadFileModal";
 
 const theme = getTheme();
 const classNames = mergeStyleSets({
@@ -100,7 +101,9 @@ export default class App extends Component {
       notRelevantList: [],
       selectedTabId: "searchResultsList",
       apiKey: "",
+      fileLocation: "",
       isApiKeyModalOpen: false,
+      isLoadFileModalOpen: false,
       isLoading: false,
       searchString: `TITLE-ABS-KEY("heart attack")`,
     };
@@ -306,7 +309,43 @@ export default class App extends Component {
       paperList: newList,
       isLoading: false,
     });
-    this.onSelectSingle(newList[0]);
+    this.onSelectSingle(newList.filter((paper) => {return paper.inList === LIST_RESULT})[0]);
+  };
+
+  onToCitavi = () => {
+    const { relevantList } = this.state;
+    var doiList = "";
+    relevantList.forEach((paper) => {
+      doiList += paper.doi + "\n";
+    });
+
+    const blob = new Blob([doiList], { type: 'text/plain' });
+    const anchor = document.createElement('a');
+    
+    anchor.download = "PotatoSearch2Citavi.txt";
+    anchor.href = (window.webkitURL || window.URL).createObjectURL(blob);
+    anchor.dataset.downloadurl = ['text/plain', anchor.download, anchor.href].join(':');
+    anchor.click();
+  };
+
+  onSave = () => {
+    const { state } = this;
+    const stateJSON = JSON.stringify(state);
+    
+    const blob = new Blob([stateJSON], { type: 'text/plain' });
+    const anchor = document.createElement('a');
+    
+    anchor.download = "PotatoSearchData.json";
+    anchor.href = (window.webkitURL || window.URL).createObjectURL(blob);
+    anchor.dataset.downloadurl = ['text/plain', anchor.download, anchor.href].join(':');
+    anchor.click();
+  };
+
+  onLoadFileOpenClose = () => {
+    const { isLoadFileModalOpen } = this.state;
+    this.setState({
+      isLoadFileModalOpen: !isLoadFileModalOpen,
+    });
   };
 
   onSettingsOpenClose = () => {
@@ -324,6 +363,18 @@ export default class App extends Component {
 
   onApiKeyChange = (ev, newVal) => {
     this.setState({ apiKey: newVal });
+  };
+
+  onLoadFile = (ev) => {
+    const file = ev.target.files;
+    
+    var reader = new FileReader();
+    reader.onload = ((e) => {
+      const savedText = reader.result;
+      const savedState = JSON.parse(savedText);
+      this.setState(savedState);
+    })
+    reader.readAsText(file[0]);
   };
 
   closeMessageBar = (ev) => {
@@ -359,7 +410,9 @@ export default class App extends Component {
       notRelevantList,
       selectedTabId,
       isApiKeyModalOpen,
+      isLoadFileModalOpen,
       apiKey,
+      fileLocation,
       isLoading,
       apiError,
     } = this.state;
@@ -383,25 +436,26 @@ export default class App extends Component {
 
     const _items = [
       {
-        key: "upload",
-        text: "Upload",
-        disabled: true,
-        iconProps: { iconName: "Upload" },
-        href: "https://developer.microsoft.com/en-us/fluentui",
+        key: "load",
+        text: "Load File",
+        disabled: false,
+        iconProps: { iconName: "Import" },
+        onClick: this.onLoadFileOpenClose,
+        //href: "https://developer.microsoft.com/en-us/fluentui",
       },
       {
-        key: "share",
-        text: "Share",
-        disabled: true,
+        key: "save",
+        text: "Save",
+        disabled: false,
+        iconProps: { iconName: "Save" },
+        onClick: this.onSave,
+      },
+      {
+        key: "toCitavi",
+        text: "To Citavi",
+        disabled: false,
         iconProps: { iconName: "Share" },
-        onClick: () => console.log("Share"),
-      },
-      {
-        key: "download",
-        text: "Download",
-        disabled: true,
-        iconProps: { iconName: "Download" },
-        onClick: () => console.log("Download"),
+        onClick: this.onToCitavi,
       },
     ];
 
@@ -427,8 +481,14 @@ export default class App extends Component {
         onClick: () => console.log("Rename"),
         iconProps: { iconName: "Edit" },
       },
+      {
+        key: "share",
+        text: "Share",
+        disabled: true,
+        iconProps: { iconName: "Download" },
+        onClick: () => console.log("Share"),
+      },
     ];
-
     const _farItems = [
       {
         key: "settings",
@@ -458,6 +518,12 @@ export default class App extends Component {
           onClearCache={this.onClearCache}
           onApiKeyChange={this.onApiKeyChange}
           onClose={this.onSettingsOpenClose}
+        />
+        <LoadFileModal
+          isOpen={isLoadFileModalOpen}
+          fileLocation={fileLocation}
+          onLoadFile={this.onLoadFile}
+          onClose={this.onLoadFileOpenClose}
         />
         <Stack tokens={{ padding: 25, childrenGap: 20 }}>
           <Image className="header" src={header} alt="Header" />
@@ -644,42 +710,46 @@ export default class App extends Component {
 
     const entries = searchResults.entry;
 
-    entries.forEach((entry) => {
-      let abstractlink = "test";
-      let links = entry["link"];
-      links.forEach((link) => {
-        let linktype = link["@ref"];
-        if (linktype === "scopus") {
-          abstractlink = link["@href"];
-        }
-      });
-
-      items.push({
-        key: entry["prism:doi"] || entry["dc:identifier"],
-        name: entry["dc:title"],
-        abstractlink: abstractlink,
-        abstract: null,
-        refs: [],
-        cites: [],
-        ids: [],
-        authors: entry["dc:creator"], // @todo: replace with full list of authors.
-        publication: `${entry["prism:publicationName"]} ${entry["prism:volume"]}`,
-        year: entry["prism:coverDate"].substr(0, 4),
-        doi: entry["prism:doi"],
-        type: entry["subtypeDescription"],
-        citedByCount: entry["citedby-count"],
-        inBatch: [this.state.searchString],
-        raw: {
-          scopusEntry: entry,
-          semScholar: null,
-        },
-        inList: LIST_RESULT,
-      });
-    });
-
-    items = await this.loadSemScholarForMany(items);
-
     const { paperList: oldItems } = this.state;
+
+    entries.forEach((entry) => {
+      let newDOI = !oldItems.some((item) => item.doi === entry["prism:doi"]);
+      if (newDOI) {
+
+        let abstractlink = "test";
+        let links = entry["link"];
+        links.forEach((link) => {
+          let linktype = link["@ref"];
+          if (linktype === "scopus") {
+            abstractlink = link["@href"];
+          }
+        });
+
+        items.push({
+          key: entry["prism:doi"] || entry["dc:identifier"],
+          name: entry["dc:title"],
+          abstractlink: abstractlink,
+          abstract: null,
+          refs: [],
+          cites: [],
+          ids: [],
+          authors: entry["dc:creator"], // @todo: replace with full list of authors.
+          publication: `${entry["prism:publicationName"]} ${entry["prism:volume"]}`,
+          year: entry["prism:coverDate"].substr(0, 4),
+          doi: entry["prism:doi"],
+          type: entry["subtypeDescription"],
+          citedByCount: entry["citedby-count"],
+          inBatch: [this.state.searchString],
+          raw: {
+            scopusEntry: entry,
+            semScholar: null,
+          },
+          inList: LIST_RESULT,
+        });
+      };
+    });
+    
+    items = await this.loadSemScholarForMany(items);
 
     // add to existing papers if exisiting
     items.push(...oldItems);
@@ -837,4 +907,6 @@ export default class App extends Component {
     });
     return papers;
   }
+
+
 }
