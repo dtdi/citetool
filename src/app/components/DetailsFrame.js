@@ -2,15 +2,26 @@ import {
   Stack,
   DefaultButton,
   PrimaryButton,
+  ScrollablePane,
+  ScrollbarVisibility,
+  Sticky,
+  StickyPositionType,
   mergeStyleSets,
   Link,
   Shimmer,
   ShimmerElementsGroup,
   ShimmerElementType,
   Text,
+  StackItem,
 } from "@fluentui/react";
 import React, { Component } from "react";
 import { LIST_NOT_RELEVANT, LIST_RELEVANT, LIST_RESULT } from "../../App";
+
+const classNames = mergeStyleSets({
+  relative: {
+    position: "relative",
+  },
+});
 
 export default class DetailsFrame extends Component {
   customElements() {
@@ -64,7 +75,10 @@ export default class DetailsFrame extends Component {
       );
     }
     return (
-      <Stack tokens={{ childrenGap: 5 }}>
+      <Stack
+        style={{ position: "relative", height: "100%" }}
+        tokens={{ childrenGap: 5 }}
+      >
         <Stack
           horizontal
           horizontalAlign={"space-evenly"}
@@ -106,6 +120,7 @@ export default class DetailsFrame extends Component {
         >
           <Text variant={"mediumPlus"}>{selectedPaper.name}</Text>
         </Shimmer>
+
         <Shimmer
           shimmerElements={[
             { type: ShimmerElementType.line, width: "15%" },
@@ -131,13 +146,16 @@ export default class DetailsFrame extends Component {
             <b>In:</b> <i>{selectedPaper.publication}</i>
           </Text>
         </Shimmer>
-
-        <Shimmer
-          customElementsGroup={this.customElements()}
-          isDataLoaded={!isLoading}
-        >
-          <Text>{selectedPaper.abstract}</Text>
-        </Shimmer>
+        <StackItem grow className={classNames.relative}>
+          <ScrollablePane scrollbarVisibility={ScrollbarVisibility.auto}>
+            <Shimmer
+              customElementsGroup={this.customElements()}
+              isDataLoaded={!isLoading}
+            >
+              <Text>{selectedPaper.abstract}</Text>
+            </Shimmer>
+          </ScrollablePane>
+        </StackItem>
 
         <Stack
           horizontal

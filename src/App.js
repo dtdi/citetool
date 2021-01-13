@@ -13,6 +13,10 @@ import {
   TeachingBubble,
   PivotLinkFormat,
   ProgressIndicator,
+  ScrollablePane,
+  ScrollbarVisibility,
+  Sticky,
+  StickyPositionType,
   Link,
   MessageBar,
   MessageBarType,
@@ -37,6 +41,9 @@ const classNames = mergeStyleSets({
     width: "40vw",
     padding: 20,
     background: theme.palette.white,
+    position: "relative",
+    height: "100%",
+    "box-sizing": "border-box",
   },
   searchBar: {
     background: theme.palette.white,
@@ -333,7 +340,11 @@ export default class App extends Component {
       paperList: newList,
       isLoading: false,
     });
-    this.onSelectSingle(newList.filter((paper) => {return paper.inList === LIST_RESULT})[0]);
+    this.onSelectSingle(
+      newList.filter((paper) => {
+        return paper.inList === LIST_RESULT;
+      })[0]
+    );
   };
 
   onToCitavi = () => {
@@ -343,25 +354,33 @@ export default class App extends Component {
       doiList += paper.doi + "\n";
     });
 
-    const blob = new Blob([doiList], { type: 'text/plain' });
-    const anchor = document.createElement('a');
-    
+    const blob = new Blob([doiList], { type: "text/plain" });
+    const anchor = document.createElement("a");
+
     anchor.download = "PotatoSearch2Citavi.txt";
     anchor.href = (window.webkitURL || window.URL).createObjectURL(blob);
-    anchor.dataset.downloadurl = ['text/plain', anchor.download, anchor.href].join(':');
+    anchor.dataset.downloadurl = [
+      "text/plain",
+      anchor.download,
+      anchor.href,
+    ].join(":");
     anchor.click();
   };
 
   onSave = () => {
     const { state } = this;
     const stateJSON = JSON.stringify(state);
-    
-    const blob = new Blob([stateJSON], { type: 'text/plain' });
-    const anchor = document.createElement('a');
-    
+
+    const blob = new Blob([stateJSON], { type: "text/plain" });
+    const anchor = document.createElement("a");
+
     anchor.download = "PotatoSearchData.json";
     anchor.href = (window.webkitURL || window.URL).createObjectURL(blob);
-    anchor.dataset.downloadurl = ['text/plain', anchor.download, anchor.href].join(':');
+    anchor.dataset.downloadurl = [
+      "text/plain",
+      anchor.download,
+      anchor.href,
+    ].join(":");
     anchor.click();
   };
 
@@ -391,13 +410,13 @@ export default class App extends Component {
 
   onLoadFile = (ev) => {
     const file = ev.target.files;
-    
+
     var reader = new FileReader();
-    reader.onload = ((e) => {
+    reader.onload = (e) => {
       const savedText = reader.result;
       const savedState = JSON.parse(savedText);
       this.setState(savedState);
-    })
+    };
     reader.readAsText(file[0]);
   };
 
@@ -465,7 +484,6 @@ export default class App extends Component {
         disabled: false,
         iconProps: { iconName: "Import" },
         onClick: this.onLoadFileOpenClose,
-        //href: "https://developer.microsoft.com/en-us/fluentui",
       },
       {
         key: "save",
@@ -483,36 +501,7 @@ export default class App extends Component {
       },
     ];
 
-    const _overflowItems = [
-      {
-        key: "move",
-        text: "Move to...",
-        disabled: true,
-        onClick: () => console.log("Move to"),
-        iconProps: { iconName: "MoveToFolder" },
-      },
-      {
-        key: "copy",
-        text: "Copy to...",
-        disabled: true,
-        onClick: () => console.log("Copy to"),
-        iconProps: { iconName: "Copy" },
-      },
-      {
-        key: "rename",
-        text: "Rename...",
-        disabled: true,
-        onClick: () => console.log("Rename"),
-        iconProps: { iconName: "Edit" },
-      },
-      {
-        key: "share",
-        text: "Share",
-        disabled: true,
-        iconProps: { iconName: "Download" },
-        onClick: () => console.log("Share"),
-      },
-    ];
+    const _overflowItems = [];
     const _farItems = [
       {
         key: "settings",
@@ -549,9 +538,10 @@ export default class App extends Component {
           onLoadFile={this.onLoadFile}
           onClose={this.onLoadFileOpenClose}
         />
-        <Stack tokens={{ padding: 25, childrenGap: 20 }}>
-          <Image className="header" src={header} alt="Header" />
-
+        <Stack
+          style={{ height: "100vh" }}
+          tokens={{ padding: 20, childrenGap: 20 }}
+        >
           <Stack
             horizontal
             horizontalAlign={"space-around"}
@@ -559,6 +549,8 @@ export default class App extends Component {
             tokens={{ childrenGap: 20 }}
             className={classNames.searchBar}
           >
+            <Image className="header" src={header} alt="Header" />
+
             <Text style={{ fontWeight: "bolder" }}>Potatosearch</Text>
             <StackItem>
               <Stack horizontal>
@@ -614,77 +606,90 @@ export default class App extends Component {
               ariaLabel="Use left and right arrow keys to navigate between commands"
             />
           </Stack>
-          <Stack className="" tokens={{ childrenGap: 5 }}>
-            <Stack
-              horizontal
-              horizontalAlign="space-evenly"
-              tokens={{ childrenGap: 10 }}
-            >
-              <StackItem disableShrink className={classNames.paperFrame}>
-                <DetailsFrame
-                  isLoading={isLoading}
-                  selectedPaper={selectedPaper}
-                  onPaperAction={this.onPaperAction}
-                />
-              </StackItem>
-              <StackItem grow={2} className={classNames.paperFrame}>
-                <Stack tokens={{ childrenGap: 5 }}>
-                  <Pivot
-                    selectedKey={selectedTabId}
-                    onLinkClick={this.handleTabLinkClick}
-                    headersOnly={true}
-                    linkFormat={PivotLinkFormat.tabs}
-                  >
-                    <PivotItem
-                      itemKey={"searchResultsList"}
-                      itemIcon="AllApps"
-                      headerText="Paper Pool"
-                      itemCount={searchResultsList.length}
-                    ></PivotItem>
-                    <PivotItem
-                      itemKey={"relevantList"}
-                      itemIcon="Accept"
-                      headerText="Relevant Paper"
-                      itemCount={relevantList.length}
-                    ></PivotItem>
-                    <PivotItem
-                      itemKey={"notRelevantList"}
-                      itemIcon="StatusCircleErrorX"
-                      headerText="Not Relevant"
-                      itemCount={notRelevantList.length}
-                    ></PivotItem>
-                  </Pivot>
-                  {isLoading && (
-                    <ProgressIndicator
-                      label="We're Loading"
-                      description="Lots of data from semantic Scholar"
-                    />
-                  )}
-                  {apiError && (
-                    <MessageBar
-                      messageBarType={MessageBarType.error}
-                      isMultiline={false}
-                      onDismiss={this.closeMessageBar}
-                      dismissButtonAriaLabel="Close"
-                    >
-                      {apiError}
-                      <Link
-                        href="https://github.com/dtdi/citetool/wiki/API-Key"
-                        target="_blank"
-                      >
-                        Did you provide your API Key?
-                      </Link>
-                    </MessageBar>
-                  )}
-                  <ResultList
-                    items={listItems}
+          <StackItem grow>
+            <Stack style={{ height: "100%" }} tokens={{ childrenGap: 5 }}>
+              <Stack
+                horizontal
+                style={{ height: "100%" }}
+                horizontalAlign="space-evenly"
+                tokens={{ childrenGap: 10 }}
+              >
+                <StackItem className={classNames.paperFrame}>
+                  <DetailsFrame
                     isLoading={isLoading}
-                    onSelectSingle={this.onSelectSingle}
+                    selectedPaper={selectedPaper}
+                    onPaperAction={this.onPaperAction}
                   />
-                </Stack>
-              </StackItem>
+                </StackItem>
+                <StackItem grow={2} className={classNames.paperFrame}>
+                  <ScrollablePane
+                    scrollbarVisibility={ScrollbarVisibility.auto}
+                  >
+                    <Sticky stickyPosition={StickyPositionType.Header}>
+                      <Stack
+                        tokens={{ padding: "15px 15px 0", childrenGap: 5 }}
+                      >
+                        <Pivot
+                          selectedKey={selectedTabId}
+                          onLinkClick={this.handleTabLinkClick}
+                          headersOnly={true}
+                          linkFormat={PivotLinkFormat.tabs}
+                        >
+                          <PivotItem
+                            itemKey={"searchResultsList"}
+                            itemIcon="AllApps"
+                            headerText="Paper Pool"
+                            itemCount={searchResultsList.length}
+                          ></PivotItem>
+                          <PivotItem
+                            itemKey={"relevantList"}
+                            itemIcon="Accept"
+                            headerText="Relevant Paper"
+                            itemCount={relevantList.length}
+                          ></PivotItem>
+                          <PivotItem
+                            itemKey={"notRelevantList"}
+                            itemIcon="StatusCircleErrorX"
+                            headerText="Not Relevant"
+                            itemCount={notRelevantList.length}
+                          ></PivotItem>
+                        </Pivot>
+                        {isLoading && (
+                          <ProgressIndicator
+                            label="We're Loading"
+                            description="Lots of data from semantic Scholar"
+                          />
+                        )}
+                        {apiError && (
+                          <MessageBar
+                            messageBarType={MessageBarType.error}
+                            isMultiline={false}
+                            onDismiss={this.closeMessageBar}
+                            dismissButtonAriaLabel="Close"
+                          >
+                            {apiError}
+                            <Link
+                              href="https://github.com/dtdi/citetool/wiki/API-Key"
+                              target="_blank"
+                            >
+                              Did you provide your API Key?
+                            </Link>
+                          </MessageBar>
+                        )}
+                      </Stack>
+                    </Sticky>
+                    <Stack style={{ padding: 15 }}>
+                      <ResultList
+                        items={listItems}
+                        isLoading={isLoading}
+                        onSelectSingle={this.onSelectSingle}
+                      />
+                    </Stack>
+                  </ScrollablePane>
+                </StackItem>
+              </Stack>
             </Stack>
-          </Stack>
+          </StackItem>
         </Stack>
       </>
     );
@@ -748,7 +753,6 @@ export default class App extends Component {
     entries.forEach((entry) => {
       let newDOI = !oldItems.some((item) => item.doi === entry["prism:doi"]);
       if (newDOI) {
-
         let abstractlink = "test";
         let links = entry["link"];
         links.forEach((link) => {
@@ -779,9 +783,9 @@ export default class App extends Component {
           },
           inList: LIST_RESULT,
         });
-      };
+      }
     });
-    
+
     items = await this.loadSemScholarForMany(items);
 
     // add to existing papers if exisiting
@@ -941,6 +945,4 @@ export default class App extends Component {
     });
     return papers;
   }
-
-
 }
