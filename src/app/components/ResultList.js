@@ -14,7 +14,7 @@ export default class ResultList extends Component {
   constructor(props) {
     super(props);
 
-    const { onSelectSingle } = this.props;
+    const { onSelectSingle, selectedKey } = this.props;
 
     const columns = [
       {
@@ -80,6 +80,8 @@ export default class ResultList extends Component {
       isModalSelection: false,
       isCompactMode: false,
     };
+
+    this._selection.selectToKey(selectedKey, true);
   }
 
   render() {

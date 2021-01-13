@@ -4,8 +4,6 @@ import {
   PrimaryButton,
   ScrollablePane,
   ScrollbarVisibility,
-  Sticky,
-  StickyPositionType,
   mergeStyleSets,
   Link,
   Shimmer,

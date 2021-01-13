@@ -110,8 +110,12 @@ class PaperCache {
 }
 
 export default class App extends Component {
+  listRef;
+
   constructor(props) {
     super(props);
+
+    this.listRef = React.createRef();
 
     this.state = {
       paperList: [],
@@ -182,7 +186,7 @@ export default class App extends Component {
       const item = await cache.getOrLoad(doi, controller, signal);
       return item;
     } catch (e) {
-      console.log(e);
+      console.log("resource exhausted", e);
     }
   };
 
@@ -340,11 +344,7 @@ export default class App extends Component {
       paperList: newList,
       isLoading: false,
     });
-    this.onSelectSingle(
-      newList.filter((paper) => {
-        return paper.inList === LIST_RESULT;
-      })[0]
-    );
+    this.onSelectSingle(newList.find((p) => p.inList === LIST_RESULT));
   };
 
   onToCitavi = () => {
@@ -681,7 +681,9 @@ export default class App extends Component {
                     <Stack style={{ padding: 15 }}>
                       <ResultList
                         items={listItems}
+                        selectedKey={selectedPaper && selectedPaper.key}
                         isLoading={isLoading}
+                        ref={this.listRef}
                         onSelectSingle={this.onSelectSingle}
                       />
                     </Stack>
@@ -803,7 +805,6 @@ export default class App extends Component {
   }
 
   getPaperScores(papers) {
-    console.log(papers);
     //Build matrix (Step1) -> direct references.
     /** @description matrix for direct references */
     let matrix = new Array(papers.length);
