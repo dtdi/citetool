@@ -79,7 +79,6 @@ class PaperCache {
           throw e;
         } else {
           throw e;
-          return;
         }
       }
       if (!response.ok) {

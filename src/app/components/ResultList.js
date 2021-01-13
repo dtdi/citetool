@@ -3,7 +3,6 @@ import {
   Selection,
   SelectionMode,
   DetailsListLayoutMode,
-  mergeStyleSets,
 } from "@fluentui/react";
 
 import React, { Component } from "react";
