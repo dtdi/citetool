@@ -3,21 +3,9 @@ import {
   Selection,
   SelectionMode,
   DetailsListLayoutMode,
-  mergeStyleSets,
 } from "@fluentui/react";
 
 import React, { Component } from "react";
-
-const classNames = mergeStyleSets({
-  scrollWrapper: {
-    position: "relative",
-    height: "65vh",
-  },
-  controlWrapper: {
-    display: "flex",
-    flexWrap: "wrap",
-  },
-});
 
 export default class ResultList extends Component {
   _selection;
@@ -25,7 +13,7 @@ export default class ResultList extends Component {
   constructor(props) {
     super(props);
 
-    const { onSelectSingle } = this.props;
+    const { onSelectSingle, selectedKey } = this.props;
 
     const columns = [
       {
@@ -91,6 +79,8 @@ export default class ResultList extends Component {
       isModalSelection: false,
       isCompactMode: false,
     };
+
+    this._selection.selectToKey(selectedKey, true);
   }
 
   render() {
