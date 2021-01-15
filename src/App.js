@@ -30,10 +30,12 @@ import { get, set, del, clear } from "idb-keyval";
 import ResultList from "./app/components/ResultList";
 import DetailsFrame from "./app/components/DetailsFrame";
 import header from "./img/header.jpg";
+import logo from "./img/potato.svg";
 import "./style.css";
 
 import ApiModal from "./app/components/ApiModal";
 import LoadFileModal from "./app/components/LoadFileModal";
+import InfoModal from "./app/components/InfoModal";
 
 const theme = getTheme();
 const classNames = mergeStyleSets({
@@ -128,6 +130,7 @@ export default class App extends Component {
       fileLocation: "",
       isApiKeyModalOpen: false,
       isLoadFileModalOpen: false,
+      isInfoModalOpen: false,
       isLoading: false,
       searchString: `TITLE-ABS-KEY("heart attack")`,
     };
@@ -390,6 +393,13 @@ export default class App extends Component {
     });
   };
 
+  onInfoModalClose = () => {
+    const { isInfoModalOpen } = this.state;
+    this.setState({
+      isInfoModalOpen: !isInfoModalOpen,
+    });
+  };
+
   onSettingsOpenClose = () => {
     const { isApiKeyModalOpen, apiKey } = this.state;
     if (apiKey) {
@@ -453,6 +463,7 @@ export default class App extends Component {
       selectedTabId,
       isApiKeyModalOpen,
       isLoadFileModalOpen,
+      isInfoModalOpen,
       apiKey,
       fileLocation,
       isLoading,
@@ -518,7 +529,7 @@ export default class App extends Component {
         ariaLabel: "Info",
         iconOnly: true,
         iconProps: { iconName: "Info" },
-        onClick: () => console.log("Info"),
+        onClick: this.onInfoModalClose,
       },
     ];
 
@@ -537,6 +548,7 @@ export default class App extends Component {
           onLoadFile={this.onLoadFile}
           onClose={this.onLoadFileOpenClose}
         />
+        <InfoModal isOpen={isInfoModalOpen} onClose={this.onInfoModalClose} />
         <Stack
           style={{ height: "100vh" }}
           tokens={{ padding: 20, childrenGap: 20 }}
@@ -549,8 +561,22 @@ export default class App extends Component {
             className={classNames.searchBar}
           >
             <Image className="header" src={header} alt="Header" />
+            <StackItem>
+              <Stack
+                horizontal
+                tokens={{ childrenGap: 10 }}
+                horizontalAlign="center"
+              >
+                <Image
+                  className="logo"
+                  style={{ width: 28 }}
+                  src={logo}
+                  alt="PotatoSearch"
+                />
+                <Text style={{ fontWeight: "bolder" }}>Potatosearch</Text>
+              </Stack>
+            </StackItem>
 
-            <Text style={{ fontWeight: "bolder" }}>Potatosearch</Text>
             <StackItem>
               <Stack horizontal>
                 <SearchBox
