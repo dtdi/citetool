@@ -38,7 +38,13 @@ export default function InfoModal(props) {
             This website helps to discover exciting new papers in three easy
             steps:
           </Text>
-          <Text>Potatosearch makes heavy use of the semanticScholar API.</Text>
+          <Text>
+            Potatosearch makes heavy use of the{" "}
+            <Link href="https://www.semanticscholar.org/?utm_source=api">
+              SemanticScholar API
+            </Link>
+            .
+          </Text>
           <Text>
             <div>
               Potato Icon made by{" "}
