@@ -40,7 +40,7 @@ import InfoModal from "./app/components/InfoModal";
 const theme = getTheme();
 const classNames = mergeStyleSets({
   paperFrame: {
-    width: "40vw",
+    width: "45vw",
     padding: 20,
     background: theme.palette.white,
     position: "relative",

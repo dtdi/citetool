@@ -34,9 +34,13 @@ export default function InfoModal(props) {
       </div>
       <div className={contentStyles.body}>
         <Stack tokens={{ childrenGap: 5 }}>
-          <Text variant="mediumPlus">
-            This website helps to discover exciting new papers in three easy
-            steps:
+          <Text>
+            This website helps to discover exciting new papers. Source Code can
+            be found at{" "}
+            <Link href="https://github.com/dtdi/citetool">
+              https://github.com/dtdi/citetool
+            </Link>
+            .
           </Text>
           <Text>
             Potatosearch makes heavy use of the{" "}
@@ -46,19 +50,17 @@ export default function InfoModal(props) {
             .
           </Text>
           <Text>
-            <div>
-              Potato Icon made by{" "}
-              <a
-                href="https://www.flaticon.com/authors/good-ware"
-                title="Good Ware"
-              >
-                Good Ware
-              </a>{" "}
-              from{" "}
-              <a href="https://www.flaticon.com/" title="Flaticon">
-                www.flaticon.com
-              </a>
-            </div>
+            Potato Icon made by{" "}
+            <Link
+              href="https://www.flaticon.com/authors/good-ware"
+              title="Good Ware"
+            >
+              Good Ware
+            </Link>{" "}
+            from{" "}
+            <Link href="https://www.flaticon.com/" title="Flaticon">
+              www.flaticon.com
+            </Link>
           </Text>
         </Stack>
       </div>

@@ -11,13 +11,28 @@ import {
   ShimmerElementType,
   Text,
   StackItem,
+  FontWeights,
+  Image,
 } from "@fluentui/react";
 import React, { Component } from "react";
 import { LIST_NOT_RELEVANT, LIST_RELEVANT, LIST_RESULT } from "../../App";
+import logo from "../../img/potato.svg";
 
 const classNames = mergeStyleSets({
   relative: {
     position: "relative",
+  },
+  abstract: {
+    "-moz-osx-font-smoothing": "grayscale",
+    "-webkit-font-smoothing": "antialiased !important",
+    "-moz-font-smoothing": "antialiased !important",
+    "text-rendering": "optimizelegibility !important",
+    "letter-spacing": ".03em",
+    "line-height": "1.25em",
+    "font-weight": "400",
+    "font-size": "1rem",
+    "line-height": "1.8",
+    "text-align": "justify",
   },
 });
 
@@ -42,7 +57,7 @@ export default class DetailsFrame extends Component {
     const { selectedPaper, onPaperAction, isLoading } = this.props;
     if (!selectedPaper) {
       return (
-        <Stack>
+        <Stack className={classNames.abstract}>
           <Text>Howdy, Partner!</Text>
           <Text>
             This website helps to discover exciting new papers in three easy
@@ -69,6 +84,7 @@ export default class DetailsFrame extends Component {
               </li>
             </ol>
           </Text>
+          <Image style={{ margin: "0 auto" }} src={logo} height={120} />
         </Stack>
       );
     }
@@ -111,84 +127,121 @@ export default class DetailsFrame extends Component {
           )}
         </Stack>
 
-        <Shimmer
-          shimmerElements={[{ type: ShimmerElementType.line, height: 22 }]}
-          width={"80%"}
-          isDataLoaded={!isLoading}
-        >
-          <Text variant={"mediumPlus"}>{selectedPaper.name}</Text>
-        </Shimmer>
-
-        <Shimmer
-          shimmerElements={[
-            { type: ShimmerElementType.line, width: "15%" },
-            { type: ShimmerElementType.gap, width: 10 },
-            { type: ShimmerElementType.line, width: "80%" },
-          ]}
-          width={"60%"}
-          isDataLoaded={!isLoading}
-        >
-          <Text>
-            <b>Authors:</b> <i>{selectedPaper.authors}</i>
-          </Text>
-        </Shimmer>
-        <Shimmer
-          isDataLoaded={!isLoading}
-          shimmerElements={[
-            { type: ShimmerElementType.line, width: "5%" },
-            { type: ShimmerElementType.gap, width: 10 },
-            { type: ShimmerElementType.line, width: "90%" },
-          ]}
-        >
-          <Text>
-            <b>In:</b> <i>{selectedPaper.publication}</i>
-          </Text>
-        </Shimmer>
         <StackItem grow className={classNames.relative}>
           <ScrollablePane scrollbarVisibility={ScrollbarVisibility.auto}>
-            <Shimmer
-              customElementsGroup={this.customElements()}
-              isDataLoaded={!isLoading}
-            >
-              <Text>{selectedPaper.abstract}</Text>
-            </Shimmer>
+            <Stack tokens={{ childrenGap: 5 }}>
+              <Shimmer
+                shimmerElements={[
+                  { type: ShimmerElementType.line, height: 22 },
+                ]}
+                width={"80%"}
+                isDataLoaded={!isLoading}
+              >
+                <Text
+                  style={{ fontWeight: FontWeights.semibold }}
+                  variant={"mediumPlus"}
+                >
+                  {selectedPaper.name}
+                </Text>
+              </Shimmer>
+
+              <Shimmer
+                shimmerElements={[
+                  { type: ShimmerElementType.line, width: "15%" },
+                  { type: ShimmerElementType.gap, width: 10 },
+                  { type: ShimmerElementType.line, width: "80%" },
+                ]}
+                width={"60%"}
+                isDataLoaded={!isLoading}
+              >
+                <Text>
+                  <Text style={{ fontWeight: FontWeights.semibold }}>
+                    Authors:{" "}
+                  </Text>
+                  {selectedPaper.authors}
+                </Text>
+              </Shimmer>
+              <Shimmer
+                isDataLoaded={!isLoading}
+                shimmerElements={[
+                  { type: ShimmerElementType.line, width: "5%" },
+                  { type: ShimmerElementType.gap, width: 10 },
+                  { type: ShimmerElementType.line, width: "90%" },
+                ]}
+              >
+                <Text>
+                  <Text style={{ fontWeight: FontWeights.semibold }}>In: </Text>{" "}
+                  {selectedPaper.publication}
+                </Text>
+              </Shimmer>
+
+              <Shimmer
+                customElementsGroup={this.customElements()}
+                isDataLoaded={!isLoading}
+              >
+                <Text className={classNames.abstract}>
+                  {selectedPaper.abstract}
+                </Text>
+              </Shimmer>
+
+              <Shimmer
+                customElementsGroup={this.customElements()}
+                isDataLoaded={!isLoading}
+              >
+                <Stack
+                  horizontal
+                  horizontalAlign="space-between"
+                  tokens={{ childrenGap: 5 }}
+                >
+                  <Text>
+                    <Text style={{ fontWeight: FontWeights.semibold }}>
+                      Year:{" "}
+                    </Text>{" "}
+                    {selectedPaper.year}
+                  </Text>
+                  <Text>
+                    <Text style={{ fontWeight: FontWeights.semibold }}>
+                      Type:{" "}
+                    </Text>{" "}
+                    {selectedPaper.type}
+                  </Text>
+                  <Text>
+                    <Text style={{ fontWeight: FontWeights.semibold }}>
+                      DOI:{" "}
+                    </Text>
+                    <Link target={"_blank"} href={selectedPaper.abstractlink}>
+                      {selectedPaper.doi}
+                    </Link>
+                  </Text>
+                </Stack>
+                <Stack
+                  horizontal
+                  horizontalAlign="space-between"
+                  tokens={{ childrenGap: 10 }}
+                >
+                  <Text>
+                    <Text style={{ fontWeight: FontWeights.semibold }}>
+                      Score:{" "}
+                    </Text>
+                    {(selectedPaper.relevance * 100).toFixed(2) + "%"}
+                  </Text>
+                  <Text>
+                    <Text style={{ fontWeight: FontWeights.semibold }}>
+                      #CitedBy:{" "}
+                    </Text>{" "}
+                    {selectedPaper.citedByCount}
+                  </Text>
+                  <Text>
+                    <Text style={{ fontWeight: FontWeights.semibold }}>
+                      #References:{" "}
+                    </Text>{" "}
+                    {selectedPaper.refs.length}
+                  </Text>
+                </Stack>
+              </Shimmer>
+            </Stack>
           </ScrollablePane>
         </StackItem>
-
-        <Stack
-          horizontal
-          horizontalAlign="space-between"
-          tokens={{ childrenGap: 5 }}
-        >
-          <Text>
-            <b>Year:</b> {selectedPaper.year}
-          </Text>
-          <Text>
-            <b>Type:</b> {selectedPaper.type}
-          </Text>
-          <Text>
-            <b>DOI:</b>{" "}
-            <Link target={"_blank"} href={selectedPaper.abstractlink}>
-              {selectedPaper.doi}
-            </Link>
-          </Text>
-        </Stack>
-        <Stack
-          horizontal
-          horizontalAlign="space-between"
-          tokens={{ childrenGap: 10 }}
-        >
-          <Text>
-            <b>Relevance Score:</b>{" "}
-            {(selectedPaper.relevance * 100).toFixed(2) + "%"}
-          </Text>
-          <Text>
-            <b>#Cited-by:</b> {selectedPaper.citedByCount}
-          </Text>
-          <Text>
-            <b>#References:</b> {selectedPaper.refs.length}
-          </Text>
-        </Stack>
       </Stack>
     );
   }
