@@ -587,7 +587,7 @@ export default class App extends Component {
                 />
                 <IconButton
                   iconProps={{ iconName: "Delete" }}
-                  title="Clear current Search"
+                  title="Clear all lists"
                   id="clearSearch"
                   ariaLabel="Help"
                   onClick={this.clearSearch}
