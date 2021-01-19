@@ -448,7 +448,7 @@ export default class App extends Component {
       notRelevantList: [],
       selectedTabId: "searchResultsList",
       isLoading: false,
-      searchString: `TITLE-ABS-KEY("heart attack")`,
+      //searchString: `TITLE-ABS-KEY("heart attack")`,
     });
   };
 
