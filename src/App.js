@@ -738,6 +738,7 @@ export default class App extends Component {
         }
         const newPaper = {
           abstract: semScholar.abstract,
+          abstractlink: semScholar.url,
           refs: semScholar.references || [],
           cites: semScholar.citations || [],
           authors: semScholar.authors
@@ -749,7 +750,6 @@ export default class App extends Component {
               })
             : [],
         };
-
         const updatedPaper = {
           ...paper,
           ...newPaper,
