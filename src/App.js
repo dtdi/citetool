@@ -40,7 +40,7 @@ import InfoModal from "./app/components/InfoModal";
 const theme = getTheme();
 const classNames = mergeStyleSets({
   paperFrame: {
-    width: "40vw",
+    width: "45vw",
     padding: 20,
     background: theme.palette.white,
     position: "relative",
@@ -261,7 +261,7 @@ export default class App extends Component {
     } while (start < limit && start <= totalResults);
 
     if (errorState) {
-      this.setState(errorState);
+      this.setState({ errorState });
       return;
     }
     await set("lastSearch", {
@@ -448,7 +448,7 @@ export default class App extends Component {
       notRelevantList: [],
       selectedTabId: "searchResultsList",
       isLoading: false,
-      searchString: `TITLE-ABS-KEY("heart attack")`,
+      //searchString: `TITLE-ABS-KEY("heart attack")`,
     });
   };
 
@@ -587,7 +587,7 @@ export default class App extends Component {
                 />
                 <IconButton
                   iconProps={{ iconName: "Delete" }}
-                  title="Clear current Search"
+                  title="Clear all lists"
                   id="clearSearch"
                   ariaLabel="Help"
                   onClick={this.clearSearch}
@@ -738,6 +738,7 @@ export default class App extends Component {
         }
         const newPaper = {
           abstract: semScholar.abstract,
+          abstractlink: paper.abstractlink || semScholar.url,
           refs: semScholar.references || [],
           cites: semScholar.citations || [],
           authors: semScholar.authors
@@ -749,7 +750,6 @@ export default class App extends Component {
               })
             : [],
         };
-
         const updatedPaper = {
           ...paper,
           ...newPaper,
