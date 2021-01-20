@@ -261,7 +261,7 @@ export default class App extends Component {
     } while (start < limit && start <= totalResults);
 
     if (errorState) {
-      this.setState(errorState);
+      this.setState({ errorState });
       return;
     }
     await set("lastSearch", {
@@ -738,7 +738,7 @@ export default class App extends Component {
         }
         const newPaper = {
           abstract: semScholar.abstract,
-          abstractlink: semScholar.url,
+          abstractlink: paper.abstractlink || semScholar.url,
           refs: semScholar.references || [],
           cites: semScholar.citations || [],
           authors: semScholar.authors
