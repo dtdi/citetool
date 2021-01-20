@@ -16,9 +16,7 @@ This website helps to discover exciting new papers in three easy steps:
 
 ## Ressources
 
-
 * [Changelog](./CHANGELOG.md)
-* [Live Demo]()
 * [Issures](https://github.com/dtdi/citetool/issues)
 * [User Documentation](https://github.com/dtdi/citetool/wiki/User-Documentation)
 
@@ -51,16 +49,3 @@ The build is minified and the filenames include the hashes.\
 Your app is ready to be deployed!
 
 See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
