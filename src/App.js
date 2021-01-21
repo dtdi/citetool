@@ -582,6 +582,7 @@ export default class App extends Component {
                 <SearchBox
                   styles={{ root: { width: 400 } }}
                   placeholder="Search"
+                  id={"searchBox"}
                   onSearch={this.onLoadData}
                   value={searchString}
                 />

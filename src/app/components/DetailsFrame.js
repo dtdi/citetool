@@ -140,6 +140,7 @@ export default class DetailsFrame extends Component {
                 <Text
                   style={{ fontWeight: FontWeights.semibold }}
                   variant={"mediumPlus"}
+                  id={"selectedPaperTitle"}
                 >
                   {selectedPaper.name}
                 </Text>
