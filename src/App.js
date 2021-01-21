@@ -132,7 +132,7 @@ export default class App extends Component {
       isLoadFileModalOpen: false,
       isInfoModalOpen: false,
       isLoading: false,
-      searchString: `TITLE-ABS-KEY("heart attack")`,
+      searchString: `TITLE("digital innovation" AND "literature review")`,
     };
   }
 
@@ -448,7 +448,6 @@ export default class App extends Component {
       notRelevantList: [],
       selectedTabId: "searchResultsList",
       isLoading: false,
-      //searchString: `TITLE-ABS-KEY("heart attack")`,
     });
   };
 
@@ -571,9 +570,9 @@ export default class App extends Component {
                   className="logo"
                   style={{ width: 28 }}
                   src={logo}
-                  alt="PotatoSearch"
+                  alt="Potato Search"
                 />
-                <Text style={{ fontWeight: "bolder" }}>Potatosearch</Text>
+                <Text style={{ fontWeight: "bolder" }}>Potato Search</Text>
               </Stack>
             </StackItem>
 
@@ -582,6 +581,7 @@ export default class App extends Component {
                 <SearchBox
                   styles={{ root: { width: 400 } }}
                   placeholder="Search"
+                  id={"searchBox"}
                   onSearch={this.onLoadData}
                   value={searchString}
                 />
