@@ -60,27 +60,30 @@ export default class DetailsFrame extends Component {
         <Stack className={classNames.abstract}>
           <Text>Howdy, Partner!</Text>
           <Text>
-            This website helps to discover exciting new papers in three easy
+            This website helps you discover exciting new papers in three easy
             steps:
             <ol>
               <li>
-                To get started, use the search box above to start a search query
+                To get started, use the search box above to run a search query
                 on Scopus.
               </li>
               <li>
-                Based on the results, we suggest relevant papers on the left,
-                which you can mark as relevant or irrelevant using the buttons
-                at the top. Your vote will automatically move the paper to the
-                lists on the right side of the page. Based on the papers you
-                rated as relevant, we will suggest new papers to rate. For this
-                purpose, we use bibliometric data (i.e., co-citation &
-                bibliometric coupling) to find papers that have a particularly
-                high overlap with your selection.
+                Based on the results, a relevance score is calculated for each
+                paper - based on bibliometric data (i.e., co-citation & 
+                bibliometric coupling). The paper with the highest relevance
+                score will be presented to you in this box. It is, then, your
+                task to mark the paper as "relevant" or "not relevant" using
+                the buttons that will be placed above the paper. Your input 
+                will automatically move the paper to the according list on the 
+                right side of this page. When a paper is marked "relevant", a 
+                forward-backward-search is run, the citing and cited papers are 
+                added to the Paper Pool, and the relevance score for each paper 
+                is updated.
               </li>
               <li>
                 If you have identified enough papers or if our suggestions do
-                not contain any more relevant papers, use the download function
-                in the header to export your results as a list.
+                not contain any more relevant papers, use the "To Citavi" function 
+                to export your results.
               </li>
             </ol>
           </Text>
