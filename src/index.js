@@ -25,8 +25,7 @@ ReactDOM.render(<App />, document.getElementById("root"));
 
 if (process.env.NODE_ENV === "production") {
   Sentry.init({
-    dsn:
-      "https://6b5e57b77ebf466980c9e68d76da6978@o503871.ingest.sentry.io/5589576",
+    dsn: process.env.REACT_APP_SENTRY_KEY,
 
     autoSessionTracking: true,
     integrations: [new Integrations.BrowserTracing()],
@@ -43,7 +42,7 @@ if (process.env.NODE_ENV === "production") {
     s = d.getElementsByTagName("script")[0];
   g.type = "text/javascript";
   g.async = true;
-  g.src = "https://stat.dtdi.de/js/container_xOZRxVHm.js";
+  g.src = process.env.REACT_APP_MATOMO_KEY;
   s.parentNode.insertBefore(g, s);
 }
 
