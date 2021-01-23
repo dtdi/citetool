@@ -2,7 +2,7 @@
   "name": "citer",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://dtdi.de/citer",
+  "homepage": "https://potatosearch.org",
   "dependencies": {
     "@fluentui/react": "^7.155.3",
     "@sentry/react": "^5.29.2",
